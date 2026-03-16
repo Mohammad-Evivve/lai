@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   FileText, ShieldCheck, Info, ArrowRight, 
   Activity, Users, Brain, Target, Compass,
-  AlertCircle
+  AlertCircle, CheckCircle2, Link as LinkIcon
 } from 'lucide-react';
 import { supabase } from '../supabase';
 
