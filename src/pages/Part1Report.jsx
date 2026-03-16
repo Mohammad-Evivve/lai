@@ -17,12 +17,10 @@ const dimensions = [
 ];
 
 const RadarChart = ({ scores, teamScores }) => {
-  const size = 300;
+  const size = 400; // Increased size to provide more room for labels
   const center = size / 2;
-  const radius = size * 0.4;
+  const radius = size * 0.35; // Slightly reduced radius ratio for padding
   const angleStep = (Math.PI * 2) / 5;
-
-  // Grid levels
   const gridLevels = [0.2, 0.4, 0.6, 0.8, 1.0];
   
   const getPoint = (score, index, r = radius) => {
@@ -40,9 +38,9 @@ const RadarChart = ({ scores, teamScores }) => {
   const teamPointsString = teamPoints ? teamPoints.map(p => `${p.x},${p.y}`).join(' ') : null;
 
   return (
-    <div className="radar-container">
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        {/* Grid lines */}
+    <div className="radar-container-brief">
+      <svg width="100%" height="auto" viewBox={`0 0 ${size} ${size}`} preserveAspectRatio="xMidYMid meet">
+        {/* Grid levels */}
         {gridLevels.map((level, i) => (
           <polygon
             key={i}
@@ -62,7 +60,7 @@ const RadarChart = ({ scores, teamScores }) => {
           return <line key={i} x1={center} y1={center} x2={p.x} y2={p.y} stroke="#f1f5f9" strokeWidth="1" />;
         })}
 
-        {/* Team Average Area (Backend Layer) */}
+        {/* Team Average Area */}
         {teamPointsString && (
           <motion.polygon
             initial={{ opacity: 0 }}
@@ -75,7 +73,7 @@ const RadarChart = ({ scores, teamScores }) => {
           />
         )}
 
-        {/* Individual Data Area (Fore Layer) */}
+        {/* Individual Data Area */}
         <motion.polygon
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -85,22 +83,24 @@ const RadarChart = ({ scores, teamScores }) => {
           strokeWidth="3"
         />
 
-        {/* Labels */}
+        {/* Labels with improved positioning */}
         {dimensions.map((d, i) => {
-          const p = getPoint(120, i);
+          const p = getPoint(125, i); // Position labels slightly further out
           return (
             <text
-              key={i} x={p.x} y={p.y} fontSize="8" fontWeight="800" fill="#94a3b8"
-              textAnchor="middle" dominantBaseline="middle" className="radar-label"
+              key={i} x={p.x} y={p.y} fontSize="10" fontWeight="950" fill="#94a3b8"
+              textAnchor="middle" dominantBaseline="middle"
               style={{ textTransform: 'uppercase', letterSpacing: '1px' }}
             >
-              {d.name.split(' ').map((word, wi) => <tspan key={wi} x={p.x} dy={wi === 0 ? 0 : 10}>{word}</tspan>)}
+              {d.name.split(' ').map((word, wi) => (
+                <tspan key={wi} x={p.x} dy={wi === 0 ? 0 : 12}>{word}</tspan>
+              ))}
             </text>
           );
         })}
       </svg>
       {teamScores && (
-        <div className="radar-legend">
+        <div className="radar-legend-brief">
           <div className="legend-item"><span className="dot perception" /> Individual</div>
           <div className="legend-item"><span className="dot team" /> Team Avg</div>
         </div>
@@ -528,6 +528,13 @@ const Part1Report = () => {
         .risk-desc { margin: 0.5rem 0 0; color: #475569; font-size: 0.95rem; }
 
         /* Radar Section Update */
+        .radar-container-brief { width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .radar-legend-brief { display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; }
+        .legend-item { display: flex; align-items: center; gap: 0.75rem; font-size: 13px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 1px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .dot.perception { background: #14b8a6; }
+        .dot.team { border: 2px dashed #0f172a; background: rgba(15, 23, 42, 0.1); }
+
         .radar-insight-text { font-size: 1rem; color: #475569; font-weight: 500; margin-bottom: 2.5rem; max-width: 600px; }
         .radar-layout-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem; align-items: start; }
         
