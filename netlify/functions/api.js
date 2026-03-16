@@ -173,6 +173,24 @@ app.get('/api/intelligence/history', async (req, res) => {
   }
 });
 
+//### Phase 7: Disciplined Reporting Refactor [NEW]
+// - **Final Structural Build Order**:
+//     1. Header (Institutional)
+//     2. Executive Signal (Narrative Headline)
+//     3. Leadership Risk Signal (Conditional Alert)
+//     4. Your Adaptiveness Profile (Radar Chart)
+//     5. Dimension Interpretations (Detail Bars)
+//     6. Leadership System Perception (Team Narrative)
+//     7. Alignment Variance Table (Team Only, 3+)
+//     8. Research Interpretation (Flywheel Context)
+//     9. Recommended Next Measurement Step (Final CTA)
+// - **Technical Thresholds**:
+//     - `Leadership Risk Signal`: Suppress unless dimension <= 40 OR HIGH variance OR alignment/responsiveness friction.
+//     - `Alignment Variance Table`: Render only when `team_member_count >= 3`.
+//     - `Team Overlay`: Render if `team_member_count > 0`.
+// - **Content Policing**: Remove "Perception vs Behavior" gap language; refocus on "Team Perception Variance."
+
+// ## Verification Plan
 // Team Verification — Check if a team code exists and return context
 app.get('/api/teams/:code', async (req, res) => {
   const { code } = req.params;
