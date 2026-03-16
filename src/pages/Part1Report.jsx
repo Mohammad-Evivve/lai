@@ -125,6 +125,7 @@ const Part1Report = () => {
   const [loading, setLoading] = useState(true);
   const [teamData, setTeamData] = useState(null);
   const [activeTabs, setActiveTabs] = useState({});
+  const [copied, setCopied] = useState(null); // 'report' or 'team'
   const reportIdDisplay = id.substring(0, 8).toUpperCase();
 
   useEffect(() => {
@@ -336,6 +337,18 @@ const Part1Report = () => {
               <div className="meta-entry"><span className="m-label">Assessment Date</span> <span className="m-val">{new Date(data.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span></div>
               <div className="meta-entry"><span className="m-label">Report ID</span> <span className="m-val">{id.substring(0, 8).toUpperCase()}</span></div>
             </div>
+            <div className="meta-col-actions no-print">
+              <button 
+                className="btn-institutional outline premium-share-btn"
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  setCopied('report_header');
+                  setTimeout(() => setCopied(null), 2000);
+                }}
+              >
+                {copied === 'report_header' ? <><ShieldCheck size={16} /> URL Copied</> : <><FileText size={16} /> Copy Report Link</>}
+              </button>
+            </div>
           </div>
         </header>
 
@@ -409,13 +422,17 @@ const Part1Report = () => {
                   <h4>Enable Systems Intelligence</h4>
                   <p>Leadership adaptiveness is a collective property. Invite your team to build a shared map of perception.</p>
                   
-                  <div className="invite-actions-brief">
-                    <button className="btn-invite" onClick={() => {
-                      const url = `${window.location.origin}/diagnostic/join/${data?.team_code || ''}`;
-                      navigator.clipboard.writeText(url);
-                      alert('Invite Link Copied');
-                    }}>
-                      Copy Invite Link
+                   <div className="invite-actions-brief">
+                    <button 
+                      className="btn-invite" 
+                      onClick={() => {
+                        const url = `${window.location.origin}/diagnostic?team=${data?.team_code || ''}`;
+                        navigator.clipboard.writeText(url);
+                        setCopied('team');
+                        setTimeout(() => setCopied(null), 2000);
+                      }}
+                    >
+                      {copied === 'team' ? 'Invite Link Copied' : 'Copy Invite Link'}
                     </button>
                     <div className="team-code-display">
                       <span className="code-label">Team Code:</span>
@@ -635,6 +652,16 @@ const Part1Report = () => {
                  </div>
                  <div className="stage-actions">
                     <Link to="/how-measured" className="btn-institutional primary">Begin Behavioral Observation</Link>
+                    <button 
+                      className="btn-institutional outline premium-share-btn no-print"
+                      onClick={() => {
+                        navigator.clipboard.writeText(window.location.href);
+                        setCopied('report_footer');
+                        setTimeout(() => setCopied(null), 2000);
+                      }}
+                    >
+                      {copied === 'report_footer' ? <><CheckCircle2 size={16} /> URL Copied</> : <><LinkIcon size={16} /> Copy Report Link</>}
+                    </button>
                     <button className="btn-institutional outline" onClick={() => window.print()}>Download Perception Brief</button>
                  </div>
                </div>

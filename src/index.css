@@ -170,6 +170,25 @@ li {
   box-shadow: none;
 }
 
+.premium-share-btn {
+  background: white !important;
+  border: 1px solid #14b8a6 !important;
+  color: #14b8a6 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.premium-share-btn:hover {
+  background: #f0fdfa !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.15);
+}
+
+.meta-col-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
 /* Utility Classes */
 .text-teal { color: #2dd4bf; }
 .bg-navy { background: #0a192f; }
@@ -201,6 +220,9 @@ li {
   .cta,
   .btn-invite,
   .btn-institutional,
+  .premium-share-btn,
+  .meta-col-actions,
+  .team-invitation-block,
   button:not(.p-tab.active) {
     display: none !important;
     height: 0 !important;
