@@ -300,7 +300,55 @@ const Part1Report = () => {
           </div>
         </section>
 
-        {/* 3. KEY INSIGHT */}
+        {/* 3. THE ADAPTIVENESS GAP (NEW PAGE 2 - DECISION MOMENT) */}
+        <section className="report-section gap-section page-section">
+          <div className="gap-content-brief">
+            <h2 className="gap-title">Measure the Adaptiveness Gap</h2>
+            
+            <div className="gap-split-grid">
+              <div className="gap-col-perception">
+                <div className="gap-tag">Verified Perception</div>
+                <h3>What This Report Shows</h3>
+                <p>This assessment measures <strong>how your leadership team perceives its adaptiveness.</strong></p>
+                <div className="gap-insight-box">
+                  <p>Your team believes it:</p>
+                  <ul className="gap-list">
+                    <li>• Recognizes signals early</li>
+                    <li>• Interprets change as opportunity</li>
+                    <li>• Struggles with systemic decision alignment</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="gap-col-behavior">
+                <div className="gap-tag-behavior">Behavioral Uncertainty</div>
+                <h3>What This Report Cannot Yet Confirm</h3>
+                <p>Perception alone does not reveal <strong>how leadership systems actually behave under pressure.</strong></p>
+                <div className="gap-behavior-narrative">
+                   Signals are often recognized early, but behavioral observation consistently reveals that decisions and resources take significantly longer to realign in dynamic conditions.
+                </div>
+              </div>
+            </div>
+
+            <div className="gap-decision-box">
+              <div className="critical-question">
+                <h3>The Critical Question</h3>
+                <p>Does your leadership system <strong>actually behave</strong> the way it believes it does? Or does decision friction emerge when leaders must act under real strategic pressure?</p>
+              </div>
+              
+              <div className="gap-cta-block">
+                <div className="cta-narrative">
+                   The Behavioral Adaptiveness Simulation observes leadership decision dynamics in real time, revealing the gap between perception and reality.
+                </div>
+                <div className="cta-actions-row">
+                   <Link to="/how-measured" className="btn-institutional primary">Test Your Leadership System Under Pressure</Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 4. KEY INSIGHT */}
         <section className="report-section insight-sentence page-section">
            <div className="high-insight">
              <p>Your leadership system <strong>interprets change well</strong> but <strong>struggles to align decisions quickly</strong> once change is recognized.</p>
@@ -444,24 +492,12 @@ const Part1Report = () => {
            </div>
         </section>
 
-        {/* 9. RECOMMENDED NEXT MEASUREMENT STEP */}
-        <section className="report-section next-stage-polish page-section">
-            <div className="next-stage-brief">
-               <div className="n-tag">Natural Progression</div>
-               <h3>Next Step: Behavioral Observation</h3>
-               <p className="brief-desc">
-                  This report measures <strong>how your leadership team perceives its adaptiveness</strong>. The next stage measures <strong>how leadership decisions actually unfold under pressure</strong> through simulation.
-               </p>
-               <div className="sim-focus-grid-document">
-                  <div className="f-item"><div className="f-dot" /> Signal recognition speed</div>
-                  <div className="f-item"><div className="f-dot" /> Decision convergence</div>
-                  <div className="f-item"><div className="f-dot" /> Resource reallocation</div>
-                  <div className="f-item"><div className="f-dot" /> Systemic responsiveness</div>
-               </div>
-               <div className="stage-actions">
-                  <Link to="/how-measured" className="btn-institutional primary">Begin Behavioral Diagnostic</Link>
-                  <button className="btn-institutional outline" onClick={() => window.print()}>Download Intelligence Brief</button>
-               </div>
+        {/* 9. DOWNLOAD BRIEF OPTION */}
+        <section className="report-section download-footer page-section">
+            <div className="download-cta-centered">
+               <h3>Secure Your Intelligence Brief</h3>
+               <p>Download the high-fidelity perception profile for strategic review.</p>
+               <button className="btn-institutional outline" onClick={() => window.print()}>Download Intelligence Brief</button>
             </div>
         </section>
 
@@ -591,6 +627,22 @@ const Part1Report = () => {
         
         .perception-stats-col { display: flex; flex-direction: column; gap: 1.5rem; }
         .doc-stat-card { background: #0f172a; color: white; padding: 1.5rem; border-radius: 16px; text-align: center; }
+
+        /* Adaptiveness Gap Styling */
+        .gap-section { background: white; border: 2px solid #0f172a; border-radius: 24px; padding: 4rem; margin-top: 4rem; }
+        .gap-title { font-size: 32px; font-weight: 950; margin-bottom: 3rem; text-align: center; border: none; }
+        .gap-split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-bottom: 4rem; }
+        .gap-tag { font-size: 10px; font-weight: 900; color: #14b8a6; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem; }
+        .gap-tag-behavior { font-size: 10px; font-weight: 900; color: #f43f5e; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem; }
+        .gap-insight-box { background: #f0fdfa; padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem; }
+        .gap-list { list-style: none; padding: 0; margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem; font-weight: 700; color: #0f172a; font-size: 14px; }
+        .gap-behavior-narrative { font-size: 15px; color: #475569; line-height: 1.6; border-left: 2px solid #fda4af; padding-left: 1.5rem; margin-top: 1.5rem; }
+        .gap-decision-box { border-top: 1px solid #e2e8f0; padding-top: 3rem; text-align: center; }
+        .critical-question { max-width: 600px; margin: 0 auto 3rem; h3 { font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 1rem; } p { font-size: 17px; color: #475569; line-height: 1.5; } }
+        .gap-cta-block { max-width: 700px; margin: 0 auto; background: #0f172a; color: white; padding: 2.5rem; border-radius: 20px; }
+        .cta-narrative { font-size: 15px; color: #94a3b8; margin-bottom: 2rem; line-height: 1.6; }
+
+        .download-footer { text-align: center; padding: 4rem 0; border-top: 1px solid #f1f5f9; h3 { font-size: 24px; font-weight: 900; margin-bottom: 1rem; } p { color: #64748b; margin-bottom: 2rem; } }
 
         @media screen and (max-width: 900px) {
            .report-container { width: 95%; padding: 2rem; }
