@@ -200,21 +200,23 @@ const Part1Report = () => {
 
     if (teamData.variance) {
       const varianceEntries = Object.entries(teamData.variance);
-      most_aligned_dimension = dimensions.find(d => d.id === varianceEntries.sort((a, b) => {
-        const levels = { 'LOW': 0, 'MODERATE': 1, 'HIGH': 2 };
-        return levels[a[1]] - levels[b[1]];
-      })[0][0]);
-      most_divergent_dimension = dimensions.find(d => d.id === varianceEntries.sort((a, b) => {
-        const levels = { 'LOW': 0, 'MODERATE': 1, 'HIGH': 2 };
-        return levels[b[1]] - levels[a[1]];
-      })[0][0]);
+      if (varianceEntries.length > 0) {
+        most_aligned_dimension = dimensions.find(d => d.id === varianceEntries.sort((a, b) => {
+          const levels = { 'LOW': 0, 'MODERATE': 1, 'HIGH': 2 };
+          return levels[a[1]] - levels[b[1]];
+        })[0][0]);
+        most_divergent_dimension = dimensions.find(d => d.id === varianceEntries.sort((a, b) => {
+          const levels = { 'LOW': 0, 'MODERATE': 1, 'HIGH': 2 };
+          return levels[b[1]] - levels[a[1]];
+        })[0][0]);
+      }
     }
   }
 
   // Leadership Risk Signal Logic
   let riskSignal = null;
   const hasLowScore = Object.values(scores).some(s => s <= 40);
-  const hasHighVariance = showVarianceAnalysis && Object.values(teamData.variance).some(v => v === 'HIGH');
+  const hasHighVariance = showVarianceAnalysis && teamData?.variance && Object.values(teamData.variance).some(v => v === 'HIGH');
   const combinedFriction = scores.decision_alignment <= 50 && scores.integrated_responsiveness <= 50;
 
   if (hasLowScore || hasHighVariance || combinedFriction) {
