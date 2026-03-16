@@ -9,11 +9,11 @@ import {
 import { supabase } from '../supabase';
 
 const dimensions = [
-  { id: 'signal_detection', name: 'Signal Detection', desc: 'Ability to detect emerging technological, geopolitical, and market signals.' },
-  { id: 'cognitive_framing', name: 'Cognitive Framing', desc: 'Interpretation of market shifts (Opportunity vs. Threat).' },
-  { id: 'decision_alignment', name: 'Decision Alignment', desc: 'Convergence of actions across the simulated system.' },
-  { id: 'resource_calibration', name: 'Resource Calibration', desc: 'Velocity of capital and talent reallocation.' },
-  { id: 'integrated_responsiveness', name: 'Integrated Responsiveness', desc: 'Systemic translation of strategy into behavioral output.' }
+  { id: 'signal_detection', name: 'Signal Detection', subtitle: 'How early leaders recognize change', desc: 'Ability to detect emerging technological, geopolitical, and market signals.' },
+  { id: 'cognitive_framing', name: 'Cognitive Framing', subtitle: 'How leaders interpret change', desc: 'Interpretation of market shifts (Opportunity vs. Threat).' },
+  { id: 'decision_alignment', name: 'Decision Alignment', subtitle: 'How leaders converge on decisions', desc: 'Convergence of actions across the simulated system.' },
+  { id: 'resource_calibration', name: 'Resource Calibration', subtitle: 'How quickly resources shift', desc: 'Velocity of capital and talent reallocation.' },
+  { id: 'integrated_responsiveness', name: 'Integrated Responsiveness', subtitle: 'How strategy becomes action', desc: 'Systemic translation of strategy into behavioral output.' }
 ];
 
 const RadarChart = ({ scores, teamScores }) => {
@@ -247,7 +247,7 @@ const Part1Report = () => {
           <div className="institutional-box">
              <div className="lai-logo">LAI</div>
              <div className="line" />
-             <div className="report-type">LAI-CORE PERCEPTION BRIEF</div>
+             <div className="report-type">LAI-CORE [Part 1 of 2]</div>
           </div>
           <h1>Leadership Adaptiveness Profile</h1>
           <div className="meta-row">
@@ -256,27 +256,39 @@ const Part1Report = () => {
             <span>Report ID: <strong>{id.substring(0, 8)}</strong></span>
           </div>
           <div className="meta-row" style={{ marginTop: '0.5rem' }}>
-            <span>Participant: <strong>{data.name}</strong></span>
+            <span>Participant: <strong>{data.participants?.name || 'Leadership Team Member'}</strong></span>
             {showTeamView && <span>Leadership Team Participants: <strong>{teamMemberCount}</strong></span>}
           </div>
         </header>
 
-        {/* 2. EXECUTIVE SIGNAL */}
-        <section className="report-section">
-          <h2>Executive Signal</h2>
-          <div className="overview-content">
-            <p style={{ fontSize: '1.2rem', color: '#0f172a', fontWeight: '500', marginBottom: '1.5rem' }}>
-              Your responses suggest that leadership adaptiveness within this system is perceived as strongest in <strong className="text-teal">{highest_dimension.name}</strong> and weakest in <strong className="text-rose">{lowest_dimension.name}</strong>.
-            </p>
-            <p>
-              Leadership teams frequently recognize external signals before they fully align decisions and resources around them. When this gap appears, organizations often continue executing strategies built on outdated assumptions.
-            </p>
-            {showVarianceAnalysis && most_aligned_dimension && (
-              <p style={{ marginTop: '1rem', borderTop: '1px solid #f1f5f9', paddingTop: '1rem' }}>
-                Across the {teamMemberCount} participating leaders, perceptions are most aligned around <strong>{most_aligned_dimension.name}</strong> and most divergent around <strong>{most_divergent_dimension.name}</strong>.
+        {/* 2. EXECUTIVE SUMMARY */}
+        <section className="report-section summary-box">
+          <h2>Executive Summary</h2>
+          <div className="summary-grid">
+            <div className="summary-bullets">
+              <p style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a', marginBottom: '1.5rem' }}>
+                Your leadership team shows <span className="text-teal">strong awareness of change</span>, but <span className="text-rose">decision alignment is significantly weaker</span>.
               </p>
-            )}
+              <ul className="m-bullets">
+                <li>• Leaders detect external signals relatively well</li>
+                <li>• Leaders interpret change constructively</li>
+                <li>• Leadership decisions do not converge at the same speed</li>
+              </ul>
+            </div>
+            <div className="primary-risk-card">
+              <h4>Primary Risk</h4>
+              <p>Your organization may recognize change early but struggle to <strong>translate that awareness into aligned decisions and resource shifts.</strong></p>
+              <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#64748b' }}>When this gap appears, organizations often continue executing strategies built on outdated assumptions.</p>
+            </div>
           </div>
+        </section>
+
+        {/* 3. KEY INSIGHT */}
+        <section className="report-section insight-sentence">
+           <div className="high-insight">
+             <p>Your leadership system <strong>interprets change well</strong> but <strong>struggles to align decisions quickly</strong> once change is recognized.</p>
+             <p className="sub-insight">This pattern often produces decision friction during periods of rapid market shift.</p>
+           </div>
         </section>
 
         {/* 3. LEADERSHIP RISK SIGNAL (CONDITIONAL) */}
@@ -295,19 +307,32 @@ const Part1Report = () => {
           </section>
         )}
 
-        {/* 4. YOUR ADAPTIVENESS PROFILE */}
+        {/* 4. ADAPTIVENESS PROFILE */}
         <section className="report-section profile-section">
           <div className="chart-area">
-             <h2>Your Adaptiveness Profile</h2>
-             <RadarChart scores={scores} teamScores={teamData?.averages} />
-             <p className="chart-caption">Overlay reflects individual perception vs. team aggregate averages.</p>
+             <h2>Leadership Adaptiveness Radar</h2>
+             <p style={{ marginBottom: '2rem', fontSize: '1rem', color: '#475569', fontWeight: '500' }}>This chart shows how your leadership team performs across five dimensions of adaptiveness.</p>
+             <div className="chart-flex-box">
+                <RadarChart scores={scores} teamScores={teamData?.averages} />
+                <div className="interpretation-scale">
+                   <h4>Adaptiveness Scale</h4>
+                   <div className="scale-node"><span className="s-range">80–100</span> <span className="s-label">Highly adaptive</span></div>
+                   <div className="scale-node"><span className="s-range">60–79</span> <span className="s-label">Moderately adaptive</span></div>
+                   <div className="scale-node"><span className="s-range">40–59</span> <span className="s-label">Constraints emerging</span></div>
+                   <div className="scale-node"><span className="s-range">&lt; 40</span> <span className="s-label">High friction risk</span></div>
+                </div>
+             </div>
+             <p className="chart-caption">Overlay reflects individual responses compared to the leadership team average.</p>
           </div>
           
           <div className="dimension-list">
              {dimensions.map(dim => (
                <div key={dim.id} className="dim-card-report">
                   <div className="dim-header">
-                    <span className="dim-name">{dim.name}</span>
+                    <div>
+                      <span className="dim-name">{dim.name}</span>
+                      <div className="dim-subtitle-text">{dim.subtitle}</div>
+                    </div>
                     <span className="dim-score" style={{ color: scores[dim.id] >= 75 ? '#14b8a6' : (scores[dim.id] <= 40 ? '#f43f5e' : '#14b8a6') }}>
                       {scores[dim.id]}
                     </span>
@@ -320,18 +345,26 @@ const Part1Report = () => {
           </div>
         </section>
 
-        {/* 5. DIMENSION INTERPRETATIONS */}
-        <section className="report-section">
-           <h2>Detailed Interpretation</h2>
-           <div style={{ display: 'grid', gap: '2rem' }}>
+        {/* 5. DIMENSION INSIGHTS */}
+        <section className="report-section detail-grid">
+           <h2>Dimension Insights</h2>
+           <div className="i-grid">
              {dimensions.map(dim => (
-               <div key={dim.id} className="interpretation-node">
-                 <h4 style={{ fontSize: '0.9rem', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.75rem', color: '#0f172a' }}>{dim.name}</h4>
-                 <p style={{ fontSize: '0.95rem', color: '#64748b', lineHeight: '1.6', margin: 0 }}>
-                   {getDimInterpretation(dim.id, scores[dim.id])}
-                    {scores[dim.id] >= 75 && <span style={{ display: 'block', marginTop: '0.5rem', fontWeight: '700', color: '#14b8a6' }}>Characterized by strong perceived capability.</span>}
-                    {scores[dim.id] <= 40 && <span style={{ display: 'block', marginTop: '0.5rem', fontWeight: '700', color: '#f43f5e' }}>Indicative of potential structural friction.</span>}
-                 </p>
+               <div key={dim.id} className="i-node">
+                 <div className="i-header">
+                    <div className="i-num">{scores[dim.id]}</div>
+                    <div className="i-title-box">
+                       <h4>{dim.name}</h4>
+                       <span className="i-subtitle">{dim.subtitle}</span>
+                    </div>
+                 </div>
+                 <div className="i-body">
+                    <p>{dim.id === 'signal_detection' && (scores[dim.id] >= 60 ? "Leaders appear reasonably capable of detecting emerging signals in the market or environment." : "Signals exist, but are not consistently recognized across the leadership system.")}</p>
+                    <p>{dim.id === 'cognitive_framing' && (scores[dim.id] >= 70 ? "Leaders generally interpret disruption as something that can be addressed strategically, translating uncertainty into opportunity." : "Disruption may be perceived primarily as an operational threat, limiting strategic experimentation.")}</p>
+                    <p>{dim.id === 'decision_alignment' && (scores[dim.id] <= 40 ? "Lower alignment suggests that once signals are recognized, leaders may not reach decisions at the same speed. This often creates delayed responses and competing priorities." : "Leadership decisions appear to converge effectively once a signal is recognized.")}</p>
+                    <p>{dim.id === 'resource_calibration' && "This dimension reflects how rapidly capital, talent, and operational capacity can be redirected when conditions change."}</p>
+                    <p>{dim.id === 'integrated_responsiveness' && "Integrated responsiveness reflects whether leadership decisions convert into coordinated execution across teams."}</p>
+                 </div>
                </div>
              ))}
            </div>
@@ -355,7 +388,7 @@ const Part1Report = () => {
                   <p>
                     {hasHighVariance 
                       ? "Leadership team members are experiencing the decision system differently, which may create friction during rapid transitions."
-                      : "Leadership perception appears broadly aligned across the team members participating in this cycle."}
+                      : "This suggests leaders share a similar understanding of how the organization currently responds to change."}
                   </p>
                   
                   {showVarianceAnalysis ? (
@@ -402,48 +435,39 @@ const Part1Report = () => {
           </section>
         )}
 
-        {/* 8. RESEARCH INTERPRETATION */}
-        <section className="report-section research-insight">
-           <div className="insight-grid">
-              <div className="i-icon"><Brain size={32} /></div>
-              <div className="i-text">
-                 <h3>Research Insight</h3>
-                 <p>
-                    Leadership adaptiveness is often difficult to evaluate from perception alone. Many leadership teams believe they adapt quickly, yet behavioral observation frequently reveals that signals are recognized faster than decisions and resources can be realigned.
-                 </p>
-                 <p style={{ marginTop: '1rem', fontStyle: 'italic' }}>
-                    Understanding how leaders <strong>perceive</strong> their system is the first step in measuring how it actually behaves.
-                 </p>
-              </div>
+        {/* 8. RESEARCH INSIGHT */}
+        <section className="report-section research-insight-compact">
+           <div className="insight-box-m">
+              <h3>Research Insight</h3>
+              <p>Most leadership teams believe they adapt quickly. <strong>Behavioral observation often shows the opposite.</strong></p>
+              <p style={{ marginTop: '1rem', color: '#94a3b8' }}>Signals are detected faster than decisions and resources can realign. Understanding perception is the first step in measuring how the system actually behaves.</p>
            </div>
         </section>
 
         {/* 9. RECOMMENDED NEXT MEASUREMENT STEP */}
-        <section className="report-section next-stage">
-            <div className="next-stage-box">
-               <div className="n-header">
-                  <Target size={24} />
-                  <h3>Next Measurement Step: Behavioral Observation</h3>
-               </div>
+        <section className="report-section next-stage-polish">
+            <div className="next-stage-brief">
+               <div className="n-tag">Natural Progression</div>
+               <h3>Next Step: Behavioral Observation</h3>
                <p>
-                  Perception assessments reveal how leadership systems understand themselves. The next stage of measurement observes how leadership decisions unfold under dynamic conditions through structured behavioral observation.
+                  This report measures <strong>how your leadership team perceives itself</strong>. The next stage measures <strong>how leadership decisions actually unfold under pressure</strong> through structured simulation.
                </p>
-               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
-                  <div style={{ fontSize: '0.85rem', color: '#64748b' }}>• Signal recognition speed</div>
-                  <div style={{ fontSize: '0.85rem', color: '#64748b' }}>• Decision convergence</div>
-                  <div style={{ fontSize: '0.85rem', color: '#64748b' }}>• Resource reallocation velocity</div>
-                  <div style={{ fontSize: '0.85rem', color: '#64748b' }}>• System-level responsiveness</div>
+               <div className="sim-focus-grid">
+                  <div className="f-item"><div className="f-dot" /> Signal recognition speed</div>
+                  <div className="f-item"><div className="f-dot" /> Decision convergence</div>
+                  <div className="f-item"><div className="f-dot" /> Resource reallocation</div>
+                  <div className="f-item"><div className="f-dot" /> Systemic responsiveness</div>
                </div>
                <div className="stage-actions">
-                  <Link to="/how-measured" className="btn-institutional primary">Continue to Behavioral Observation</Link>
-                  <button className="btn-institutional outline" onClick={() => window.print()}>Download Leadership Brief</button>
+                  <Link to="/how-measured" className="btn-institutional primary">Begin Behavioral Diagnostic</Link>
+                  <button className="btn-institutional outline" onClick={() => window.print()}>Download Brief</button>
                </div>
             </div>
         </section>
 
         <footer className="report-footer">
           <div className="footer-logo">LEADERSHIP ADAPTIVENESS INSTITUTE</div>
-          <div className="legal">CONFIDENTIAL · INTELLECTUAL PROPERTY OF LAI</div>
+          <div className="legal">CONFIDENTIAL · EXECUTIVE INTELLIGENCE · © {new Date().getFullYear()} LAI</div>
         </footer>
       </div>
 
@@ -536,43 +560,55 @@ const Part1Report = () => {
         .report-footer { border-top: 1px solid #f1f5f9; padding-top: 3rem; display: flex; justify-content: space-between; align-items: center; }
         .footer-logo { font-size: 0.75rem; font-weight: 900; letter-spacing: 1.5px; }
         .legal { font-size: 0.6rem; color: #cbd5e1; font-weight: 800; }
+        /* McKinsey Refinements */
+        .summary-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 24px; padding: 3rem; }
+        .summary-grid { display: grid; grid-template-columns: 1fr 300px; gap: 4rem; }
+        .m-bullets { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+        .m-bullets li { font-size: 1rem; color: #475569; font-weight: 500; }
+        .primary-risk-card { background: white; border: 1px solid #fda4af; padding: 2rem; border-radius: 16px; h4 { color: #f43f5e; margin-top: 0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; } }
 
-        .report-loading { display: flex; height: 100vh; align-items: center; justify-content: center; font-weight: 800; color: #94a3b8; letter-spacing: 2px; text-transform: uppercase; }
-        .text-teal { color: #14b8a6; }
-        .text-rose { color: #f43f5e; }
+        .high-insight { text-align: center; max-width: 800px; margin: 4rem auto; p { font-size: 1.75rem; font-weight: 950; color: #0f172a; line-height: 1.2; } .sub-insight { font-size: 1.1rem; color: #64748b; font-weight: 400; margin-top: 1rem; } }
 
-        .interpretation-node { 
-          padding: 2rem; border-left: 2px solid #f1f5f9; 
-          transition: border-color 0.2s;
-        }
-        .interpretation-node:hover { border-left-color: #14b8a6; }
+        .chart-flex-box { display: flex; align-items: center; gap: 4rem; justify-content: center; margin-bottom: 2rem; }
+        .interpretation-scale { background: #f8fafc; padding: 1.5rem; border-radius: 12px; min-width: 220px; }
+        .interpretation-scale h4 { margin-top: 0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 1rem; }
+        .scale-node { display: flex; justify-content: space-between; font-size: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #f1f5f9; }
+        .s-range { font-weight: 800; color: #0f172a; }
+        .s-label { color: #64748b; }
 
-        .v-status.high { color: #f43f5e; font-weight: 800; }
-        .v-status.moderate { color: #f59e0b; font-weight: 800; }
-        .v-status.low { color: #10b981; font-weight: 800; }
+        .dim-subtitle-text { font-size: 0.7rem; color: #64748b; font-weight: 400; text-transform: none; letter-spacing: 0; margin-top: 2px; }
+
+        .i-grid { display: grid; gap: 3rem; }
+        .i-node { display: grid; grid-template-columns: 80px 1fr; gap: 2rem; }
+        .i-header { display: flex; gap: 1.5rem; align-items: flex-start; }
+        .i-num { font-size: 2.5rem; font-weight: 950; color: #14b8a6; line-height: 1; font-family: monospace; }
+        .i-title-box h4 { margin: 0; font-size: 1.25rem; font-weight: 800; }
+        .i-subtitle { font-size: 0.85rem; color: #64748b; }
+        .i-body p { margin-top: 1rem; color: #475569; line-height: 1.6; }
+
+        .research-insight-compact { background: #0f172a; color: white; padding: 4rem; border-radius: 24px; text-align: center; }
+        .insight-box-m h3 { color: #14b8a6; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 2px; margin-bottom: 1.5rem; }
+        .insight-box-m p { font-size: 1.5rem; font-weight: 800; line-height: 1.3; }
+
+        .next-stage-polish { border-top: 2px solid #f1f5f9; padding-top: 5rem; }
+        .next-stage-brief { max-width: 700px; margin: 0 auto; text-align: center; }
+        .n-tag { display: inline-block; padding: 0.25rem 0.75rem; background: #f0fdfa; color: #14b8a6; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; border-radius: 100px; margin-bottom: 1.5rem; }
+        .next-stage-brief h3 { font-size: 2.25rem; font-weight: 950; margin-bottom: 1.5rem; }
+        .sim-focus-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem 3rem; text-align: left; margin: 3rem 0; padding: 2rem; background: #f8fafc; border-radius: 16px; }
+        .f-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; font-weight: 600; color: #475569; }
+        .f-dot { width: 6px; height: 6px; background: #14b8a6; border-radius: 50%; }
 
         @media (max-width: 768px) {
-          .report-container { padding: 2rem; }
-          .profile-section { grid-template-columns: 1fr; }
-          .meta-row { flex-direction: column; gap: 0.5rem; }
-          .team-insights-grid { grid-template-columns: 1fr; }
-          .stage-actions { flex-direction: column; }
+          .summary-grid { grid-template-columns: 1fr; gap: 2rem; }
+          .chart-flex-box { flex-direction: column; }
+          .i-node { grid-template-columns: 1fr; gap: 1rem; }
         }
 
         @media print {
-          body { background: white !important; }
-          .report-page { padding: 0 !important; background: white !important; }
-          .report-container { box-shadow: none !important; padding: 0 !important; max-width: 100% !important; margin: 0 !important; border: none !important; }
-          header.nav-header, .stage-actions, footer.report-footer, .breadcrumb, .diagnostic-alert { display: none !important; }
-          .report-section { page-break-inside: avoid; margin-bottom: 3rem !important; }
-          .radar-container { max-width: 280px !important; margin: 0 auto !important; }
-          h1 { font-size: 2.25rem !important; margin-bottom: 1rem !important; }
-          h2 { border-bottom: 2px solid #0f172a !important; padding-bottom: 0.5rem !important; }
-          .profile-section { display: block !important; }
-          .interpretation-node { page-break-inside: avoid; border-left: 2px solid #e2e8f0 !important; margin-bottom: 1.5rem !important; }
-          .risk-signal-section { background: #fff1f2 !important; border: 1px solid #fda4af !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          .fill { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          .dim-bar { background: #f1f5f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .summary-box { background: #f8fafc !important; -webkit-print-color-adjust: exact; }
+          .research-insight-compact { background: #0f172a !important; -webkit-print-color-adjust: exact; }
+          .primary-risk-card { border: 1px solid #fda4af !important; -webkit-print-color-adjust: exact; }
+          .sim-focus-grid { background: #f8fafc !important; -webkit-print-color-adjust: exact; }
         }
       `}</style>
     </div>
