@@ -213,16 +213,21 @@ const Part1Report = () => {
     }
   }
 
-  // Leadership Risk Signal Logic
+  // Leadership Risk Signal Logic (Disciplined)
   let riskSignal = null;
   const hasLowScore = Object.values(scores).some(s => s <= 40);
   const hasHighVariance = showVarianceAnalysis && teamData?.variance && Object.values(teamData.variance).some(v => v === 'HIGH');
-  const combinedFriction = scores.decision_alignment <= 50 && scores.integrated_responsiveness <= 50;
+  
+  // High friction patterns
+  const executionFriction = scores.decision_alignment <= 50 && scores.integrated_responsiveness <= 50;
+  const signalFriction = scores.signal_detection <= 40;
+  
+  const shouldShowRiskBanner = hasLowScore || hasHighVariance || executionFriction;
 
-  if (hasLowScore || hasHighVariance || combinedFriction) {
-    if (scores.signal_detection <= 40) riskSignal = "Signal Recognition Risk";
+  if (shouldShowRiskBanner) {
+    if (signalFriction) riskSignal = "Signal Recognition Risk";
     else if (hasHighVariance) riskSignal = "Alignment Variance Risk";
-    else if (combinedFriction) riskSignal = "Execution Friction Risk";
+    else if (executionFriction) riskSignal = "Execution Friction Risk";
     else if (scores.resource_calibration <= 40) riskSignal = "Resource Reallocation Risk";
     else riskSignal = "Decision Friction Risk";
   }
@@ -278,7 +283,7 @@ const Part1Report = () => {
           </div>
         </header>
 
-        {/* 2. EXECUTIVE SUMMARY */}
+        {/* 2. EXECUTIVE SIGNAL (The Narrative Headline) */}
         <section className="report-section summary-box page-section">
           <h2>Executive Summary</h2>
           <div className="summary-grid">
@@ -300,69 +305,13 @@ const Part1Report = () => {
           </div>
         </section>
 
-        {/* 3. THE ADAPTIVENESS GAP (NEW PAGE 2 - DECISION MOMENT) */}
-        <section className="report-section gap-section page-section">
-          <div className="gap-content-brief">
-            <h2 className="gap-title">Measure the Adaptiveness Gap</h2>
-            
-            <div className="gap-split-grid">
-              <div className="gap-col-perception">
-                <div className="gap-tag">Verified Perception</div>
-                <h3>What This Report Shows</h3>
-                <p>This assessment measures <strong>how your leadership team perceives its adaptiveness.</strong></p>
-                <div className="gap-insight-box">
-                  <p>Your team believes it:</p>
-                  <ul className="gap-list">
-                    <li>• Recognizes signals early</li>
-                    <li>• Interprets change as opportunity</li>
-                    <li>• Struggles with systemic decision alignment</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="gap-col-behavior">
-                <div className="gap-tag-behavior">Behavioral Uncertainty</div>
-                <h3>What This Report Cannot Yet Confirm</h3>
-                <p>Perception alone does not reveal <strong>how leadership systems actually behave under pressure.</strong></p>
-                <div className="gap-behavior-narrative">
-                   Signals are often recognized early, but behavioral observation consistently reveals that decisions and resources take significantly longer to realign in dynamic conditions.
-                </div>
-              </div>
-            </div>
-
-            <div className="gap-decision-box">
-              <div className="critical-question">
-                <h3>The Critical Question</h3>
-                <p>Does your leadership system <strong>actually behave</strong> the way it believes it does? Or does decision friction emerge when leaders must act under real strategic pressure?</p>
-              </div>
-              
-              <div className="gap-cta-block">
-                <div className="cta-narrative">
-                   The Behavioral Adaptiveness Simulation observes leadership decision dynamics in real time, revealing the gap between perception and reality.
-                </div>
-                <div className="cta-actions-row">
-                   <Link to="/how-measured" className="btn-institutional primary">Test Your Leadership System Under Pressure</Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 4. KEY INSIGHT */}
-        <section className="report-section insight-sentence page-section">
-           <div className="high-insight">
-             <p>Your leadership system <strong>interprets change well</strong> but <strong>struggles to align decisions quickly</strong> once change is recognized.</p>
-             <p className="sub-insight">This pattern often produces decision friction during periods of rapid market shift.</p>
-           </div>
-        </section>
-
         {/* 3. LEADERSHIP RISK SIGNAL (CONDITIONAL) */}
         {riskSignal && (
           <section className="report-section risk-signal-section page-section">
             <div className="risk-banner-inner">
                <AlertCircle size={32} className="text-rose" />
                <div>
-                  <h3 className="risk-tag">Critical Observation</h3>
+                  <h3 className="risk-tag">Institutional Alert</h3>
                   <div className="risk-title">{riskSignal}</div>
                   <p className="risk-desc">
                     A pattern in the perception data suggests a localized friction point that may impede systemic adaptiveness during periods of rapid environmental shift.
@@ -372,7 +321,7 @@ const Part1Report = () => {
           </section>
         )}
 
-        {/* 4. ADAPTIVENESS PROFILE */}
+        {/* 4. YOUR ADAPTIVENESS PROFILE (Radar Chart) */}
         <section className="report-section profile-section page-section">
           <h2>Leadership Adaptiveness Radar</h2>
           <div className="radar-insight-text">
@@ -415,7 +364,7 @@ const Part1Report = () => {
           </div>
         </section>
 
-        {/* 5. DIMENSION INSIGHTS */}
+        {/* 5. DIMENSION INTERPRETATIONS (Detail Bars) */}
         <section className="report-section detail-grid page-section">
            <h2>Dimension Insights</h2>
            <div className="document-insight-grid">
@@ -442,7 +391,7 @@ const Part1Report = () => {
            </div>
         </section>
 
-        {/* 6. LEADERSHIP SYSTEM PERCEPTION (TEAM ONLY) */}
+        {/* 6. LEADERSHIP SYSTEM PERCEPTION (Team Narrative) */}
         {showTeamView && (
           <section className="report-section team-section-document page-section">
             <div className="section-header-row-brief">
@@ -463,7 +412,7 @@ const Part1Report = () => {
                       : "Leaders appear to share a consistent understanding of how the organization responds to change."}
                   </p>
                   <p className="alignment-insight-line">
-                    Shared perception alignment often indicates that leadership teams recognize similar challenges and opportunities in the current environment.
+                    Shared perception alignment often indicates that leadership teams recognize similar challenges and opportunities.
                   </p>
                </div>
                
@@ -481,23 +430,72 @@ const Part1Report = () => {
           </section>
         )}
 
-        {/* 8. RESEARCH INSIGHT */}
+        {/* 7. ALIGNMENT VARIANCE TABLE (TEAM ONLY, 3+) */}
+        {showVarianceAnalysis && teamData.variance && (
+          <section className="report-section variance-table-section page-section">
+            <h2>Alignment Variance Table</h2>
+            <p className="section-desc-brief">Analysis of how consistently the leadership team perceives adaptiveness across the framework.</p>
+            
+            <div className="document-variance-grid">
+              <table className="variance-brief-table">
+                <thead>
+                  <tr>
+                    <th>Dimension</th>
+                    <th>Average Score</th>
+                    <th>Team Alignment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dimensions.map(dim => {
+                    const avg = Math.round(teamData.averages[dim.id]);
+                    const varLevel = teamData.variance[dim.id];
+                    return (
+                      <tr key={dim.id}>
+                        <td><strong>{dim.name}</strong></td>
+                        <td>{avg}</td>
+                        <td>
+                          <span className={`var-tag ${varLevel.toLowerCase()}`}>
+                            {varLevel} VARIANCE
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {/* 8. RESEARCH INTERPRETATION (Flywheel Context) */}
         <section className="report-section research-insight-brief page-section">
            <div className="insight-box-m-document">
               <h3>Research Insight</h3>
               <p>Most leadership teams believe they adapt quickly. <strong>Behavioral observation often shows the opposite.</strong></p>
               <div className="insight-brief-body">
-                 Signals are detected faster than decisions and resources can realign. Understanding perception is the first step in measuring how the system actually behaves.
+                 Signals are often recognized early, but behavioral observation consistently reveals that decisions and resources take significantly longer to realign in dynamic conditions.
               </div>
            </div>
         </section>
 
-        {/* 9. DOWNLOAD BRIEF OPTION */}
-        <section className="report-section download-footer page-section">
-            <div className="download-cta-centered">
-               <h3>Secure Your Intelligence Brief</h3>
-               <p>Download the high-fidelity perception profile for strategic review.</p>
-               <button className="btn-institutional outline" onClick={() => window.print()}>Download Intelligence Brief</button>
+        {/* 9. RECOMMENDED NEXT MEASUREMENT STEP (Final CTA) */}
+        <section className="report-section next-stage-polish page-section">
+            <div className="next-stage-brief">
+               <div className="n-tag">Natural Progression</div>
+               <h3>Next Step: Behavioral Observation</h3>
+               <p className="brief-desc">
+                  This report measures <strong>how your leadership team perceives its adaptiveness</strong>. The next stage observes how leadership decisions actually unfold under pressure through strategic simulation.
+               </p>
+               <div className="sim-focus-grid-document">
+                  <div className="f-item"><div className="f-dot" /> Signal recognition speed</div>
+                  <div className="f-item"><div className="f-dot" /> Decision convergence</div>
+                  <div className="f-item"><div className="f-dot" /> Resource reallocation</div>
+                  <div className="f-item"><div className="f-dot" /> Systemic responsiveness</div>
+               </div>
+               <div className="stage-actions">
+                  <Link to="/how-measured" className="btn-institutional primary">Begin Behavioral Diagnostic</Link>
+                  <button className="btn-institutional outline" onClick={() => window.print()}>Download Intelligence Brief</button>
+               </div>
             </div>
         </section>
 
@@ -643,6 +641,17 @@ const Part1Report = () => {
         .cta-narrative { font-size: 15px; color: #94a3b8; margin-bottom: 2rem; line-height: 1.6; }
 
         .download-footer { text-align: center; padding: 4rem 0; border-top: 1px solid #f1f5f9; h3 { font-size: 24px; font-weight: 900; margin-bottom: 1rem; } p { color: #64748b; margin-bottom: 2rem; } }
+
+        /* Variance Table */
+        .variance-table-section { background: white; border-top: 1px solid #f1f5f9; padding-top: 4rem; }
+        .section-desc-brief { font-size: 0.9rem; color: #64748b; margin-bottom: 2rem; }
+        .variance-brief-table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
+        .variance-brief-table th { text-align: left; padding: 1.5rem 1rem; border-bottom: 2px solid #0f172a; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; }
+        .variance-brief-table td { padding: 1.5rem 1rem; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+        .var-tag { font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; }
+        .var-tag.low { background: #f0fdf4; color: #16a34a; }
+        .var-tag.moderate { background: #fffbeb; color: #d97706; }
+        .var-tag.high { background: #fef2f2; color: #dc2626; }
 
         @media screen and (max-width: 900px) {
            .report-container { width: 95%; padding: 2rem; }
