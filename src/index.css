@@ -174,4 +174,117 @@ li {
 .text-teal { color: #2dd4bf; }
 .bg-navy { background: #0a192f; }
 .bg-light { background: #f8fafc; }
-.text-white { color: white; }
+/* --- PRINTER ARCHITECTURE --- */
+@media print {
+  body {
+    background: #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Scoped Print System */
+  .report-print {
+    background: white !important;
+    color: #0f172a !important;
+    width: 100% !important;
+    padding: 0 !important;
+  }
+
+  /* Isolation */
+  .no-print, 
+  nav, 
+  .navbar,
+  .site-header,
+  footer:not(.print-only-persistent-footer),
+  .menu,
+  .sidebar,
+  .cta,
+  .btn-invite,
+  .btn-institutional,
+  button:not(.p-tab.active) {
+    display: none !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Layout Reflow */
+  .report-container {
+    padding: 10mm 0 !important; /* Standard margins for A4 */
+    margin: 0 !important;
+    max-width: none !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    border: none !important;
+  }
+
+  .page-section {
+    page-break-after: auto;
+    page-break-inside: avoid;
+    padding-top: 5rem !important;
+    margin-bottom: 5rem !important;
+    border-bottom: 2px solid #f1f5f9 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Ensure headings are never orphaned */
+  h1, h2, h3, h4 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  /* Stacked Print Layouts */
+  .radar-layout-grid-refined,
+  .summary-grid,
+  .perception-layout-grid-narrative {
+    display: block !important;
+  }
+
+  .radar-visual-column {
+    max-width: 500px;
+    margin: 0 auto 3rem;
+  }
+
+  .primary-risk-card {
+    margin-top: 2rem;
+    background: #fff1f2 !important;
+    border: 1px solid #fda4af !important;
+  }
+
+  /* Branded Footer */
+  .print-only-persistent-footer {
+    display: flex !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #e2e8f0;
+    padding: 1rem 0;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: white;
+    visibility: visible !important;
+    z-index: 9999;
+  }
+
+  /* CSS Counters for Page Numbering (Chrome Optimized) */
+  body { counter-reset: page; }
+  .page-section { counter-increment: page; }
+  .page-number-display::after {
+    content: "Page " counter(page);
+  }
+
+  /* Force background colors */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+.print-only-persistent-footer {
+  display: none;
+}

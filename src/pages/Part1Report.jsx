@@ -16,6 +16,16 @@ const dimensions = [
   { id: 'integrated_responsiveness', name: 'Integrated Responsiveness', subtitle: 'How strategy becomes action', desc: 'Systemic translation of strategy into behavioral output.' }
 ];
 
+const PrintFooter = ({ reportId }) => (
+  <footer className="print-only-persistent-footer">
+    <div className="pf-left">LEADERSHIP ADAPTIVENESS INSTITUTE</div>
+    <div className="pf-center">CONFIDENTIAL EXECUTIVE INTELLIGENCE</div>
+    <div className="pf-right">
+      <span className="page-number-display" /> | ID: {reportId}
+    </div>
+  </footer>
+);
+
 const RadarChart = ({ scores, teamScores }) => {
   const size = 400; // Increased size to provide more room for labels
   const center = size / 2;
@@ -115,6 +125,7 @@ const Part1Report = () => {
   const [loading, setLoading] = useState(true);
   const [teamData, setTeamData] = useState(null);
   const [activeTabs, setActiveTabs] = useState({});
+  const reportIdDisplay = id.substring(0, 8).toUpperCase();
 
   useEffect(() => {
     const fetchReport = async () => {
@@ -171,78 +182,93 @@ const Part1Report = () => {
     </div>
   );
 
-  const scores = {
-    signal_detection: data.signal_detection_score,
-    cognitive_framing: data.cognitive_framing_score,
-    decision_alignment: data.decision_alignment_score,
-    resource_calibration: data.resource_calibration_score,
-    integrated_responsiveness: data.integrated_responsiveness_score
-  };
+  // 1. Data Preparation (Memoized for Stability)
+  const reportLogic = React.useMemo(() => {
+    if (!data) return null;
 
-  // Team Logic Primitives
+    const scoresObj = {
+      signal_detection: data.signal_detection_score || 0,
+      cognitive_framing: data.cognitive_framing_score || 0,
+      decision_alignment: data.decision_alignment_score || 0,
+      resource_calibration: data.resource_calibration_score || 0,
+      integrated_responsiveness: data.integrated_responsiveness_score || 0
+    };
+
+    const team_avg = teamData?.averages 
+      ? Math.round(Object.values(teamData.averages).reduce((a, b) => a + (b || 0), 0) / 5) 
+      : 0;
+
+    const pA = scoresObj.signal_detection >= 65 && scoresObj.cognitive_framing >= 65 && scoresObj.decision_alignment <= 50;
+    const pB = scoresObj.signal_detection <= 45 && scoresObj.cognitive_framing <= 45;
+    const pC = scoresObj.decision_alignment >= 60 && scoresObj.resource_calibration <= 50;
+    
+    let pattern = 'D';
+    if (pA) pattern = 'A';
+    else if (pB) pattern = 'B';
+    else if (pC) pattern = 'C';
+
+    return { 
+      scores: scoresObj, 
+      team_average_score: team_avg,
+      summaryPattern: pattern,
+      patterns: { pA, pB, pC }
+    };
+  }, [data, teamData]);
+
+  if (!reportLogic) return null; // Safety fallback
+
+  const { scores, team_average_score, summaryPattern } = reportLogic;
+
+  // 2. Team Logic Primitives
   const teamMemberCount = teamData?.count || 0;
   const showTeamView = teamMemberCount > 0;
   const showVarianceAnalysis = teamMemberCount >= 3;
-  const team_average_score = teamData?.averages 
-    ? Math.round(Object.values(teamData.averages).reduce((a, b) => a + b, 0) / 5) 
-    : 0;
 
-  // Alignment Narrative Helpers
+  // 3. Alignment Narrative Helpers
   const most_aligned_dimension = teamData?.variance 
-    ? dimensions.find(d => teamData.variance[d.id]?.toLowerCase().includes('low'))
+    ? dimensions.find(d => teamData?.variance?.[d.id]?.toLowerCase()?.includes('low'))
     : null;
   const most_divergent_dimension = teamData?.variance
-    ? dimensions.find(d => teamData.variance[d.id]?.toLowerCase().includes('high'))
+    ? dimensions.find(d => teamData?.variance?.[d.id]?.toLowerCase()?.includes('high'))
     : null;
 
-  // --- NARRATIVE ENGINE (PASS 1) ---
-  
-  // 1. Executive Summary Patterns
-  const patternA = scores.signal_detection >= 65 && scores.cognitive_framing >= 65 && scores.decision_alignment <= 50;
-  const patternB = scores.signal_detection <= 45 && scores.cognitive_framing <= 45;
-  const patternC = scores.decision_alignment >= 60 && scores.resource_calibration <= 50;
-  
-  let summaryPattern = 'D'; // Default
-  if (patternA) summaryPattern = 'A';
-  else if (patternB) summaryPattern = 'B';
-  else if (patternC) summaryPattern = 'C';
-
+  // 4. Executive Summary patterns
   const summaries = {
     A: {
       headline: "Leaders believe change is recognized and understood, but decision convergence may lag behind awareness.",
       bullets: [
-        "Awareness of emerging signals is notably high.",
-        "Change is interpreted strategically across the system.",
-        "A visible gap exists between recognition and coordinated action."
+        "Awareness of emerging signals is notably high across the leadership system.",
+        "Change is interpreted strategically, but often lacks a unified tactical roadmap.",
+        "A visible gap exists between recognition of disruption and coordinated systemic action."
       ],
-      risk: "Awareness is high but coordination lags, meaning the organization may see the need to change but fail to move as one."
+      risk: "Awareness without coordination creates 'strategic paralysis'—the organization sees the need to change but fails to move as a single unit."
     },
     B: {
       headline: "The leadership system may not yet interpret emerging change with sufficient clarity or shared awareness.",
       bullets: [
-        "Detection of weak signals appears inconsistent.",
-        "The system may be filter-heavy, potentially missing early shifts.",
-        "Alignment and response often become reactive rather than intentional."
+        "Detection of weak signals appears inconsistent across varying organizational layers.",
+        "The system may be filter-heavy, potentially missing early geopolitical or market shifts.",
+        "Strategic response often becomes reactive and fragmented rather than intentional."
       ],
-      risk: "When change is weakly recognized, the organization remains optimized for past conditions while new threats emerge."
+      risk: "Consistent recognition lag means the organization remains optimized for past conditions while new threats materialize unnoticed."
     },
     C: {
-      headline: "Leadership may be aligned on direction but less confident in the ability to shift resources quickly.",
+      headline: "Leadership appears aligned on direction but may struggle with the velocity of resource reallocation.",
       bullets: [
-        "Decision convergence is relatively high.",
-        "There is shared intent on the strategic path forward.",
-        "A friction point exists in the velocity of resource reallocation."
+        "Decision convergence is relatively high, indicating shared strategic intent.",
+        "There is strong agreement on the path forward among key decision-makers.",
+        "Capital and talent do not yet shift quickly enough to match the speed of decisions."
       ],
-      risk: "Alignment without resource mobility creates 'strategy gridlock'—decisions are made but capital and talent don't move."
+      risk: "Alignment without resource mobility creates 'strategy gridlock'—decisions are made but the organizational mass remains anchored to legacy priorities."
     },
     D: {
-      headline: "Perception across the five dimensions appears relatively balanced without a dominant strength or constraint.",
+      headline: "Perception across the five dimensions appears balanced without a dominant strength or constraint.",
       bullets: [
-        "Confidence is evenly distributed across the framework.",
-        "No single dimension indicates critical failure or excellence.",
-        "Systemic stability suggests moderate confidence in current adaptiveness."
+        "Confidence is evenly distributed across the adaptiveness framework.",
+        "No single dimension indicates critical systemic failure or exceptional capability.",
+        "The leadership system appears stable but potentially optimized for moderate environments."
       ],
-      risk: "A balanced profile can mask underlying bottlenecks that only appear under significant external pressure."
+      risk: "A balanced profile can mask underlying bottlenecks that only manifest under periods of extreme or non-linear systemic pressure."
     }
   };
 
@@ -252,7 +278,7 @@ const Part1Report = () => {
   let riskSignal = null;
   const hasLowScore = Object.values(scores).some(s => s !== undefined && s !== null && s <= 40);
   const frictionPattern = scores.decision_alignment <= 45 && scores.integrated_responsiveness <= 45;
-  const lowVarAlignmentThreshold = showVarianceAnalysis && teamData?.variance && Object.values(teamData.variance).some(v => v?.toLowerCase().includes('high'));
+  const lowVarAlignmentThreshold = showVarianceAnalysis && teamData?.variance && Object.values(teamData.variance).some(v => v?.toLowerCase()?.includes('high'));
 
   if (hasLowScore || lowVarAlignmentThreshold || frictionPattern) {
     if (scores.signal_detection <= 40) riskSignal = "Signal Recognition Risk";
@@ -275,7 +301,7 @@ const Part1Report = () => {
   };
 
   return (
-    <div className="report-page">
+    <div className="report-page report-print">
       <div className="report-container">
         {/* 1. INSTITUTIONAL HEADER */}
         <header className="report-header-premium">
@@ -295,7 +321,7 @@ const Part1Report = () => {
             <h1 className="report-main-title">Leadership Adaptiveness</h1>
             <h2 className="report-subtitle-intelligence">Perception Intelligence Report</h2>
             <p className="report-description-institutional">
-              How you and your leadership team perceive your organization’s adaptiveness across the LAI framework.
+              How leadership perceives organizational adaptiveness across the LAI framework.
             </p>
             <div className="confidential-seal">Confidential Executive Intelligence</div>
           </div>
@@ -339,13 +365,27 @@ const Part1Report = () => {
         {riskSignal && (
           <section className="report-section risk-signal-section page-section">
             <div className="risk-banner-inner">
-               <AlertCircle size={32} className="text-rose" />
-               <div>
+               <AlertCircle size={40} className="text-rose" />
+               <div style={{ flex: 1 }}>
                   <h3 className="risk-tag">Institutional Alert</h3>
                   <div className="risk-title">{riskSignal}</div>
-                  <p className="risk-desc">
-                    A pattern in the perception data suggests a localized friction point that may impede systemic adaptiveness during periods of rapid environmental shift.
-                  </p>
+                  <div className="risk-content-expanded" style={{ marginTop: '1.5rem', borderTop: '1px solid rgba(244, 63, 94, 0.2)', paddingTop: '1.5rem' }}>
+                    <p className="risk-desc" style={{ fontSize: '1.1rem', fontWeight: '700', color: '#0f172a', marginBottom: '1rem' }}>
+                      Why this matters operationally:
+                    </p>
+                    <p className="risk-desc" style={{ marginBottom: '1.5rem' }}>
+                      {riskSignal === "Decision Friction Risk" && "This pattern occurs when leadership teams recognize change but struggle to converge quickly on coordinated decisions. Awareness of the problem is not the bottleneck—synchronization is."}
+                      {riskSignal === "Signal Recognition Risk" && "When early signals are missed, the organization remains optimized for past conditions. This creates a 'blind spot' where threats materialize fully before a response is even conceptualized."}
+                      {riskSignal === "Resource Reallocation Risk" && "The organization may be aligned on strategy but anchored by its capital and talent. Without resource mobility, strategic decisions remain theoretical and lack systemic impact."}
+                      {riskSignal === "Leadership Alignment Risk" && "Divergent perceptions across the team indicate that operational realities vary significantly by business unit. This fragmentation prevents the organization from responding as a single, coherent system."}
+                      {(!riskSignal || !["Decision Friction Risk", "Signal Recognition Risk", "Resource Reallocation Risk", "Leadership Alignment Risk"].includes(riskSignal)) && "A pattern in perception suggests a structural friction point that may impede systemic adaptiveness during periods of rapid environmental shift."}
+                    </p>
+                    <ul style={{ listStyle: 'none', padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                      <li style={{ fontSize: '0.85rem', color: '#9f1239', fontWeight: '700', padding: '0.5rem', background: 'rgba(244, 63, 94, 0.05)', borderRadius: '6px' }}>• Delayed Strategic Response</li>
+                      <li style={{ fontSize: '0.85rem', color: '#9f1239', fontWeight: '700', padding: '0.5rem', background: 'rgba(244, 63, 94, 0.05)', borderRadius: '6px' }}>• Persistence in Outdated Assumptions</li>
+                      <li style={{ fontSize: '0.85rem', color: '#9f1239', fontWeight: '700', padding: '0.5rem', background: 'rgba(244, 63, 94, 0.05)', borderRadius: '6px' }}>• Fragmented Regional Execution</li>
+                    </ul>
+                  </div>
                </div>
             </div>
           </section>
@@ -364,10 +404,10 @@ const Part1Report = () => {
                <RadarChart scores={scores} teamScores={teamData?.averages} />
             </div>
             
-            <div className="invitation-cta-column">
+            <div className="invitation-cta-column no-print">
                <div className="team-invitation-block">
-                  <h4>Invite your leadership team to compare perception</h4>
-                  <p>Leadership perception becomes more meaningful when multiple leaders participate. Copy the link below to invite others.</p>
+                  <h4>Enable Systems Intelligence</h4>
+                  <p>Leadership adaptiveness is a collective property. Invite your team to build a shared map of perception.</p>
                   
                   <div className="invite-actions-brief">
                     <button className="btn-invite" onClick={() => {
@@ -383,6 +423,19 @@ const Part1Report = () => {
                     </div>
                   </div>
                </div>
+
+               {showTeamView && (
+                 <div className="radar-comparison-callout" style={{ padding: '1.5rem', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '2rem' }}>
+                    <h4 style={{ color: '#64748b', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem' }}>Perception Gap Insight</h4>
+                    <p style={{ fontSize: '0.95rem', color: '#0f172a', lineHeight: '1.4', margin: 0 }}>
+                      You rated <strong>Decision Alignment</strong> at <strong style={{ color: '#f43f5e' }}>{scores.decision_alignment}</strong>. 
+                      The leadership team average is <strong style={{ color: '#14b8a6' }}>{Math.round(teamData?.averages?.decision_alignment || 0)}</strong>.
+                    </p>
+                    <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.5rem' }}>
+                      This variance suggests you may be experiencing decision latency that is not yet visible to the broader team.
+                    </p>
+                 </div>
+               )}
 
                <div className="interpretation-scale-document-tiny">
                   <h4>Adaptiveness Interpretation</h4>
@@ -405,6 +458,49 @@ const Part1Report = () => {
                 const activeTab = activeTabs[dim.id] || 'your';
                 const delta = teamAvg ? s - teamAvg : null;
 
+                const YourPerceptionPane = () => (
+                  <div className="tab-pane-brief">
+                    <div className="t-score-indicator">
+                      <span className="t-label">Your Score</span>
+                      <span className="t-val">{s}</span>
+                      <span className="t-desc">({getScoreInterpretation(s)})</span>
+                    </div>
+                    <p className="t-narrative">
+                      {dim.id === 'signal_detection' && (s >= 75 ? "Leaders in this system appear highly confident in recognizing emerging signals. This suggests a proactive stance toward disruption and market shifts." : (s >= 60 ? "Moderate confidence suggests signals are noticed, but not always translated immediately into coordinated action across the system." : "Signals may be present but are not consistently recognized, making the organization reactive rather than anticipatory."))}
+                      {dim.id === 'cognitive_framing' && (s >= 75 ? "The leadership system interprets market disruption as a strategic opportunity. This mindset is a critical precursor to adaptiveness." : (s >= 60 ? "There is moderate success in framing uncertainty as opportunity, though some threat-based filters remain at the operational level." : "Disruption is primarily experienced as an operational threat, potentially leading to defensive decision-making under pressure."))}
+                      {dim.id === 'decision_alignment' && (s >= 75 ? "Leaders converge quickly on a shared path. This allows for rapid systemic response during environmental shifts." : (s >= 60 ? "Decision latency exists. While leaders agree on direction, the speed of convergence varies across the system." : "Leadership decisions do not converge at the same speed. This fragmentation creates structural latency in responding to change."))}
+                      {dim.id === 'resource_calibration' && (s >= 75 ? "Capital and talent move rapidly to match strategic shifts. The organization avoids being anchored to legacy priorities." : (s >= 60 ? "Resource movement is moderate. Legacy commitments occasionally slow down the reallocation of institutional energy." : "Resources are slow to move. The organization may remain optimized for past conditions even after a new direction is set."))}
+                      {dim.id === 'integrated_responsiveness' && (s >= 75 ? "Strategic intent is seamlessly translated into operational output. The organization moves as a single, coherent system." : (s >= 60 ? "Functional output is moderate. Strategic decisions occasionally lose momentum before they reach behavioral execution." : "A disconnect exists between strategy and operative output. Decisions are made, but behavior on the ground remains legacy-bound."))}
+                    </p>
+                  </div>
+                );
+
+                const TeamPerceptionPane = () => (
+                  <div className="tab-pane-brief team-tab">
+                    <div className="team-stats-row-brief">
+                      <div className="t-stat">
+                        <span className="ts-label">Team Avg</span>
+                        <span className="ts-val">{Math.round(teamAvg)}</span>
+                      </div>
+                      <div className="t-stat">
+                        <span className="ts-label">Your Delta</span>
+                        <span className={`ts-val ${Math.abs(delta) > 15 ? 'high-delta' : ''}`}>
+                          {delta > 0 ? `+${Math.round(delta)}` : Math.round(delta)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="team-interpretation-box">
+                      {Math.abs(delta) < 10 ? (
+                        <p>Your perception is <strong>closely aligned</strong> with the leadership team average on this dimension, indicating a shared experience of the current system.</p>
+                      ) : delta > 0 ? (
+                        <p>You perceive <strong>stronger capability</strong> than the team average. This may indicate confidence that is not yet broadly shared, or that you are experiencing systemic success more directly than others.</p>
+                      ) : (
+                        <p>You perceive <strong>weaker capability</strong> than the team average. This may indicate a more skeptical reading of the system's current effectiveness, or that you are experiencing friction points that the broader team has not yet identified.</p>
+                      )}
+                    </div>
+                  </div>
+                );
+
                 return (
                   <div key={dim.id} className="phased-dim-row">
                     <div className="phased-dim-header">
@@ -412,7 +508,7 @@ const Part1Report = () => {
                           <h3>{dim.name}</h3>
                           <span className="p-dim-subtitle">{dim.subtitle}</span>
                        </div>
-                       <div className="p-dim-tabs">
+                       <div className="p-dim-tabs no-print">
                           <button 
                             className={`p-tab ${activeTab === 'your' ? 'active' : ''}`}
                             onClick={() => toggleTab(dim.id, 'your')}
@@ -431,46 +527,23 @@ const Part1Report = () => {
                     </div>
 
                     <div className="phased-dim-content">
-                       {activeTab === 'your' ? (
-                         <div className="tab-pane-brief">
-                            <div className="t-score-indicator">
-                               <span className="t-label">Your Score</span>
-                               <span className="t-val">{s}</span>
-                               <span className="t-desc">({getScoreInterpretation(s)})</span>
-                            </div>
-                            <p className="t-narrative">
-                               {dim.id === 'signal_detection' && (s >= 75 ? "Your score suggests strong perceived capability in detecting technological and market signals before they become mainstream." : (s >= 60 ? "Your score reflects moderate confidence in the system's ability to recognize signals early." : "Your score suggests that signals may be present but are not consistently being recognized."))}
-                               {dim.id === 'cognitive_framing' && (s >= 75 ? "You perceive a strong ability within leadership to interpret disruption as a strategic opportunity." : (s >= 60 ? "You perceive a moderate success in framing uncertainty as opportunity rather than threat." : "Your score suggests disruption is primarily experienced as an operational threat."))}
-                               {dim.id === 'decision_alignment' && (s >= 75 ? "You view the leadership system as highly aligned in its decision-making convergence." : (s >= 60 ? "You see moderate alignment, suggesting some latency in how leadership decisions converge." : "Lower alignment suggests leaders do not reach decisions at the same speed, creating latency."))}
-                               {dim.id === 'resource_calibration' && (s >= 75 ? "You perceive a high velocity in the redirection of capital and talent toward new priorities." : (s >= 60 ? "You see moderate flexibility in resource reallocation when conditions change." : "Your score reflects a perception that resources are slow to move from legacy priorities."))}
-                               {dim.id === 'integrated_responsiveness' && (s >= 75 ? "You view the organization as highly responsive in translating strategy into coordinated behavioral output." : (s >= 60 ? "You perceive moderate effectiveness in systemic execution." : "Your score suggests a disconnect between strategic decisions and operational output."))}
-                            </p>
-                         </div>
-                       ) : (
-                         <div className="tab-pane-brief team-tab">
-                            <div className="team-stats-row-brief">
-                               <div className="t-stat">
-                                  <span className="ts-label">Team Avg</span>
-                                  <span className="ts-val">{Math.round(teamAvg)}</span>
-                               </div>
-                               <div className="t-stat">
-                                  <span className="ts-label">Your Delta</span>
-                                  <span className={`ts-val ${Math.abs(delta) > 15 ? 'high-delta' : ''}`}>
-                                     {delta > 0 ? `+${Math.round(delta)}` : Math.round(delta)}
-                                  </span>
-                               </div>
-                            </div>
-                            <div className="team-interpretation-box">
-                               {Math.abs(delta) < 10 ? (
-                                 <p>Your perception is <strong>closely aligned</strong> with the leadership team average on this dimension, indicating a shared experience of the current system.</p>
-                               ) : delta > 0 ? (
-                                 <p>You perceive <strong>stronger capability</strong> than the team average. This may indicate confidence that is not yet broadly shared, or that you are experiencing systemic success more directly than others.</p>
-                               ) : (
-                                 <p>You perceive <strong>weaker capability</strong> than the team average. This may indicate a more skeptical reading of the system's current effectiveness, or that you are experiencing friction points that the broader team has not yet identified.</p>
-                               )}
-                            </div>
-                         </div>
-                       )}
+                       {/* Mobile/Screen View: Interactive Tabs */}
+                       <div className="screen-tabs-only no-print">
+                         {activeTab === 'your' ? <YourPerceptionPane /> : <TeamPerceptionPane />}
+                       </div>
+
+                       {/* Print View: Linearized Sections */}
+                       <div className="print-linear-only" style={{ display: 'none' }}>
+                         <div className="print-subheading-label">Individual Perception</div>
+                         <YourPerceptionPane />
+                         
+                         {showTeamView && (
+                           <div style={{ marginTop: '2rem', borderTop: '1px dashed #e2e8f0', paddingTop: '2rem' }}>
+                             <div className="print-subheading-label">Team Alignment Analysis</div>
+                             <TeamPerceptionPane />
+                           </div>
+                         )}
+                       </div>
                     </div>
                   </div>
                 );
@@ -489,31 +562,33 @@ const Part1Report = () => {
             <div className="perception-layout-grid-narrative">
                <div className="perception-analysis-col">
                   <h3 className="alignment-status-label">
-                    {teamData.variance && Object.values(teamData.variance).some(v => v?.toLowerCase().includes('high')) 
+                    {teamData?.variance && Object.values(teamData.variance).some(v => v?.toLowerCase()?.includes('high')) 
                       ? "Fragmented Perception" 
-                      : (Object.values(teamData.variance || {}).some(v => v?.toLowerCase().includes('moderate')) 
+                      : (Object.values(teamData?.variance || {}).some(v => v?.toLowerCase()?.includes('moderate')) 
                        ? "Mixed Perception" 
                        : "Shared Perception")}
                   </h3>
                   <p className="alignment-description-narrative">
-                    {teamData.variance && Object.values(teamData.variance).some(v => v?.toLowerCase().includes('high')) 
+                    {teamData?.variance && Object.values(teamData.variance).some(v => v?.toLowerCase()?.includes('high')) 
                       ? "Leadership team members are experiencing the organization’s capability in significantly different ways. This fragmentation often indicates that operational realities vary across different parts of the leadership system."
-                      : (Object.values(teamData.variance || {}).some(v => v?.toLowerCase().includes('moderate'))
+                      : (Object.values(teamData?.variance || {}).some(v => v?.toLowerCase()?.includes('moderate'))
                         ? "There is moderate divergence in how leaders experience the system. While shared understanding exists in some areas, key dimensions of adaptiveness are being interpreted differently across the team."
                         : "Leaders share a consistently strong understanding of how the organization responds to change. This alignment is a critical foundation for coordinated action during transitions.")
                     }
                   </p>
                   
-                  <div className="most-shared-fragmented-grid">
-                     <div className="sf-item">
-                        <span className="sf-label">Most Shared Perception</span>
-                        <span className="sf-val">{most_aligned_dimension?.name || 'N/A'}</span>
-                     </div>
-                     <div className="sf-item">
-                        <span className="sf-label">Most Fragmented Perception</span>
-                        <span className="sf-val">{most_divergent_dimension?.name || 'N/A'}</span>
-                     </div>
-                  </div>
+                   <div className="shared-divergent-callouts" style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                      <div className="callout-box" style={{ padding: '1.25rem', background: '#f0fdf4', border: '1px solid #bcf0da', borderRadius: '12px' }}>
+                         <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#166534', fontWeight: '800', letterSpacing: '0.5px' }}>Most Shared Dimension</span>
+                         <h4 style={{ margin: '0.5rem 0', fontSize: '1.1rem', color: '#166534' }}>{most_aligned_dimension?.name || 'Cognitive Framing'}</h4>
+                         <p style={{ fontSize: '0.85rem', color: '#14532d', margin: 0, lineHeight: '1.4' }}>This dimension represents the highest level of perceptual agreement within the leadership team.</p>
+                      </div>
+                      <div className="callout-box" style={{ padding: '1.25rem', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '12px' }}>
+                         <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#9f1239', fontWeight: '800', letterSpacing: '0.5px' }}>Most Divergent Dimension</span>
+                         <h4 style={{ margin: '0.5rem 0', fontSize: '1.1rem', color: '#9f1239' }}>{most_divergent_dimension?.name || 'Decision Alignment'}</h4>
+                         <p style={{ fontSize: '0.85rem', color: '#881337', margin: 0, lineHeight: '1.4' }}>This reflects the greatest variance in how adaptiveness is being experienced across the system.</p>
+                      </div>
+                   </div>
                </div>
                
                <div className="perception-stats-summary-col">
@@ -544,25 +619,43 @@ const Part1Report = () => {
         {/* 9. RECOMMENDED NEXT MEASUREMENT STEP (Perception to Behavior) */}
         <section className="report-section next-stage-polish page-section">
             <div className="next-stage-brief">
-               <div className="n-tag">Decision Moment</div>
-               <h3>Does Behavior Match Belief?</h3>
-               <p className="brief-desc">
-                  This report measures <strong>how the leadership team perceives its adaptiveness</strong>. The next phase moves from perception to behavioral observation, measuring how decisions actually unfold under pressure.
-               </p>
-               <div className="sim-focus-grid-document">
-                  <div className="f-item"><div className="f-dot" /> Signal recognition speed</div>
-                  <div className="f-item"><div className="f-dot" /> Decision convergence</div>
-                  <div className="f-item"><div className="f-dot" /> Resource reallocation velocity</div>
-                  <div className="f-item"><div className="f-dot" /> Coordinated system output</div>
+               <div className="n-tag no-print">Decision Moment</div>
+               <h3>Next Measurement Stage</h3>
+               
+               {/* Screen CTA */}
+               <div className="screen-cta-only no-print">
+                 <p className="brief-desc">
+                    This report measures <strong>how the leadership team perceives its adaptiveness</strong>. The next phase moves from perception to behavioral observation, measuring how decisions actually unfold under pressure.
+                 </p>
+                 <div className="sim-focus-grid-document">
+                    <div className="f-item"><div className="f-dot" /> Signal recognition speed</div>
+                    <div className="f-item"><div className="f-dot" /> Decision convergence</div>
+                    <div className="f-item"><div className="f-dot" /> Resource reallocation velocity</div>
+                    <div className="f-item"><div className="f-dot" /> Coordinated system output</div>
+                 </div>
+                 <div className="stage-actions">
+                    <Link to="/how-measured" className="btn-institutional primary">Begin Behavioral Observation</Link>
+                    <button className="btn-institutional outline" onClick={() => window.print()}>Download Perception Brief</button>
+                 </div>
                </div>
-               <div className="stage-actions">
-                  <Link to="/how-measured" className="btn-institutional primary">Begin Behavioral Observation</Link>
-                  <button className="btn-institutional outline" onClick={() => window.print()}>Download Perception Brief</button>
+
+               {/* Print Institutional Block */}
+               <div className="print-institutional-cta-block" style={{ display: 'none' }}>
+                 <p style={{ fontSize: '1.1rem', color: '#475569', lineHeight: '1.6', margin: '2rem 0' }}>
+                   <strong>Recommended Next Measurement Step:</strong><br />
+                   Behavioral Observation provides the next layer of insight by examining how leadership decisions unfold under pressure.
+                 </p>
+                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', textAlign: 'left', background: '#f8fafc', padding: '1.5rem', borderRadius: '12px' }}>
+                    <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#475569' }}>• Signal recognition speed</div>
+                    <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#475569' }}>• Decision convergence velocity</div>
+                    <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#475569' }}>• Resource reallocation mobility</div>
+                    <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#475569' }}>• Coordinated systemic transition</div>
+                 </div>
                </div>
             </div>
         </section>
 
-        <footer className="footer-document">
+        <footer className="footer-document no-print">
            <div className="f-left">LEADERSHIP ADAPTIVENESS INSTITUTE</div>
            <div className="f-center">CONFIDENTIAL EXECUTIVE INTELLIGENCE</div>
            <div className="f-right">PAGE X</div>
@@ -753,8 +846,25 @@ const Part1Report = () => {
           .doc-stat-card { background: #0f172a !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .d-bar-bg { background: #f1f5f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .f-item { color: #475569 !important; }
+
+          .no-print { display: none !important; }
+          .page-section { page-break-inside: avoid !important; }
+          
+          .print-linear-only { display: block !important; }
+          .print-institutional-cta-block { display: block !important; }
+          .print-subheading-label { 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            font-weight: 800; 
+            color: #94a3b8; 
+            margin-bottom: 1rem; 
+          }
         }
+
+        .print-only-persistent-footer { display: none; }
       `}</style>
+      <PrintFooter reportId={reportIdDisplay} />
     </div>
   );
 };
