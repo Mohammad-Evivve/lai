@@ -242,22 +242,39 @@ const Part1Report = () => {
   return (
     <div className="report-page">
       <div className="report-container">
-        {/* 1. HEADER */}
-        <header className="report-header">
-          <div className="institutional-box">
-             <div className="lai-logo">LAI</div>
-             <div className="line" />
-             <div className="report-type">LAI-CORE [Part 1 of 2]</div>
+        {/* 1. INSTITUTIONAL HEADER */}
+        <header className="report-header-premium">
+          <div className="institution-brand-line">
+            <span className="brand-logo">LAI</span>
+            <span className="brand-divider">|</span>
+            <span className="brand-name">Leadership Adaptiveness Institute</span>
           </div>
-          <h1>Leadership Adaptiveness Intelligence Brief</h1>
-          <div className="meta-row">
-            <span>Institution: <strong>{data.organization_name}</strong></span>
-            <span>Date: <strong>{new Date(data.created_at).toLocaleDateString()}</strong></span>
-            <span>Report ID: <strong>{id.substring(0, 8)}</strong></span>
+
+          <div className="product-identity-row">
+            <span className="product-name">LAI-CORE Diagnostic</span>
+            <span className="product-divider">|</span>
+            <span className="part-indicator">Part 1 of 2</span>
           </div>
-          <div className="meta-row" style={{ marginTop: '0.5rem' }}>
-            <span>Participant: <strong>{data.participants?.name || 'Leadership Team Member'}</strong></span>
-            {showTeamView && <span>Leadership Team Participants: <strong>{teamMemberCount}</strong></span>}
+
+          <div className="report-title-block">
+            <h1 className="report-main-title">Leadership Adaptiveness</h1>
+            <h2 className="report-subtitle-intelligence">Perception Intelligence Report</h2>
+            <p className="report-description-institutional">
+              How you and your leadership team perceive your organization’s adaptiveness across the LAI framework.
+            </p>
+            <div className="confidential-seal">Confidential Executive Intelligence</div>
+          </div>
+
+          <div className="header-metadata-grid">
+            <div className="meta-col">
+              <div className="meta-entry"><span className="m-label">Institution</span> <span className="m-val">{data.organization_name}</span></div>
+              <div className="meta-entry"><span className="m-label">Participant</span> <span className="m-val">{data.participants?.name || 'Leadership Team Member'}</span></div>
+              <div className="meta-entry"><span className="m-label">Leadership Team</span> <span className="m-val">{teamMemberCount} members</span></div>
+            </div>
+            <div className="meta-col">
+              <div className="meta-entry"><span className="m-label">Assessment Date</span> <span className="m-val">{new Date(data.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span></div>
+              <div className="meta-entry"><span className="m-label">Report ID</span> <span className="m-val">{id.substring(0, 8).toUpperCase()}</span></div>
+            </div>
           </div>
         </header>
 
@@ -471,14 +488,29 @@ const Part1Report = () => {
         /* Document Primitives */
         .page-section { break-inside: avoid; page-break-inside: avoid; margin-bottom: 5rem; }
         
-        /* Header */
-        .report-header { border-bottom: 1px solid #e2e8f0; padding-bottom: 2rem; margin-bottom: 3rem; }
-        .institutional-box { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
-        .lai-logo { font-weight: 900; font-size: 1.25rem; letter-spacing: -1px; }
-        .meta-row { display: flex; gap: 3rem; font-size: 13px; color: #64748b; }
-        .meta-row strong { color: #0f172a; }
+        /* Institutional Header Overhaul */
+        .report-header-premium { margin-bottom: 5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 4rem; }
+        
+        .institution-brand-line { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2.5rem; }
+        .brand-logo { font-weight: 950; font-size: 1.25rem; letter-spacing: -1px; color: #0f172a; }
+        .brand-divider { color: #e2e8f0; font-weight: 300; }
+        .brand-name { font-size: 0.9rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Summary Box */
+        .product-identity-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; }
+        .product-divider { color: #e2e8f0; }
+
+        .report-title-block { margin-bottom: 4rem; }
+        .report-main-title { font-size: 48px !important; font-weight: 950; margin-bottom: 0.75rem !important; margin-top: 0 !important; border: none !important; padding: 0 !important; }
+        .report-subtitle-intelligence { font-size: 22px !important; font-weight: 800 !important; color: #14b8a6 !important; text-transform: none !important; letter-spacing: 0 !important; margin-bottom: 1rem !important; border: none !important; padding: 0 !important; }
+        .report-description-institutional { font-size: 16px; color: #475569; max-width: 700px; line-height: 1.5; margin-bottom: 1.5rem; }
+        .confidential-seal { font-size: 11px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; display: inline-block; padding: 4px 0; border-top: 1px solid #f1f5f9; }
+
+        .header-metadata-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4rem; border-top: 2px solid #0f172a; pt: 2rem; margin-top: 1rem; padding-top: 2rem;}
+        .meta-entry { display: grid; grid-template-columns: 140px 1fr; gap: 1rem; margin-bottom: 0.75rem; font-size: 14px; }
+        .m-label { color: #94a3b8; font-weight: 600; }
+        .m-val { color: #0f172a; font-weight: 800; }
+
+        /* Typography Hierarchy (Base) */
         .summary-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 32px; max-width: 900px; }
         .summary-grid { display: grid; grid-template-columns: 1fr 280px; gap: 3rem; }
         .m-bullets { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
