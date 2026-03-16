@@ -21,6 +21,9 @@
 [functions."research-scheduler"]
   schedule = "*/15 * * * *"
 
+[functions."daily-research-crawler"]
+  schedule = "0 0 * * *"
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api"

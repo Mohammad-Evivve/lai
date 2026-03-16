@@ -35,7 +35,8 @@ const TYPE_CONFIG = {
   'Case Study':     { color: '#0d9488', bg: '#ccfbf1', border: '#99f6e4', label: 'Case Study',     Icon: Building2 },
   Article:          { color: '#3b82f6', bg: '#dbeafe', border: '#bfdbfe', label: 'Article',         Icon: Newspaper },
   'Strategic Deck': { color: '#8b5cf6', bg: '#ede9fe', border: '#ddd6fe', label: 'Strategy Deck',  Icon: Presentation },
-  'Cognitive Framing': { color: '#Brain_Color_Placeholder', bg: '#Brain_BG_Placeholder', Icon: Brain }
+  'Cognitive Framing': { color: '#6366f1', bg: '#eef2ff', border: '#c7d2fe', label: 'Cognitive Framing', Icon: Brain },
+  Infographic:      { color: '#ec4899', bg: '#fce7f3', border: '#fbcfe8', label: 'Infographic',    Icon: BarChart3 },
 };
 
 
@@ -193,7 +194,7 @@ const ResearchPage = () => {
   const [loading, setLoading]       = useState(true);
   const [activeFilter, setActiveFilter] = useState('All');
 
-  const FILTERS = ['All', 'Framework', 'Report', 'Case Study', 'Article', 'Strategic Deck'];
+  const FILTERS = ['All', 'Framework', 'Report', 'Case Study', 'Article', 'Strategic Deck', 'Infographic'];
 
   const filteredResources = activeFilter === 'All'
     ? resources
