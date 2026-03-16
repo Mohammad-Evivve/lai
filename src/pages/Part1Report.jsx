@@ -198,25 +198,32 @@ const Part1Report = () => {
     const sortedTeamAverages = [...dimensions].sort((a, b) => teamAverages[b.id] - teamAverages[a.id]);
     team_average_score = Math.round(Object.values(teamAverages).reduce((a, b) => a + b, 0) / dimensions.length);
 
-    if (teamData.variance) {
+    if (teamData?.variance) {
       const varianceEntries = Object.entries(teamData.variance);
       if (varianceEntries.length > 0) {
-        most_aligned_dimension = dimensions.find(d => d.id === varianceEntries.sort((a, b) => {
-          const levels = { 'LOW': 0, 'MODERATE': 1, 'HIGH': 2 };
-          return levels[a[1]] - levels[b[1]];
-        })[0][0]);
-        most_divergent_dimension = dimensions.find(d => d.id === varianceEntries.sort((a, b) => {
-          const levels = { 'LOW': 0, 'MODERATE': 1, 'HIGH': 2 };
-          return levels[b[1]] - levels[a[1]];
-        })[0][0]);
+        // Map full strings to levels
+        const levels = { 
+          'Low alignment variance': 0, 
+          'Moderate alignment variance': 1, 
+          'High alignment variance': 2 
+        };
+        
+        const sorted = [...varianceEntries].sort((a, b) => {
+          const valA = levels[a[1]] ?? 1;
+          const valB = levels[b[1]] ?? 1;
+          return valA - valB;
+        });
+
+        most_aligned_dimension = dimensions.find(d => d.id === sorted[0][0]);
+        most_divergent_dimension = dimensions.find(d => d.id === sorted[sorted.length - 1][0]);
       }
     }
   }
 
   // Leadership Risk Signal Logic (Disciplined)
   let riskSignal = null;
-  const hasLowScore = Object.values(scores).some(s => s <= 40);
-  const hasHighVariance = showVarianceAnalysis && teamData?.variance && Object.values(teamData.variance).some(v => v === 'HIGH');
+  const hasLowScore = Object.values(scores).some(s => s !== undefined && s !== null && s <= 40);
+  const hasHighVariance = showVarianceAnalysis && teamData?.variance && Object.values(teamData.variance).some(v => v?.toLowerCase().includes('high'));
   
   // High friction patterns
   const executionFriction = scores.decision_alignment <= 50 && scores.integrated_responsiveness <= 50;
@@ -447,19 +454,20 @@ const Part1Report = () => {
                 </thead>
                 <tbody>
                   {dimensions.map(dim => {
-                    const avg = Math.round(teamData.averages[dim.id]);
-                    const varLevel = teamData.variance[dim.id];
-                    return (
-                      <tr key={dim.id}>
-                        <td><strong>{dim.name}</strong></td>
-                        <td>{avg}</td>
-                        <td>
-                          <span className={`var-tag ${varLevel.toLowerCase()}`}>
-                            {varLevel} VARIANCE
-                          </span>
-                        </td>
-                      </tr>
-                    );
+                      const avg = Math.round(teamData.averages?.[dim.id] || 0);
+                      const varLevel = teamData.variance?.[dim.id] || 'N/A';
+                      const varClass = varLevel.toLowerCase().includes('high') ? 'high' : (varLevel.toLowerCase().includes('low') ? 'low' : 'moderate');
+                      return (
+                        <tr key={dim.id}>
+                          <td><strong>{dim.name}</strong></td>
+                          <td>{avg}</td>
+                          <td>
+                            <span className={`var-tag ${varClass}`}>
+                              {varLevel}
+                            </span>
+                          </td>
+                        </tr>
+                      );
                   })}
                 </tbody>
               </table>
