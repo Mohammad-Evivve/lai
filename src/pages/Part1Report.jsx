@@ -249,7 +249,7 @@ const Part1Report = () => {
              <div className="line" />
              <div className="report-type">LAI-CORE [Part 1 of 2]</div>
           </div>
-          <h1>Leadership Adaptiveness Profile</h1>
+          <h1>Leadership Adaptiveness Intelligence Brief</h1>
           <div className="meta-row">
             <span>Institution: <strong>{data.organization_name}</strong></span>
             <span>Date: <strong>{new Date(data.created_at).toLocaleDateString()}</strong></span>
@@ -262,11 +262,11 @@ const Part1Report = () => {
         </header>
 
         {/* 2. EXECUTIVE SUMMARY */}
-        <section className="report-section summary-box">
+        <section className="report-section summary-box page-section">
           <h2>Executive Summary</h2>
           <div className="summary-grid">
             <div className="summary-bullets">
-              <p style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a', marginBottom: '1.5rem' }}>
+              <p style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a', marginBottom: '1.25rem' }}>
                 Your leadership team shows <span className="text-teal">strong awareness of change</span>, but <span className="text-rose">decision alignment is significantly weaker</span>.
               </p>
               <ul className="m-bullets">
@@ -277,14 +277,14 @@ const Part1Report = () => {
             </div>
             <div className="primary-risk-card">
               <h4>Primary Risk</h4>
-              <p>Your organization may recognize change early but struggle to <strong>translate that awareness into aligned decisions and resource shifts.</strong></p>
-              <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#64748b' }}>When this gap appears, organizations often continue executing strategies built on outdated assumptions.</p>
+              <p style={{ lineHeight: '1.4' }}>Your organization may recognize change early but struggle to <strong>translate awareness into aligned decisions.</strong></p>
+              <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: '#64748b', lineHeight: '1.3' }}>When signals move faster than decisions, organizations often execute outdated assumptions.</p>
             </div>
           </div>
         </section>
 
         {/* 3. KEY INSIGHT */}
-        <section className="report-section insight-sentence">
+        <section className="report-section insight-sentence page-section">
            <div className="high-insight">
              <p>Your leadership system <strong>interprets change well</strong> but <strong>struggles to align decisions quickly</strong> once change is recognized.</p>
              <p className="sub-insight">This pattern often produces decision friction during periods of rapid market shift.</p>
@@ -293,13 +293,13 @@ const Part1Report = () => {
 
         {/* 3. LEADERSHIP RISK SIGNAL (CONDITIONAL) */}
         {riskSignal && (
-          <section className="report-section risk-signal-section" style={{ background: '#fff1f2', border: '1px solid #fda4af', padding: '2.5rem', borderRadius: '20px', marginBottom: '4rem' }}>
-            <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+          <section className="report-section risk-signal-section page-section">
+            <div className="risk-banner-inner">
                <AlertCircle size={32} className="text-rose" />
                <div>
-                  <h3 style={{ margin: 0, color: '#9f1239', fontSize: '0.75rem', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '0.5rem' }}>Critical Observation</h3>
-                  <div style={{ fontSize: '1.75rem', fontWeight: '950', color: '#0f172a', letterSpacing: '-0.02em' }}>{riskSignal}</div>
-                  <p style={{ margin: '0.75rem 0 0', color: '#475569', fontSize: '0.95rem' }}>
+                  <h3 className="risk-tag">Critical Observation</h3>
+                  <div className="risk-title">{riskSignal}</div>
+                  <p className="risk-desc">
                     A pattern in the perception data suggests a localized friction point that may impede systemic adaptiveness during periods of rapid environmental shift.
                   </p>
                </div>
@@ -308,65 +308,72 @@ const Part1Report = () => {
         )}
 
         {/* 4. ADAPTIVENESS PROFILE */}
-        <section className="report-section profile-section">
-          <div className="chart-area">
-             <h2>Leadership Adaptiveness Radar</h2>
-             <p style={{ marginBottom: '2rem', fontSize: '1rem', color: '#475569', fontWeight: '500' }}>This chart shows how your leadership team performs across five dimensions of adaptiveness.</p>
-             <div className="chart-flex-box">
-                <RadarChart scores={scores} teamScores={teamData?.averages} />
-                <div className="interpretation-scale">
-                   <h4>Adaptiveness Scale</h4>
-                   <div className="scale-node"><span className="s-range">80–100</span> <span className="s-label">Highly adaptive</span></div>
-                   <div className="scale-node"><span className="s-range">60–79</span> <span className="s-label">Moderately adaptive</span></div>
-                   <div className="scale-node"><span className="s-range">40–59</span> <span className="s-label">Constraints emerging</span></div>
-                   <div className="scale-node"><span className="s-range">&lt; 40</span> <span className="s-label">High friction risk</span></div>
-                </div>
-             </div>
-             <p className="chart-caption">Overlay reflects individual responses compared to the leadership team average.</p>
+        <section className="report-section profile-section page-section">
+          <h2>Leadership Adaptiveness Radar</h2>
+          <div className="radar-insight-text">
+            This chart shows how your leadership team performs across five dimensions of adaptiveness. 
+            Overlay reflects individual responses compared to the leadership team average.
           </div>
           
-          <div className="dimension-list">
-             {dimensions.map(dim => (
-               <div key={dim.id} className="dim-card-report">
-                  <div className="dim-header">
-                    <div>
-                      <span className="dim-name">{dim.name}</span>
-                      <div className="dim-subtitle-text">{dim.subtitle}</div>
-                    </div>
-                    <span className="dim-score" style={{ color: scores[dim.id] >= 75 ? '#14b8a6' : (scores[dim.id] <= 40 ? '#f43f5e' : '#14b8a6') }}>
-                      {scores[dim.id]}
-                    </span>
-                  </div>
-                  <div className="dim-bar">
-                    <div className="fill" style={{ width: `${scores[dim.id]}%`, background: scores[dim.id] <= 40 ? '#f43f5e' : '#14b8a6' }} />
-                  </div>
+          <div className="radar-layout-grid">
+            <div className="radar-visual-column">
+               <RadarChart scores={scores} teamScores={teamData?.averages} />
+            </div>
+            
+            <div className="dimension-bars-column">
+               <div className="interpretation-scale-document">
+                  <h4>Adaptiveness Interpretation</h4>
+                  <div className="scale-node"><span className="s-range">80–100</span> <span className="s-label">Highly adaptive system</span></div>
+                  <div className="scale-node"><span className="s-range">60–79</span> <span className="s-label">Moderately adaptive</span></div>
+                  <div className="scale-node"><span className="s-range">40–59</span> <span className="s-label">Constraints emerging</span></div>
+                  <div className="scale-node s-critical"><span className="s-range">&lt; 40</span> <span className="s-label">High friction risk</span></div>
                </div>
-             ))}
+
+               <div className="brief-bars-list">
+                 {dimensions.map(dim => {
+                   const s = scores[dim.id];
+                   const sClass = s >= 80 ? 'score-high' : (s <= 40 ? 'score-low' : 'score-medium');
+                   return (
+                     <div key={dim.id} className="document-dim-entry">
+                        <div className="d-meta">
+                          <span className="d-name">{dim.name}</span>
+                          <span className={`d-score-val ${sClass}`}>{s}</span>
+                        </div>
+                        <div className="d-bar-bg">
+                          <div className={`d-bar-fill ${sClass}`} style={{ width: `${s}%` }} />
+                        </div>
+                     </div>
+                   );
+                 })}
+               </div>
+            </div>
           </div>
         </section>
 
         {/* 5. DIMENSION INSIGHTS */}
-        <section className="report-section detail-grid">
+        <section className="report-section detail-grid page-section">
            <h2>Dimension Insights</h2>
-           <div className="i-grid">
-             {dimensions.map(dim => (
-               <div key={dim.id} className="i-node">
-                 <div className="i-header">
-                    <div className="i-num">{scores[dim.id]}</div>
-                    <div className="i-title-box">
+           <div className="document-insight-grid">
+             {dimensions.map(dim => {
+                const s = scores[dim.id];
+                const sClass = s >= 80 ? 'score-high' : (s <= 40 ? 'score-low' : 'score-medium');
+                return (
+                  <div key={dim.id} className="dim-insight-row">
+                    <div className={`dim-score-col ${sClass}`}>{s}</div>
+                    <div className="dim-text-col">
                        <h4>{dim.name}</h4>
-                       <span className="i-subtitle">{dim.subtitle}</span>
+                       <span className="dim-subtitle-brief">{dim.subtitle}</span>
+                       <div className="dim-narrative">
+                          <p>{dim.id === 'signal_detection' && (s >= 60 ? "Leaders appear reasonably capable of detecting emerging signals in the market or environment." : "Signals exist, but are not consistently recognized across the leadership system.")}</p>
+                          <p>{dim.id === 'cognitive_framing' && (s >= 70 ? "Leaders generally interpret disruption as something that can be addressed strategically, translating uncertainty into opportunity." : "Disruption may be perceived primarily as an operational threat, limiting strategic experimentation.")}</p>
+                          <p>{dim.id === 'decision_alignment' && (s <= 40 ? "Lower alignment suggests that once signals are recognized, leaders may not reach decisions at the same speed. This often creates delayed responses." : "Leadership decisions appear to converge effectively once a signal is recognized.")}</p>
+                          <p>{dim.id === 'resource_calibration' && "Reflects how rapidly capital, talent, and operational capacity can be redirected when conditions change."}</p>
+                          <p>{dim.id === 'integrated_responsiveness' && "Reflects whether leadership decisions convert into coordinated execution across teams."}</p>
+                       </div>
                     </div>
-                 </div>
-                 <div className="i-body">
-                    <p>{dim.id === 'signal_detection' && (scores[dim.id] >= 60 ? "Leaders appear reasonably capable of detecting emerging signals in the market or environment." : "Signals exist, but are not consistently recognized across the leadership system.")}</p>
-                    <p>{dim.id === 'cognitive_framing' && (scores[dim.id] >= 70 ? "Leaders generally interpret disruption as something that can be addressed strategically, translating uncertainty into opportunity." : "Disruption may be perceived primarily as an operational threat, limiting strategic experimentation.")}</p>
-                    <p>{dim.id === 'decision_alignment' && (scores[dim.id] <= 40 ? "Lower alignment suggests that once signals are recognized, leaders may not reach decisions at the same speed. This often creates delayed responses and competing priorities." : "Leadership decisions appear to converge effectively once a signal is recognized.")}</p>
-                    <p>{dim.id === 'resource_calibration' && "This dimension reflects how rapidly capital, talent, and operational capacity can be redirected when conditions change."}</p>
-                    <p>{dim.id === 'integrated_responsiveness' && "Integrated responsiveness reflects whether leadership decisions convert into coordinated execution across teams."}</p>
-                 </div>
-               </div>
-             ))}
+                  </div>
+                );
+             })}
            </div>
         </section>
 
@@ -436,23 +443,25 @@ const Part1Report = () => {
         )}
 
         {/* 8. RESEARCH INSIGHT */}
-        <section className="report-section research-insight-compact">
-           <div className="insight-box-m">
+        <section className="report-section research-insight-brief page-section">
+           <div className="insight-box-m-document">
               <h3>Research Insight</h3>
               <p>Most leadership teams believe they adapt quickly. <strong>Behavioral observation often shows the opposite.</strong></p>
-              <p style={{ marginTop: '1rem', color: '#94a3b8' }}>Signals are detected faster than decisions and resources can realign. Understanding perception is the first step in measuring how the system actually behaves.</p>
+              <div className="insight-brief-body">
+                 Signals are detected faster than decisions and resources can realign. Understanding perception is the first step in measuring how the system actually behaves.
+              </div>
            </div>
         </section>
 
         {/* 9. RECOMMENDED NEXT MEASUREMENT STEP */}
-        <section className="report-section next-stage-polish">
+        <section className="report-section next-stage-polish page-section">
             <div className="next-stage-brief">
                <div className="n-tag">Natural Progression</div>
                <h3>Next Step: Behavioral Observation</h3>
-               <p>
-                  This report measures <strong>how your leadership team perceives itself</strong>. The next stage measures <strong>how leadership decisions actually unfold under pressure</strong> through structured simulation.
+               <p className="brief-desc">
+                  This report measures <strong>how your leadership team perceives its adaptiveness</strong>. The next stage measures <strong>how leadership decisions actually unfold under pressure</strong> through simulation.
                </p>
-               <div className="sim-focus-grid">
+               <div className="sim-focus-grid-document">
                   <div className="f-item"><div className="f-dot" /> Signal recognition speed</div>
                   <div className="f-item"><div className="f-dot" /> Decision convergence</div>
                   <div className="f-item"><div className="f-dot" /> Resource reallocation</div>
@@ -460,155 +469,122 @@ const Part1Report = () => {
                </div>
                <div className="stage-actions">
                   <Link to="/how-measured" className="btn-institutional primary">Begin Behavioral Diagnostic</Link>
-                  <button className="btn-institutional outline" onClick={() => window.print()}>Download Brief</button>
+                  <button className="btn-institutional outline" onClick={() => window.print()}>Download Intelligence Brief</button>
                </div>
             </div>
         </section>
 
-        <footer className="report-footer">
-          <div className="footer-logo">LEADERSHIP ADAPTIVENESS INSTITUTE</div>
-          <div className="legal">CONFIDENTIAL · EXECUTIVE INTELLIGENCE · © {new Date().getFullYear()} LAI</div>
+        <footer className="footer-document">
+           <div className="f-left">LEADERSHIP ADAPTIVENESS INSTITUTE</div>
+           <div className="f-center">CONFIDENTIAL EXECUTIVE INTELLIGENCE</div>
+           <div className="f-right">PAGE X</div>
         </footer>
       </div>
 
       <style jsx>{`
-        .report-page { background: #f1f5f9; min-height: 100vh; padding: 4rem 2rem; color: #0f172a; }
+        .report-page { background: #f1f5f9; min-height: 100vh; padding: 4rem 2rem; color: #0f172a; font-family: 'Inter', -apple-system, sans-serif; }
         .report-container { 
-          max-width: 900px; margin: 0 auto; background: white; 
+          width: 900px; margin: 0 auto; background: white; 
           padding: 5rem; box-shadow: 0 50px 100px -20px rgba(0,0,0,0.1);
         }
         
+        /* Typography Hierarchy */
+        h1 { font-size: 42px; font-weight: 950; margin-bottom: 1.5rem; font-family: 'Georgia', serif; letter-spacing: -0.02em; }
+        h2 { font-size: 28px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #0f172a; margin-bottom: 1.5rem; border-bottom: 2px solid #0f172a; padding-bottom: 0.5rem; }
+        h3 { font-size: 20px; font-weight: 800; }
+        h4 { font-size: 16px; font-weight: 800; color: #0f172a; }
+
+        /* Document Primitives */
+        .page-section { break-inside: avoid; page-break-inside: avoid; margin-bottom: 5rem; }
+        
         /* Header */
-        .report-header { border-bottom: 2px solid #0f172a; padding-bottom: 2rem; margin-bottom: 4rem; }
+        .report-header { border-bottom: 1px solid #e2e8f0; padding-bottom: 2rem; margin-bottom: 3rem; }
         .institutional-box { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
         .lai-logo { font-weight: 900; font-size: 1.25rem; letter-spacing: -1px; }
-        .institutional-box .line { width: 1px; height: 20px; background: #e2e8f0; }
-        .report-type { font-size: 0.65rem; font-weight: 800; letter-spacing: 2px; color: #94a3b8; }
-        
-        h1 { font-size: 2.75rem; font-weight: 950; margin-bottom: 1.5rem; font-family: 'Georgia', serif; }
-        .meta-row { display: flex; gap: 3rem; font-size: 0.8rem; color: #64748b; }
+        .meta-row { display: flex; gap: 3rem; font-size: 13px; color: #64748b; }
         .meta-row strong { color: #0f172a; }
 
-        /* Sections */
-        .report-section { margin-bottom: 5rem; }
-        h2 { font-size: 1.25rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #0f172a; margin-bottom: 1.5rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.5rem; }
-        
-        .overview-content { max-width: 650px; }
-        .overview-content p { font-size: 1.1rem; line-height: 1.6; color: #475569; }
-        
-        .insight-callout { 
-          margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-left: 3px solid #14b8a6;
-          display: flex; gap: 1rem;
-        }
-        .insight-callout p { margin: 0; font-size: 0.95rem; font-style: italic; color: #64748b; }
-
-        /* Profile Section */
-        .profile-section { display: grid; grid-template-columns: 350px 1fr; gap: 4rem; align-items: center; }
-        .chart-area { text-align: center; }
-        .radar-legend { display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; }
-        .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #64748b; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; }
-        .dot.perception { background: #14b8a6; }
-        .dot.team { background: #0f172a; border: 1px dashed #0f172a; }
-
-        .chart-caption { font-size: 0.75rem; color: #94a3b8; font-style: italic; }
-        
-        .dimension-list { display: flex; flex-direction: column; gap: 1.5rem; }
-        .dim-card-report { padding: 1.5rem; border: 1px solid #f1f5f9; border-radius: 12px; }
-        .dim-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-        .dim-name { font-weight: 900; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
-        .dim-score { font-size: 1.25rem; font-weight: 900; font-family: monospace; color: #14b8a6; }
-        .dim-desc { font-size: 0.8rem; color: #64748b; margin-bottom: 1rem; }
-        .dim-bar { height: 4px; background: #f1f5f9; border-radius: 2px; }
-        .dim-bar .fill { height: 100%; background: #14b8a6; border-radius: 2px; }
-
-        /* Team Section */
-        .section-header-row { display: flex; align-items: center; gap: 1rem; color: #14b8a6; margin-bottom: 1rem; }
-        .section-header-row h2 { flex: 1; border: none; margin: 0; }
-        .team-insights-grid { display: grid; grid-template-columns: 1fr 200px; gap: 2rem; margin-top: 2rem; }
-        .comparison-card { background: #f8fafc; padding: 2.5rem; border-radius: 20px; h4 { margin-top: 0; font-size: 1.1rem; } }
-        
-        .variance-list { margin-top: 2rem; display: flex; flex-direction: column; gap: 1rem; }
-        .variance-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; }
-        .v-dim { font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase; }
-        .v-status { font-size: 0.8rem; font-weight: 900; }
-        .v-status.high { color: #f43f5e; }
-        .v-status.low { color: #10b981; }
-        
-        .variance-threshold-message { margin-top: 2rem; padding: 1rem; background: #f1f5f9; border-radius: 8px; font-size: 0.8rem; color: #64748b; display: flex; gap: 0.5rem; align-items: center; }
-
-        .team-stats { display: flex; flex-direction: column; gap: 1.5rem; }
-        .stat-node { background: #0f172a; color: white; padding: 1.5rem; border-radius: 16px; text-align: center; }
-        .s-label { font-size: 0.6rem; color: #94a3b8; font-weight: 800; letter-spacing: 2px; margin-bottom: 0.5rem; text-transform: uppercase; }
-        .s-value { font-size: 2rem; font-weight: 900; font-family: monospace; }
-
-        /* Research Insight */
-        .research-insight { background: #0f172a; color: white; padding: 3rem; border-radius: 24px; }
-        .insight-grid { display: flex; gap: 2.5rem; align-items: center; }
-        .i-icon { color: #14b8a6; }
-        .i-text h3 { color: white; margin-top: 0; font-size: 1.25rem; margin-bottom: 1rem; }
-        .i-text p { color: #94a3b8; line-height: 1.6; margin: 0; }
-
-        /* Next Stage */
-        .next-stage-box { border: 2px solid #f1f5f9; border-radius: 24px; padding: 3rem; }
-        .n-header { display: flex; align-items: center; gap: 1rem; color: #14b8a6; margin-bottom: 1.5rem; }
-        .n-header h3 { margin: 0; font-size: 1.5rem; color: #0f172a; }
-        .next-stage-box p { font-size: 1rem; line-height: 1.6; color: #475569; margin-bottom: 2.5rem; }
-        .stage-actions { display: flex; gap: 1.5rem; }
-
-        /* Footer */
-        .report-footer { border-top: 1px solid #f1f5f9; padding-top: 3rem; display: flex; justify-content: space-between; align-items: center; }
-        .footer-logo { font-size: 0.75rem; font-weight: 900; letter-spacing: 1.5px; }
-        .legal { font-size: 0.6rem; color: #cbd5e1; font-weight: 800; }
-        /* McKinsey Refinements */
-        .summary-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 24px; padding: 3rem; }
-        .summary-grid { display: grid; grid-template-columns: 1fr 300px; gap: 4rem; }
-        .m-bullets { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+        /* Summary Box */
+        .summary-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 32px; max-width: 900px; }
+        .summary-grid { display: grid; grid-template-columns: 1fr 280px; gap: 3rem; }
+        .m-bullets { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
         .m-bullets li { font-size: 1rem; color: #475569; font-weight: 500; }
-        .primary-risk-card { background: white; border: 1px solid #fda4af; padding: 2rem; border-radius: 16px; h4 { color: #f43f5e; margin-top: 0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; } }
+        .primary-risk-card { background: white; border: 1px solid #fda4af; padding: 1.5rem; border-radius: 12px; }
+        .primary-risk-card h4 { color: #f43f5e; margin: 0 0 0.5rem; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
 
-        .high-insight { text-align: center; max-width: 800px; margin: 4rem auto; p { font-size: 1.75rem; font-weight: 950; color: #0f172a; line-height: 1.2; } .sub-insight { font-size: 1.1rem; color: #64748b; font-weight: 400; margin-top: 1rem; } }
+        .high-insight { text-align: center; max-width: 800px; margin: 3rem auto; p { font-size: 24px; font-weight: 950; color: #0f172a; line-height: 1.25; } .sub-insight { font-size: 1.1rem; color: #64748b; margin-top: 1rem; } }
 
-        .chart-flex-box { display: flex; align-items: center; gap: 4rem; justify-content: center; margin-bottom: 2rem; }
-        .interpretation-scale { background: #f8fafc; padding: 1.5rem; border-radius: 12px; min-width: 220px; }
-        .interpretation-scale h4 { margin-top: 0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 1rem; }
-        .scale-node { display: flex; justify-content: space-between; font-size: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #f1f5f9; }
+        /* Risk Banner */
+        .risk-signal-section { background: #fff1f2; border: 1px solid #fda4af; border-radius: 20px; padding: 2.5rem; }
+        .risk-banner-inner { display: flex; gap: 1.5rem; align-items: center; }
+        .risk-tag { margin: 0; color: #9f1239; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.25rem; border: none; }
+        .risk-title { font-size: 1.75rem; font-weight: 950; color: #0f172a; letter-spacing: -0.02em; }
+        .risk-desc { margin: 0.5rem 0 0; color: #475569; font-size: 0.95rem; }
+
+        /* Radar Section Update */
+        .radar-insight-text { font-size: 1rem; color: #475569; font-weight: 500; margin-bottom: 2.5rem; max-width: 600px; }
+        .radar-layout-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem; align-items: start; }
+        
+        .interpretation-scale-document { background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid #f1f5f9; }
+        .interpretation-scale-document h4 { margin: 0 0 1rem; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; }
+        .scale-node { display: flex; justify-content: space-between; font-size: 11px; padding: 0.5rem 0; border-bottom: 1px solid #f1f5f9; }
         .s-range { font-weight: 800; color: #0f172a; }
-        .s-label { color: #64748b; }
+        .s-critical { border-left: 2px solid #f43f5e; padding-left: 0.5rem; }
 
-        .dim-subtitle-text { font-size: 0.7rem; color: #64748b; font-weight: 400; text-transform: none; letter-spacing: 0; margin-top: 2px; }
+        .document-dim-entry { margin-bottom: 1.5rem; }
+        .d-meta { display: flex; justify-content: space-between; margin-bottom: 0.25rem; align-items: flex-end; }
+        .d-name { font-size: 12px; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 1px; }
+        .d-score-val { font-size: 18px; font-weight: 950; font-family: monospace; }
+        .d-bar-bg { height: 6px; background: #f1f5f9; border-radius: 3px; overflow: hidden; }
+        .d-bar-fill { height: 100%; border-radius: 3px; }
 
-        .i-grid { display: grid; gap: 3rem; }
-        .i-node { display: grid; grid-template-columns: 80px 1fr; gap: 2rem; }
-        .i-header { display: flex; gap: 1.5rem; align-items: flex-start; }
-        .i-num { font-size: 2.5rem; font-weight: 950; color: #14b8a6; line-height: 1; font-family: monospace; }
-        .i-title-box h4 { margin: 0; font-size: 1.25rem; font-weight: 800; }
-        .i-subtitle { font-size: 0.85rem; color: #64748b; }
-        .i-body p { margin-top: 1rem; color: #475569; line-height: 1.6; }
+        /* Score States */
+        .score-high { color: #1FA37A !important; } .d-bar-fill.score-high { background: #1FA37A !important; }
+        .score-medium { color: #F2A93B !important; } .d-bar-fill.score-medium { background: #F2A93B !important; }
+        .score-low { color: #D64545 !important; } .d-bar-fill.score-low { background: #D64545 !important; }
 
-        .research-insight-compact { background: #0f172a; color: white; padding: 4rem; border-radius: 24px; text-align: center; }
-        .insight-box-m h3 { color: #14b8a6; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 2px; margin-bottom: 1.5rem; }
-        .insight-box-m p { font-size: 1.5rem; font-weight: 800; line-height: 1.3; }
+        /* Dimension Insight Grid Update */
+        .document-insight-grid { display: flex; flex-direction: column; gap: 3rem; }
+        .dim-insight-row { display: grid; grid-template-columns: 80px 1fr; gap: 2rem; align-items: start; }
+        .dim-score-col { font-size: 42px; font-weight: 950; line-height: 1; font-family: monospace; text-align: right; }
+        .dim-text-col h4 { margin: 0; font-size: 20px; font-weight: 800; }
+        .dim-subtitle-brief { font-size: 14px; color: #64748b; display: block; margin-top: 2px; }
+        .dim-narrative { margin-top: 1rem; color: #475569; line-height: 1.5; font-size: 15px; }
 
-        .next-stage-polish { border-top: 2px solid #f1f5f9; padding-top: 5rem; }
+        .research-insight-brief { background: #0f172a; color: white; padding: 3rem 4rem; border-radius: 20px; max-width: 900px; margin: 0 auto 5rem; }
+        .insight-box-m-document h3 { color: #14b8a6; text-transform: uppercase; font-size: 11px; letter-spacing: 2px; margin-bottom: 1.5rem; border: none; }
+        .insight-box-m-document p { font-size: 22px; font-weight: 800; line-height: 1.3; }
+        .insight-brief-body { margin-top: 1.5rem; color: #94a3b8; font-size: 16px; line-height: 1.6; max-width: 720px; margin-left: auto; margin-right: auto; }
+
         .next-stage-brief { max-width: 700px; margin: 0 auto; text-align: center; }
-        .n-tag { display: inline-block; padding: 0.25rem 0.75rem; background: #f0fdfa; color: #14b8a6; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; border-radius: 100px; margin-bottom: 1.5rem; }
-        .next-stage-brief h3 { font-size: 2.25rem; font-weight: 950; margin-bottom: 1.5rem; }
-        .sim-focus-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem 3rem; text-align: left; margin: 3rem 0; padding: 2rem; background: #f8fafc; border-radius: 16px; }
-        .f-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; font-weight: 600; color: #475569; }
+        .n-tag { display: inline-block; padding: 4px 12px; background: #f0fdfa; color: #14b8a6; font-size: 10px; font-weight: 900; text-transform: uppercase; border-radius: 100px; margin-bottom: 1.5rem; }
+        .next-stage-brief h3 { font-size: 32px; font-weight: 950; margin-bottom: 1.5rem; }
+        .brief-desc { font-size: 16px; color: #475569; margin-bottom: 2.5rem; line-height: 1.6; }
+        .sim-focus-grid-document { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem 3rem; text-align: left; margin: 3rem 0; padding: 2rem; background: #f8fafc; border-radius: 16px; }
+        .f-item { display: flex; align-items: center; gap: 0.75rem; font-size: 14px; font-weight: 700; color: #475569; }
         .f-dot { width: 6px; height: 6px; background: #14b8a6; border-radius: 50%; }
 
-        @media (max-width: 768px) {
-          .summary-grid { grid-template-columns: 1fr; gap: 2rem; }
-          .chart-flex-box { flex-direction: column; }
-          .i-node { grid-template-columns: 1fr; gap: 1rem; }
+        /* Document Footer Component */
+        .footer-document { border-top: 1px solid #f1f5f9; padding-top: 2rem; display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; letter-spacing: 1px; font-weight: 700; }
+
+        @media screen and (max-width: 900px) {
+           .report-container { width: 95%; padding: 2rem; }
+           .summary-grid, .radar-layout-grid, .dim-insight-row { grid-template-columns: 1fr; gap: 2rem; }
+           .dim-score-col { text-align: left; font-size: 32px; }
         }
 
         @media print {
-          .summary-box { background: #f8fafc !important; -webkit-print-color-adjust: exact; }
-          .research-insight-compact { background: #0f172a !important; -webkit-print-color-adjust: exact; }
-          .primary-risk-card { border: 1px solid #fda4af !important; -webkit-print-color-adjust: exact; }
-          .sim-focus-grid { background: #f8fafc !important; -webkit-print-color-adjust: exact; }
+          @page { size: A4; margin: 20mm; }
+          body { background: white !important; }
+          .report-page { background: white !important; padding: 0 !important; }
+          .report-container { width: 100% !important; max-width: 100% !important; padding: 0 !important; box-shadow: none !important; margin: 0 !important; }
+          header.nav-header, .stage-actions, .breadcrumb { display: none !important; }
+          .summary-box { background: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .risk-signal-section { background: #fff1f2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .research-insight-brief { background: #0f172a !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .interpretation-scale-document, .sim-focus-grid-document { background: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .d-bar-bg { background: #f1f5f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .f-item { color: #475569 !important; }
         }
       `}</style>
     </div>
