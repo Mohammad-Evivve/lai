@@ -85,7 +85,7 @@ const RadarChart = ({ scores, teamScores }) => {
 
         {/* Labels with improved positioning */}
         {dimensions.map((d, i) => {
-          const p = getPoint(125, i); // Position labels slightly further out
+          const p = getPoint(105, i); // Bring labels in more to prevent cutting
           return (
             <text
               key={i} x={p.x} y={p.y} fontSize="10" fontWeight="950" fill="#94a3b8"
