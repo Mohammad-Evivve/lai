@@ -379,61 +379,35 @@ const Part1Report = () => {
 
         {/* 6. LEADERSHIP SYSTEM PERCEPTION (TEAM ONLY) */}
         {showTeamView && (
-          <section className="report-section team-section">
-            <div className="section-header-row">
+          <section className="report-section team-section-document page-section">
+            <div className="section-header-row-brief">
               <Users size={20} />
               <h2>Leadership System Perception</h2>
             </div>
-            <p>Aggregated results from <strong>{teamMemberCount}</strong> leadership team members.</p>
+            <p className="team-meta-brief">Aggregated results from <strong>{teamMemberCount}</strong> leadership team members.</p>
             
-            <div className="team-insights-grid">
-               <div className="comparison-card">
+            <div className="perception-layout-grid">
+               <div className="perception-analysis-col">
                   <h4>Team Alignment Status</h4>
-                  <p style={{ fontSize: '1.1rem', fontWeight: '700', color: '#0f172a', marginBottom: '1rem' }}>
+                  <p className="alignment-status-title">
                     {teamData.variance && Object.values(teamData.variance).some(v => v === 'HIGH') ? "Fragmented leadership perception" : (Object.values(teamData.variance || {}).some(v => v === 'MODERATE') ? "Mixed leadership perception" : "Strong shared perception")}
                   </p>
-                  <p>
+                  <p className="alignment-description">
                     {hasHighVariance 
                       ? "Leadership team members are experiencing the decision system differently, which may create friction during rapid transitions."
-                      : "This suggests leaders share a similar understanding of how the organization currently responds to change."}
+                      : "Leaders appear to share a consistent understanding of how the organization responds to change."}
                   </p>
-                  
-                  {showVarianceAnalysis ? (
-                    <div className="variance-table-wrap" style={{ marginTop: '2rem' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-                        <thead>
-                          <tr style={{ textAlign: 'left', borderBottom: '2px solid #0f172a' }}>
-                            <th style={{ padding: '0.75rem 0' }}>Dimension</th>
-                            <th style={{ padding: '0.75rem 0' }}>Variance</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {dimensions.map(dim => (
-                            <tr key={dim.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                              <td style={{ padding: '1rem 0', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', fontSize: '0.7rem' }}>{dim.name}</td>
-                              <td style={{ padding: '1rem 0' }}>
-                                <span className={`v-status ${teamData.variance[dim.id]?.toLowerCase()}`}>
-                                  {teamData.variance[dim.id]}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  ) : (
-                    <div className="variance-threshold-message" style={{ marginTop: '2rem' }}>
-                      <Info size={14} /> Alignment variance analysis activates after 3 team members complete the assessment.
-                    </div>
-                  )}
+                  <p className="alignment-insight-line">
+                    Shared perception alignment often indicates that leadership teams recognize similar challenges and opportunities in the current environment.
+                  </p>
                </div>
                
-               <div className="team-stats">
-                  <div className="stat-node">
+               <div className="perception-stats-col">
+                  <div className="doc-stat-card">
                      <div className="s-label">Team Avg Score</div>
                      <div className="s-value">{team_average_score}</div>
                   </div>
-                  <div className="stat-node">
+                  <div className="doc-stat-card">
                      <div className="s-label">Participants</div>
                      <div className="s-value">{teamMemberCount}</div>
                   </div>
@@ -567,22 +541,45 @@ const Part1Report = () => {
         /* Document Footer Component */
         .footer-document { border-top: 1px solid #f1f5f9; padding-top: 2rem; display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; letter-spacing: 1px; font-weight: 700; }
 
+        /* Perception Section Brief */
+        .team-section-document { border-top: 1px solid #f1f5f9; padding-top: 3rem; }
+        .section-header-row-brief { display: flex; align-items: center; gap: 0.75rem; color: #14b8a6; margin-bottom: 0.5rem; h2 { border: none; margin: 0; } }
+        .team-meta-brief { font-size: 0.85rem; color: #64748b; margin-bottom: 2rem; }
+        .perception-layout-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 4rem; align-items: start; }
+        .alignment-status-title { font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 1rem; }
+        .alignment-description { color: #475569; line-height: 1.5; font-size: 1rem; margin-bottom: 1.5rem; }
+        .alignment-insight-line { font-size: 0.9rem; color: #64748b; font-style: italic; border-top: 1px solid #f1f5f9; padding-top: 1.5rem; }
+        
+        .perception-stats-col { display: flex; flex-direction: column; gap: 1.5rem; }
+        .doc-stat-card { background: #0f172a; color: white; padding: 1.5rem; border-radius: 16px; text-align: center; }
+
         @media screen and (max-width: 900px) {
            .report-container { width: 95%; padding: 2rem; }
-           .summary-grid, .radar-layout-grid, .dim-insight-row { grid-template-columns: 1fr; gap: 2rem; }
+           .summary-grid, .radar-layout-grid, .dim-insight-row, .perception-layout-grid { grid-template-columns: 1fr; gap: 2rem; }
            .dim-score-col { text-align: left; font-size: 32px; }
         }
 
         @media print {
           @page { size: A4; margin: 20mm; }
           body { background: white !important; }
-          .report-page { background: white !important; padding: 0 !important; }
-          .report-container { width: 100% !important; max-width: 100% !important; padding: 0 !important; box-shadow: none !important; margin: 0 !important; }
-          header.nav-header, .stage-actions, .breadcrumb { display: none !important; }
+          
+          /* Print Isolation */
+          body * { visibility: hidden; }
+          .report-container, .report-container * { visibility: visible; }
+          .report-container { 
+            position: absolute; left: 0; top: 0; width: 100% !important; 
+            max-width: 100% !important; padding: 0 !important; box-shadow: none !important; margin: 0 !important; 
+          }
+
+          nav, header, .menu, .sidebar, .footer-nav, button, .cta, .download-button, .site-header, .btn-institutional, .breadcrumb { 
+            display: none !important; 
+          }
+
           .summary-box { background: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .risk-signal-section { background: #fff1f2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .research-insight-brief { background: #0f172a !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .interpretation-scale-document, .sim-focus-grid-document { background: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .doc-stat-card { background: #0f172a !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .d-bar-bg { background: #f1f5f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .f-item { color: #475569 !important; }
         }
