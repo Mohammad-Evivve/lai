@@ -294,6 +294,19 @@ const Part1Report = () => {
     setActiveTabs(prev => ({ ...prev, [dimId]: tab }));
   };
 
+  const topInsightsDimensions = (() => {
+    if (!teamData?.averages) {
+      // Fallback: If no team data exists, show the 3 dimensions with lowest individual score (highest personal risk)
+      return [...dimensions].sort((a, b) => (scores[a.id] || 0) - (scores[b.id] || 0)).slice(0, 3);
+    }
+    // Primary: Sort by highest absolute variance between individual score and team average
+    return [...dimensions].sort((a, b) => {
+      const deltaA = Math.abs((scores[a.id] || 0) - (teamData.averages[a.id] || 0));
+      const deltaB = Math.abs((scores[b.id] || 0) - (teamData.averages[b.id] || 0));
+      return deltaB - deltaA; // Descending (highest variance first)
+    }).slice(0, 3);
+  })();
+
   return (
     <div className="report-page report-print">
       <div className="report-container">
@@ -462,7 +475,7 @@ const Part1Report = () => {
         <section className="report-section dimension-insights-section page-section">
            <h2>Dimension Insights</h2>
            <div className="document-insight-grid-phased">
-             {dimensions.map(dim => {
+             {topInsightsDimensions.map(dim => {
                 const s = scores[dim.id];
                 const teamAvg = teamData?.averages?.[dim.id];
                 const activeTab = activeTabs[dim.id] || 'your';
