@@ -69,7 +69,7 @@ const Navbar = () => {
         </Link>
       </div>
 
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .navbar {
           position: fixed;
           top: 0;
@@ -206,7 +206,7 @@ const Navbar = () => {
           border-radius: 4px;
           font-weight: 600;
         }
-      `}</style>
+      `}} />
     </nav>
   );
 };

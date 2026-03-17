@@ -660,7 +660,7 @@ const Part1Report = () => {
                         setTimeout(() => setCopied(null), 2000);
                       }}
                     >
-                      {copied === 'report_footer' ? <><CheckCircle2 size={16} /> URL Copied</> : <><LinkIcon size={16} /> Copy Report Link</>}
+                      {copied === 'report_footer' ? <><CheckCircle size={16} /> URL Copied</> : <><LinkIcon size={16} /> Copy Report Link</>}
                     </button>
                     <button className="btn-institutional outline" onClick={() => window.print()}>Download Perception Brief</button>
                  </div>
@@ -722,7 +722,7 @@ const Part1Report = () => {
         .report-description-institutional { font-size: 16px; color: #475569; max-width: 700px; line-height: 1.5; margin-bottom: 1.5rem; }
         .confidential-seal { font-size: 11px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; display: inline-block; padding: 4px 0; border-top: 1px solid #f1f5f9; }
 
-        .header-metadata-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4rem; border-top: 2px solid #0f172a; pt: 2rem; margin-top: 1rem; padding-top: 2rem;}
+        .header-metadata-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4rem; border-top: 2px solid #0f172a; padding-top: 2rem; margin-top: 1rem; }
         .meta-entry { display: grid; grid-template-columns: 140px 1fr; gap: 1rem; margin-bottom: 0.75rem; font-size: 14px; }
         .m-label { color: #94a3b8; font-weight: 600; }
         .m-val { color: #0f172a; font-weight: 800; }

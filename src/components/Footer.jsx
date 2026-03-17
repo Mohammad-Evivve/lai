@@ -69,7 +69,7 @@ const Footer = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .footer {
           background: #f8fafc;
           padding: 0;
@@ -183,7 +183,7 @@ const Footer = () => {
           .footer-brand, .footer-links { grid-column: span 6; margin-bottom: 3rem; }
           .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
         }
-      `}</style>
+      `}} />
     </footer>
   );
 };
