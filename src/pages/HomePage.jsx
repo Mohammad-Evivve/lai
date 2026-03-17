@@ -112,28 +112,62 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* ── SECTION 4: OBSERVATORY (Real-time Signals) ────────────────────────── */}
+      {/* ── SECTION 4: OBSERVATORY & GLOBAL INDEX (Real-time Signals) ────────────────── */}
       <section className="observatory-section bg-navy text-white py-24 overflow-hidden">
         <div className="container grid-2 items-center">
           <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}>
             <span className="eyebrow text-teal">The Observatory</span>
-            <h2 className="section-h2 text-white">Global Adaptiveness Signals</h2>
+            <h2 className="section-h2 text-white">Global Adaptiveness Index</h2>
             <p className="text-slate-400 mb-8">Our environmental intelligence engine ingests real-time signals from markets, technology shifts, and regulatory changes to measure organizational response speed.</p>
-            <div className="signal-stats-grid">
-               <div className="s-stat">
-                  <span className="s-val">840/day</span>
-                  <span className="s-lab">Signals Ingested</span>
-               </div>
-               <div className="s-stat">
-                  <span className="s-val">45+</span>
-                  <span className="s-lab">Countries Monitored</span>
-               </div>
+            
+            <div className="glai-stats mb-8" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div className="glai-stat" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', padding: '1.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <Activity className="text-teal" />
+                <div>
+                  <h4 style={{ margin: 0, fontSize: '1.2rem' }}>+12%</h4>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8' }}>Global Adaptiveness YOY</p>
+                </div>
+              </div>
             </div>
-            <Link to="/signals" className="btn-institutional outline white mt-8">View Live Signals</Link>
+
+            <Link to="/global-index" className="btn-institutional primary">View Global Map</Link>
           </motion.div>
+
           <div className="observatory-visual">
-             <div className="pulse-circle"></div>
-             <Globe size={300} className="text-teal opacity-20" />
+            {/* Hierarchy of Truth Legend */}
+            <div className="intelligence-legend">
+              <h4 className="legend-title">Hierarchy of Truth</h4>
+              <div className="legend-items">
+                <div className="legend-item">
+                  <div className="legend-tier tier-0">Tier 0</div>
+                  <div>
+                    <strong>Sovereign</strong>
+                    <p>Proprietary Research & Expert Overrides (1.2x)</p>
+                  </div>
+                </div>
+                <div className="legend-item">
+                  <div className="legend-tier tier-1">Tier 1</div>
+                  <div>
+                    <strong>Observed</strong>
+                    <p>Behavioral Simulation Telemetry (1.0x)</p>
+                  </div>
+                </div>
+                <div className="legend-item">
+                  <div className="legend-tier tier-2">Tier 2</div>
+                  <div>
+                    <strong>Perceived</strong>
+                    <p>Internal Diagnostic & Sentiment Surveys (0.8x)</p>
+                  </div>
+                </div>
+                <div className="legend-item">
+                  <div className="legend-tier tier-3">Tier 3</div>
+                  <div>
+                    <strong>Inferred</strong>
+                    <p>External Market Intelligence & Digital Signals (0.4x)</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -237,17 +271,8 @@ const HomePage = () => {
         .home-f-card h3 { font-size: 1rem; font-weight: 800; color: #0a192f; }
 
         /* Observatory Section */
-        .signal-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; }
-        .s-val { display: block; font-size: 1.5rem; font-weight: 800; color: #2dd4bf; }
-        .s-lab { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: #94a3b8; }
         .observatory-visual { position: relative; display: flex; align-items: center; justify-content: center; }
-        .pulse-circle { position: absolute; width: 400px; height: 400px; border: 1px solid #2dd4bf; border-radius: 50%; animation: pulse 4s infinite; opacity: 0; }
-        @keyframes pulse {
-           0% { transform: scale(0.8); opacity: 0; }
-           50% { opacity: 0.2; }
-           100% { transform: scale(1.2); opacity: 0; }
-        }
-
+        
         /* Index Section */
         .index-preview-box { background: white; border: 1px solid #e2e8f0; border-radius: 24px; max-width: 900px; margin: 0 auto; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
         .index-meta-header { padding: 1.5rem 2rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
@@ -267,6 +292,24 @@ const HomePage = () => {
 
         /* Buttons */
         .btn-institutional:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+
+        .intelligence-legend { 
+          background: white; padding: 2rem; border-radius: 12px; 
+          border: 1px solid var(--border-color); box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+        .legend-title { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: var(--slate-light); margin-bottom: 1.5rem; }
+        .legend-items { display: grid; gap: 1.25rem; }
+        .legend-item { display: flex; gap: 1rem; align-items: flex-start; }
+        .legend-tier { 
+          font-size: 0.6rem; font-weight: 800; padding: 0.2rem 0.5rem; border-radius: 4px; 
+          color: white; text-transform: uppercase; min-width: 48px; text-align: center; margin-top: 0.2rem;
+        }
+        .tier-0 { background: #0f172a; }
+        .tier-1 { background: #3b82f6; }
+        .tier-2 { background: #0d9488; }
+        .tier-3 { background: #64748b; }
+        .legend-item strong { display: block; font-size: 0.9rem; color: var(--navy); }
+        .legend-item p { font-size: 0.75rem; color: var(--text-muted); margin: 0; }
 
         @media (max-width: 992px) {
           .hero h1 { font-size: 3rem; }

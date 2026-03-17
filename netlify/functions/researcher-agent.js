@@ -10,7 +10,7 @@ const { supabase } = require('./lib/supabase.cjs');
 
 // ── 5 Core Dimension Keyword Maps ─────────────────────────────────────────────
 const DIMENSION_KEYWORDS = {
-  signal_interpretation: [
+  signal_detection: [
     'signal', 'detect', 'sensing', 'awareness', 'recognize', 'identify',
     'early warning', 'insight', 'foresight', 'read', 'monitor', 'scanning',
     'anticipate', 'interpret', 'perceive', 'intelligence', 'alert'
@@ -20,7 +20,7 @@ const DIMENSION_KEYWORDS = {
     'mental model', 'paradigm', 'thinking', 'worldview', 'belief', 'cognitive',
     'clarity', 'focus', 'orientation', 'conception', 'rationale'
   ],
-  resource_reallocation: [
+  resource_calibration: [
     'resource', 'realloc', 'capital', 'budget', 'invest', 'redeploy',
     'priority', 'shift', 'allocat', 'fund', 'bandwidth', 'capacity',
     'talent', 'restructur', 'pivot', 'redirect', 'portfolio', 'trade-off'
@@ -30,7 +30,7 @@ const DIMENSION_KEYWORDS = {
     'unity', 'cohesion', 'direction', 'agreement', 'mandate', 'strategy',
     'committee', 'board', 'executive', 'resolve', 'commitment', 'directive'
   ],
-  execution_responsiveness: [
+  integrated_responsiveness: [
     'execution', 'deliver', 'implement', 'responsive', 'speed', 'agile',
     'velocity', 'adapt', 'deploy', 'operationalize', 'action', 'initiative',
     'launch', 'rollout', 'performance', 'throughput', 'efficiency', 'outcome'
@@ -51,11 +51,11 @@ const NEGATIVE_WORDS = [
 
 // Base scores by dimension (calibrated to a 60-70 baseline)
 const BASE_SCORES = {
-  signal_interpretation: 65,
+  signal_detection: 65,
   cognitive_framing: 65,
-  resource_reallocation: 60,
+  resource_calibration: 60,
   decision_alignment: 62,
-  execution_responsiveness: 63
+  integrated_responsiveness: 63
 };
 
 function extractScores(text) {
@@ -100,12 +100,12 @@ exports.handler = async (event) => {
 
     const { data, error } = await supabase.from('diagnostic_results').insert([{
       organization_name: organization_id,
-      overall_lai_score: overall,
-      signal_interpretation_score: scores.signal_interpretation,
+      overall_score: overall,
+      signal_detection_score: scores.signal_detection,
       cognitive_framing_score: scores.cognitive_framing,
-      resource_reallocation_score: scores.resource_reallocation,
+      resource_calibration_score: scores.resource_calibration,
       decision_alignment_score: scores.decision_alignment,
-      execution_responsiveness_score: scores.execution_responsiveness,
+      integrated_responsiveness_score: scores.integrated_responsiveness,
       source_type,
       seniority_level: seniority || 'middle_management',
       is_published: true,

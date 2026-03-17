@@ -234,15 +234,27 @@ app.get('/api/diagnostic/:id', async (req, res) => {
 
     let teamData = null;
     if (individual.team_id) {
-      // 2. Fetch team average and count
+      // 1c. Fetch team code explicitly for UI convenience
+      const { data: teamRow } = await supabaseClient
+        .from('teams')
+        .select('team_code')
+        .eq('id', individual.team_id)
+        .single();
+      
+      if (teamRow) {
+        individual.team_code = teamRow.team_code;
+      }
+
+        // 2. Fetch team average and count
       const { data: teamMembers, error: teamError } = await supabaseClient
         .from('diagnostic_results')
-        .select('signal_detection_score, cognitive_framing_score, decision_alignment_score, resource_calibration_score, integrated_responsiveness_score')
+        .select('overall_score, signal_detection_score, cognitive_framing_score, decision_alignment_score, resource_calibration_score, integrated_responsiveness_score')
         .eq('team_id', individual.team_id);
 
       if (!teamError && teamMembers.length > 0) {
         const count = teamMembers.length;
         const averages = {
+          overall: teamMembers.reduce((a, b) => a + Number(b.overall_score), 0) / count,
           signal_detection: teamMembers.reduce((a, b) => a + Number(b.signal_detection_score), 0) / count,
           cognitive_framing: teamMembers.reduce((a, b) => a + Number(b.cognitive_framing_score), 0) / count,
           decision_alignment: teamMembers.reduce((a, b) => a + Number(b.decision_alignment_score), 0) / count,
@@ -546,7 +558,7 @@ app.get('/api/analytics/global', async (req, res) => {
       }
       
       const orgName = verifiedOrg ? verifiedOrg.name : (first?.organization_name?.trim() || 'Unknown');
-            let totalWeight = 0;
+      let totalWeight = 0;
       let weightedSum = 0;
       let sums = { 
         signal_detection: 0, 
@@ -590,7 +602,6 @@ app.get('/api/analytics/global', async (req, res) => {
         totalWeight += finalWeight;
         weightedSum += currentScore * finalWeight;
 
-        // Track per-tier weighted sums for contribution % calculation
         // Track per-tier weighted sums for calculation of averages and dissonance
         if (tier === 'BEHAVIORAL') {
           tierSums.behavioral += currentScore * finalWeight;

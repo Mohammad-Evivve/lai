@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, CheckCircle2, Loader2 } from 'lucide-react';
+import { X, CheckCircle, Loader2 } from 'lucide-react';
 
 const DemoRequestModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({ name: '', email: '', organization: '' });
@@ -54,7 +54,7 @@ const DemoRequestModal = ({ isOpen, onClose }) => {
             
             {status === 'success' ? (
               <div className="modal-success">
-                <CheckCircle2 size={48} className="text-teal" />
+                <CheckCircle size={48} className="text-teal" />
                 <h3>Request Received</h3>
                 <p>A research coordinator will contact you shortly to schedule your behavioral simulation demo.</p>
               </div>

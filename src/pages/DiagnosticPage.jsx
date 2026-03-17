@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  ArrowRight, CheckCircle2, ChevronLeft, AlertCircle, 
+  ArrowRight, CheckCircle, ChevronLeft, AlertCircle, 
   BarChart3, TrendingUp, Sparkles, Brain, Users, 
   User, Link as LinkIcon, Mail, ShieldCheck, Globe,
   Briefcase, Activity, Target
@@ -306,7 +306,7 @@ const DiagnosticPage = () => {
               
               <div className="consent-box">
                 <div className="consent-check" onClick={() => setConsent(!consent)}>
-                  <div className={`checkbox ${consent ? 'checked' : ''}`}>{consent && <CheckCircle2 size={16} />}</div>
+                  <div className={`checkbox ${consent ? 'checked' : ''}`}>{consent && <CheckCircle size={16} />}</div>
                   <p>I agree that anonymized responses may contribute to research conducted by the Leadership Adaptiveness Institute.</p>
                 </div>
                 <div className="consent-info">
@@ -489,7 +489,7 @@ const DiagnosticPage = () => {
                       }}
                       style={{ background: '#0f172a', border: 'none', color: 'white', width: '56px', height: '56px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                     >
-                      {copied === 'team' ? <CheckCircle2 size={24} color="#14b8a6" /> : <LinkIcon size={24} />}
+                      {copied === 'team' ? <CheckCircle size={24} color="#14b8a6" /> : <LinkIcon size={24} />}
                     </button>
                   </div>
                   {copied === 'team' && <div style={{ color: '#14b8a6', fontSize: '0.75rem', fontWeight: '800', marginTop: '1rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Code Copied to Clipboard</div>}
@@ -517,7 +517,7 @@ const DiagnosticPage = () => {
                     }}
                     style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', padding: '1rem 2rem', borderRadius: '12px', color: 'white', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', transition: 'all 0.2s', flex: '1', minWidth: '200px' }}
                   >
-                    {copied === 'report' ? <><CheckCircle2 size={18} color="#14b8a6" /> Copied!</> : <><LinkIcon size={18} /> Copy Report Link</>}
+                    {copied === 'report' ? <><CheckCircle size={18} color="#14b8a6" /> Copied!</> : <><LinkIcon size={18} /> Copy Report Link</>}
                   </button>
                 </div>
               </div>

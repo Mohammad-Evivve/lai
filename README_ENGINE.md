@@ -5,11 +5,7 @@ The engine does not treat all data equally. It filters every signal through a We
 
 | Tier | Source | Weight (W) | Description |
 | :--- | :--- | :--- | :--- |
-<<<<<<< HEAD
-| **Tier 0: Sovereign** | Proprietary Research | 1.5 | High-priority overrides. Direct expert injection. |
-=======
 | **Tier 0: Sovereign** | Proprietary Research | 1.2 | High-priority overrides. Direct expert injection. |
->>>>>>> e4da136a541935dba949a893d5c1a363975726a9
 | **Tier 1: Observed** | Evivve Simulation | 1.0 | Behavioral telemetry. How leaders act under pressure. |
 | **Tier 2: Perception** | Self-Diagnostic / Survey | 0.8 | Internal sentiment. How the org perceives its own adaptiveness. |
 | **Tier 3: Inferred** | Market Intelligence | 0.4 | External context. Signals from global news and filings. |
@@ -40,11 +36,11 @@ The engine utilizes a Self-Hydrating Nerve System to maintain global coverage an
 ## 5. Taxonomy & Pillars
 To ensure boardroom credibility, the engine standardizes all data into five distinct pillars:
 
-1. **Cognitive Framing (Lead Metric)**: The ability to define and shift strategic perspectives.
-2. **Strategic Calibration**: Aligning actions with shifting global realities.
-3. **Challenge Networks**: The health of internal dissent and diverse thinking.
-4. **Learning Agility**: Speed of skill and strategy acquisition.
-5. **Psychological Stamina**: Resilience under prolonged volatility.
+1. **Signal Detection**: Measures the delta between environmental changes and institutional recognition context.
+2. **Cognitive Framing**: Evaluates the cognitive framing (threat vs opportunity) of detected environmental shifts.
+3. **Decision Alignment**: Measures the coherence and precision of decisions across the leadership system.
+4. **Resource Calibration**: Observes the speed and precision of capital and talent redirection during disruption.
+5. **Integrated Responsiveness**: Measures the translation of strategy into systemic, coordinated behavioral response.
 
 ## 6. Real-Time Broadcast Architecture
 The system uses Supabase Realtime (Postgres Changes) to broadcast updates. When the Orion Scout injects a new Tier 3 signal for a company like NVIDIA, the following happens:

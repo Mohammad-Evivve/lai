@@ -526,9 +526,27 @@ const LeaderboardRow = React.memo(({ r, idx, expandedId, setExpandedId, setFocus
                   </div>
                 </div>
               </div>
-
-              <div style={{ fontSize: '0.55rem', color: '#94a3b8', fontStyle: 'italic', marginTop: '1.5rem', textAlign: 'center' }}>
-                * Real-time signals are processed via the Deterministic Scoring Engine with 90-day recency decay.
+              <div>
+                <p style={{ fontSize: '0.62rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 2, color: '#94a3b8', marginBottom: '1rem' }}>5-Pillar Adaptiveness Breakdown</p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem 2rem' }}>
+                  {[
+                    { label: 'Signal Detection', key: 'signal_detection' },
+                    { label: 'Cognitive Framing', key: 'cognitive_framing' },
+                    { label: 'Decision Alignment', key: 'decision_alignment' },
+                    { label: 'Resource Calibration', key: 'resource_calibration' },
+                    { label: 'Integrated Responsiveness', key: 'integrated_responsiveness' }
+                  ].map(dim => (
+                    <div key={dim.key} title={PILLAR_DEFINITIONS[dim.key]}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.3rem', cursor: 'help' }}>
+                        <span style={{ fontSize: '0.6rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          {dim.label} <Info size={10} />
+                        </span>
+                        <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#0f172a' }}>{r[dim.key] || 0}</span>
+                      </div>
+                      <ScoreBar score={r[dim.key] || 0} />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </motion.div>

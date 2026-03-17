@@ -97,33 +97,24 @@ function App() {
               <Route path="/observatory" element={<ObservatoryPage />} />
               <Route path="/global-index" element={<GlobalIndexPage />} />
               <Route path="/completeness" element={<CompletenessPage />} />
-              <Route path="/methodology" element={<div>Measurement Methodology (Coming Soon)</div>} />
-              <Route path="/flywheel" element={<div>The LAI Research Flywheel (Coming Soon)</div>} />
-
+              
               {/* Phase 3: Research Layer */}
-              <Route path="/behavioral-science" element={<div>Behavioral Science of Adaptiveness (Coming Soon)</div>} />
+              <Route path="/research" element={<ResearchPage />} />
               <Route path="/aferr" element={<AFERRPage />} />
-              <Route path="/simulation" element={<div>Simulation-Based Measurement (Coming Soon)</div>} />
-              <Route path="/collaboration" element={<div>Global Research Collaboration (Coming Soon)</div>} />
-              <Route path="/case-insights" element={<div>Case Insights (Coming Soon)</div>} />
-              <Route path="/library" element={<ResearchPage />} />
 
               {/* Phase 4: Participation Layer */}
               <Route path="/diagnostic" element={<DiagnosticPage />} />
               <Route path="/report/perception/:id" element={<Part1Report />} />
               <Route path="/benchmark" element={<BenchmarkPage />} />
-              <Route path="/journey" element={<div>Leadership Team Measurement Journey (Coming Soon)</div>} />
 
               {/* Phase 5: Institutional Foundation */}
               <Route path="/about" element={<AboutPage />} />
-              <Route path="/council" element={<div>Advisory / Research Council (Coming Soon)</div>} />
 
-              {/* Admin & Legacy */}
-              <Route path="/research" element={<ResearchPage />} />
-              <Route path="/admin" element={<ResearchDashboard />} />
+              {/* Admin & Dev */}
+              <Route path="/admin/research" element={<ResearchDashboard />} />
               <Route path="/admin/mapping" element={<AdminMappingPage />} />
               <Route path="/admin/intel" element={<AdminIntel />} />
-              <Route path="/status" element={<DevStatus />} />
+              <Route path="/dev/status" element={<DevStatus />} />
             </Routes>
           </main>
           <Footer />
