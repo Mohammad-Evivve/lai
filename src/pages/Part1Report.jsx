@@ -4,7 +4,8 @@ import { motion } from 'framer-motion';
 import { 
   FileText, ShieldCheck, Info, ArrowRight, 
   Activity, Users, Brain, Target, Compass,
-  AlertCircle, CheckCircle, Lightbulb, Link as LinkIcon
+  AlertCircle, CheckCircle, Lightbulb, Link as LinkIcon,
+  Printer
 } from 'lucide-react';
 import { supabase } from '../supabase';
 
@@ -153,8 +154,8 @@ const RadarChart = ({ scores, teamScores }) => {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           points={pointsString}
-          fill="rgba(6, 95, 70, 0.15)"
-          stroke="#065f46"
+          fill="rgba(20, 184, 166, 0.15)"
+          stroke="#14b8a6"
           strokeWidth="3"
         />
         {dimensions.map((d, i) => {
@@ -358,7 +359,19 @@ const Part1Report = () => {
               <div className="meta-entry"><span className="m-label">Assessment Date</span> <span className="m-val">{new Date(data.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span></div>
               <div className="meta-entry"><span className="m-label">Report ID</span> <span className="m-val">{id.substring(0, 8).toUpperCase()}</span></div>
             </div>
-            <div className="meta-col-actions no-print">
+            <div className="meta-col-actions no-print" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <button 
+                className="btn-institutional premium-download-btn"
+                onClick={() => window.print()}
+                style={{ 
+                  background: '#0f172a', color: 'white', border: 'none', 
+                  padding: '12px 24px', borderRadius: '12px', fontWeight: '800', 
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem',
+                  fontSize: '14px', transition: 'all 0.2s'
+                }}
+              >
+                <Printer size={18} /> Download Intelligence Report
+              </button>
               <button 
                 className="btn-institutional outline premium-share-btn"
                 onClick={() => {
@@ -366,8 +379,14 @@ const Part1Report = () => {
                   setCopied('report_header');
                   setTimeout(() => setCopied(null), 2000);
                 }}
+                style={{
+                  background: 'transparent', color: '#14b8a6', border: '2px solid #14b8a6',
+                  padding: '10px 20px', borderRadius: '12px', fontWeight: '800',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem',
+                  fontSize: '14px', transition: 'all 0.2s'
+                }}
               >
-                {copied === 'report_header' ? <><ShieldCheck size={16} /> URL Copied</> : <><FileText size={16} /> Copy Report Link</>}
+                {copied === 'report_header' ? <><ShieldCheck size={18} /> URL Copied</> : <><FileText size={18} /> Copy Report Link</>}
               </button>
             </div>
           </div>
@@ -466,8 +485,8 @@ const Part1Report = () => {
                  <div className="radar-comparison-callout" style={{ padding: '1.5rem', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '2rem' }}>
                     <h4 style={{ color: '#64748b', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem' }}>Perception Gap Insight</h4>
                     <p style={{ fontSize: '0.95rem', color: '#0f172a', lineHeight: '1.4', margin: 0 }}>
-                      You rated <strong>Decision Alignment</strong> at <strong style={{ color: '#9f1239' }}>{scores.decision_alignment}</strong>. 
-                      The leadership team average is <strong style={{ color: '#065f46' }}>{Math.round(teamData?.averages?.decision_alignment || 0)}</strong>.
+                      You rated <strong>Decision Alignment</strong> at <strong style={{ color: '#f43f5e' }}>{scores.decision_alignment}</strong>. 
+                      The leadership team average is <strong style={{ color: '#14b8a6' }}>{Math.round(teamData?.averages?.decision_alignment || 0)}</strong>.
                     </p>
                     <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.5rem' }}>
                       This variance suggests you may be experiencing decision latency that is not yet visible to the broader team.
@@ -621,14 +640,14 @@ const Part1Report = () => {
                   </p>
                   
                    <div className="shared-divergent-callouts" style={{ marginTop: 'auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
-                      <div className="callout-box" style={{ padding: '1.25rem', background: '#f0fdf4', border: '1px solid #d1fae5', borderRadius: '12px', display: 'flex', flexDirection: 'column' }}>
-                         <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#065f46', fontWeight: '800', letterSpacing: '0.5px' }}>Most Shared Dimension</span>
+                      <div className="callout-box" style={{ padding: '1.25rem', background: '#f0fdf4', border: '1px solid #bcf0da', borderRadius: '12px', display: 'flex', flexDirection: 'column' }}>
+                         <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#166534', fontWeight: '800', letterSpacing: '0.5px' }}>Most Shared Dimension</span>
                          <h4 style={{ margin: '0.5rem 0', fontSize: '1.1rem', color: '#065f46' }}>{most_aligned_dimension?.name || 'Cognitive Framing'}</h4>
-                         <p style={{ fontSize: '0.85rem', color: '#064e3b', margin: 0, lineHeight: '1.4' }}>This dimension represents the highest level of perceptual agreement and shared reality within the leadership team.</p>
+                         <p style={{ fontSize: '0.85rem', color: '#14532d', margin: 0, lineHeight: '1.4' }}>This dimension represents the highest level of perceptual agreement and shared reality within the leadership team.</p>
                       </div>
-                      <div className="callout-box" style={{ padding: '1.25rem', background: '#fff1f2', border: '1px solid #fee2e2', borderRadius: '12px', display: 'flex', flexDirection: 'column' }}>
+                      <div className="callout-box" style={{ padding: '1.25rem', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '12px', display: 'flex', flexDirection: 'column' }}>
                          <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#9f1239', fontWeight: '800', letterSpacing: '0.5px' }}>Most Divergent Dimension</span>
-                         <h4 style={{ margin: '0.5rem 0', fontSize: '1.1rem', color: '#9f1239' }}>{most_divergent_dimension?.name || 'Decision Alignment'}</h4>
+                         <h4 style={{ margin: '0.5rem 0', fontSize: '1.1rem', color: '#f43f5e' }}>{most_divergent_dimension?.name || 'Decision Alignment'}</h4>
                          <p style={{ fontSize: '0.85rem', color: '#881337', margin: 0, lineHeight: '1.4' }}>This dimension reveals the greatest variance in how adaptiveness is currently being experienced across the system.</p>
                       </div>
                    </div>
@@ -646,10 +665,10 @@ const Part1Report = () => {
                     </div>
                   </div>
                   
-                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderLeft: '4px solid #1e3a8a', borderRadius: '12px', padding: '1.5rem', marginTop: 'auto', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderLeft: '4px solid #14b8a6', borderRadius: '12px', padding: '1.5rem', marginTop: 'auto', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-                      <Lightbulb size={18} color="#1e3a8a" strokeWidth={2.5} />
-                      <div style={{ fontSize: '0.8rem', fontWeight: '800', textTransform: 'uppercase', color: '#1e3a8a', letterSpacing: '0.5px' }}>What this suggests</div>
+                      <Lightbulb size={18} color="#14b8a6" strokeWidth={2.5} />
+                      <div style={{ fontSize: '0.8rem', fontWeight: '800', textTransform: 'uppercase', color: '#14b8a6', letterSpacing: '0.5px' }}>What this suggests</div>
                     </div>
                     <p style={{ fontSize: '0.95rem', color: '#334155', margin: 0, lineHeight: '1.6', fontWeight: '500' }}>
                       {teamData?.variance && Object.values(teamData.variance).some(v => (v?.diff > 10) || (typeof v === 'string' && v.toLowerCase().includes('moderate')))
@@ -664,18 +683,18 @@ const Part1Report = () => {
                <h3 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', marginBottom: '1.5rem' }}>What this likely looks like inside your team</h3>
                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '1rem' }}>
                   <div style={{ display: 'flex', gap: '1.5rem', background: '#f8fafc', padding: '1.5rem', borderRadius: '12px', alignItems: 'flex-start' }}>
-                     <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '50%', background: '#d1fae5', color: '#065f46', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>+</div>
+                     <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '50%', background: '#dcfce7', color: '#14b8a6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>+</div>
                      <div>
-                        <div style={{ fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase', color: '#065f46', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>Shared Pattern: {most_aligned_dimension?.name}</div>
+                        <div style={{ fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase', color: '#14b8a6', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>Shared Pattern: {most_aligned_dimension?.name}</div>
                         <div style={{ fontSize: '0.95rem', color: '#334155', lineHeight: '1.5' }}>
                           {getBehavioralText(most_aligned_dimension?.id, 'shared')}
                         </div>
                      </div>
                   </div>
                   <div style={{ display: 'flex', gap: '1.5rem', background: '#f8fafc', padding: '1.5rem', borderRadius: '12px', alignItems: 'flex-start' }}>
-                     <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '50%', background: '#fee2e2', color: '#9f1239', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>−</div>
+                     <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '50%', background: '#fee2e2', color: '#f43f5e', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>−</div>
                      <div>
-                        <div style={{ fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase', color: '#9f1239', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>Divergent Pattern: {most_divergent_dimension?.name}</div>
+                        <div style={{ fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase', color: '#f43f5e', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>Divergent Pattern: {most_divergent_dimension?.name}</div>
                         <div style={{ fontSize: '0.95rem', color: '#334155', lineHeight: '1.5' }}>
                           {getBehavioralText(most_divergent_dimension?.id, 'divergent')}
                         </div>
@@ -833,7 +852,7 @@ const Part1Report = () => {
 
         .report-title-block { margin-bottom: 4rem; }
         .report-main-title { font-size: 48px !important; font-weight: 950; margin-bottom: 0.75rem !important; margin-top: 0 !important; border: none !important; padding: 0 !important; }
-        .report-subtitle-intelligence { font-size: 22px !important; font-weight: 800 !important; color: #065f46 !important; text-transform: none !important; letter-spacing: 0 !important; margin-bottom: 1rem !important; border: none !important; padding: 0 !important; }
+        .report-subtitle-intelligence { font-size: 22px !important; font-weight: 800 !important; color: #14b8a6 !important; text-transform: none !important; letter-spacing: 0 !important; margin-bottom: 1rem !important; border: none !important; padding: 0 !important; }
         .report-description-institutional { font-size: 16px; color: #475569; max-width: 700px; line-height: 1.5; margin-bottom: 1.5rem; }
         .confidential-seal { font-size: 11px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; display: inline-block; padding: 4px 0; border-top: 1px solid #f1f5f9; }
 
@@ -864,7 +883,7 @@ const Part1Report = () => {
         .radar-legend-brief { display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; }
         .legend-item { display: flex; align-items: center; gap: 0.75rem; font-size: 13px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 1px; }
         .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
-        .dot.perception { background: #065f46; }
+        .dot.perception { background: #14b8a6; }
         .dot.team { border: 2px dashed #0f172a; background: rgba(15, 23, 42, 0.1); }
 
         .radar-insight-text { font-size: 1rem; color: #475569; font-weight: 500; margin-bottom: 2.5rem; max-width: 600px; }
@@ -884,9 +903,9 @@ const Part1Report = () => {
         .d-bar-fill { height: 100%; border-radius: 3px; }
 
         /* Score States */
-        .score-high { color: #065f46 !important; } .d-bar-fill.score-high { background: #065f46 !important; }
-        .score-medium { color: #b45309 !important; } .d-bar-fill.score-medium { background: #b45309 !important; }
-        .score-low { color: #9f1239 !important; } .d-bar-fill.score-low { background: #9f1239 !important; }
+        .score-high { color: #14b8a6 !important; } .d-bar-fill.score-high { background: #14b8a6 !important; }
+        .score-medium { color: #f2a93b !important; } .d-bar-fill.score-medium { background: #f2a93b !important; }
+        .score-low { color: #f43f5e !important; } .d-bar-fill.score-low { background: #f43f5e !important; }
 
         /* Dimension Insight Grid Update */
         .document-insight-grid { display: flex; flex-direction: column; gap: 3rem; }
@@ -915,10 +934,10 @@ const Part1Report = () => {
         /* Pass 1 Logic & Layout Updates */
         .radar-layout-grid-refined { display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: center; }
         .team-invitation-block { background: #0f172a; color: white; padding: 2rem; border-radius: 20px; margin-bottom: 2.5rem; }
-        .team-invitation-block h4 { color: #0ea5e9; margin: 0 0 0.5rem; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .team-invitation-block h4 { color: #14b8a6; margin: 0 0 0.5rem; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
         .team-invitation-block p { font-size: 0.9rem; color: #94a3b8; line-height: 1.5; margin-bottom: 1.5rem; }
         .invite-actions-brief { display: flex; flex-direction: column; gap: 1rem; }
-        .btn-invite { background: #0ea5e9; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 14px; }
+        .btn-invite { background: #14b8a6; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 14px; }
         .team-code-display { display: flex; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
         .team-code-display .code-label { color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .team-code-display .code-value { color: white; font-family: monospace; font-weight: 800; }
@@ -945,8 +964,8 @@ const Part1Report = () => {
         .team-stats-row-brief { display: flex; gap: 3rem; margin-bottom: 1.5rem; }
         .ts-label { display: block; font-size: 11px; font-weight: 900; text-transform: uppercase; color: #94a3b8; }
         .ts-val { font-size: 2rem; font-weight: 950; color: #0f172a; }
-        .ts-val.high-delta { color: #9f1239; }
-        .team-interpretation-box { background: #f8fafc; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #065f46; color: #475569; line-height: 1.6; }
+        .ts-val.high-delta { color: #f43f5e; }
+        .team-interpretation-box { background: #f8fafc; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #14b8a6; color: #475569; line-height: 1.6; }
         
         /* Alignment Status Refined */
         .perception-layout-grid-narrative { display: grid; grid-template-columns: 2fr 1fr; gap: 4rem; align-items: start; }
