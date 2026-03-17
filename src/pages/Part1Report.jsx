@@ -756,64 +756,167 @@ const Part1Report = () => {
           </section>
         )}
 
-        {/* 8. RESEARCH INTERPRETATION (Flywheel Context) */}
-        <section className="report-section research-insight-brief page-section">
-           <div className="insight-box-m-document">
-              <h3>Research Insight</h3>
-              <p>Most leadership teams believe they adapt quickly. <strong>Behavioral observation often shows the opposite.</strong></p>
-              <div className="insight-brief-body">
-                 Signals are often recognized early, but behavioral observation consistently reveals that decisions and resources take significantly longer to realign in dynamic conditions.
+        {/* 8 + 9. RESEARCH SIGNAL + NEXT STEP — Unified Storytelling CTA */}
+        <section className="report-section page-section no-print" style={{ marginBottom: '3rem' }}>
+          <div style={{
+            background: '#0f172a',
+            borderRadius: '20px',
+            padding: '3.5rem 4rem',
+            color: 'white'
+          }}>
+
+            {/* ── PART 1: Insight → Risk ── */}
+            <div style={{ marginBottom: '2.5rem' }}>
+              <div style={{
+                fontSize: '0.7rem', fontWeight: '900', textTransform: 'uppercase',
+                letterSpacing: '2.5px', color: '#14b8a6', marginBottom: '1.25rem'
+              }}>
+                🧠 Research Signal
               </div>
-           </div>
+
+              <p style={{ fontSize: '1.35rem', fontWeight: '800', color: 'white', lineHeight: '1.4', marginBottom: '1rem', margin: '0 0 1rem' }}>
+                Most leadership teams believe they adapt quickly.<br />
+                <span style={{ color: '#94a3b8' }}>Behavioral observation shows they don't.</span>
+              </p>
+
+              <p style={{ fontSize: '1rem', color: '#94a3b8', lineHeight: '1.7', maxWidth: '640px', margin: '0 0 1.5rem' }}>
+                When decisions and resources don't realign at the speed of change, strategy begins to drift — often before leaders notice.
+              </p>
+
+              <div style={{
+                borderLeft: '3px solid #475569',
+                paddingLeft: '1.25rem',
+                color: '#64748b',
+                fontSize: '0.95rem',
+                fontStyle: 'italic',
+                lineHeight: '1.6'
+              }}>
+                "Signals move faster than decisions and resources realign."
+              </div>
+            </div>
+
+            {/* ── DIVIDER ── */}
+            <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', margin: '0 0 2.5rem' }} />
+
+            {/* ── PART 2: Doubt → Decision ── */}
+            <div style={{ marginBottom: '2.5rem' }}>
+              <div style={{
+                fontSize: '0.7rem', fontWeight: '900', textTransform: 'uppercase',
+                letterSpacing: '2.5px', color: '#94a3b8', marginBottom: '1.25rem'
+              }}>
+                You've seen how your system is perceived
+              </div>
+
+              <p style={{ fontSize: '1.25rem', fontWeight: '700', color: 'white', lineHeight: '1.5', margin: '0', maxWidth: '560px' }}>
+                The question is —<br />
+                <span style={{ color: '#e2e8f0' }}>does it behave the same way under pressure?</span>
+              </p>
+            </div>
+
+            {/* ── CTAS ── */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '440px' }}>
+
+              {/* Primary CTA */}
+              <Link
+                to="/how-measured"
+                style={{
+                  display: 'block', textAlign: 'center',
+                  background: '#14b8a6', color: 'white',
+                  padding: '1rem 2rem', borderRadius: '10px',
+                  fontWeight: '800', fontSize: '0.95rem',
+                  textDecoration: 'none', transition: 'opacity 0.2s',
+                  letterSpacing: '0.01em'
+                }}
+              >
+                Run Behavioral Diagnostic
+              </Link>
+              <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '-0.5rem', paddingLeft: '0.25rem' }}>
+                See how your leadership team actually makes decisions under pressure.
+              </div>
+
+              {/* Secondary CTA */}
+              {data?.team_code && (
+                <button
+                  onClick={() => {
+                    const url = `${window.location.origin}/diagnostic?team=${data.team_code}`;
+                    navigator.clipboard.writeText(url);
+                    setCopied('cta_invite');
+                    setTimeout(() => setCopied(null), 2000);
+                  }}
+                  style={{
+                    display: 'block', width: '100%', textAlign: 'center',
+                    background: 'transparent', color: '#e2e8f0',
+                    border: '1.5px solid rgba(255,255,255,0.2)',
+                    padding: '0.875rem 2rem', borderRadius: '10px',
+                    fontWeight: '700', fontSize: '0.95rem',
+                    cursor: 'pointer', transition: 'border-color 0.2s',
+                    letterSpacing: '0.01em'
+                  }}
+                >
+                  {copied === 'cta_invite' ? '✓ Link Copied' : 'Invite Your Leadership Team'}
+                </button>
+              )}
+              {data?.team_code && (
+                <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '-0.5rem', paddingLeft: '0.25rem' }}>
+                  Map where perception aligns — and where it breaks.
+                </div>
+              )}
+            </div>
+
+          </div>
+
+          {/* ── UTILITY ROW (outside card) ── */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            gap: '2rem', marginTop: '1.5rem'
+          }}>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                setCopied('report_footer');
+                setTimeout(() => setCopied(null), 2000);
+              }}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontSize: '0.8rem', fontWeight: '700', color: '#94a3b8',
+                textTransform: 'uppercase', letterSpacing: '1px',
+                display: 'flex', alignItems: 'center', gap: '0.4rem',
+                padding: '0', transition: 'color 0.2s'
+              }}
+            >
+              <FileText size={14} />
+              {copied === 'report_footer' ? 'Link Copied' : 'Share Report'}
+            </button>
+
+            <span style={{ color: '#e2e8f0', fontSize: '0.8rem' }}>•</span>
+
+            <button
+              onClick={() => window.print()}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontSize: '0.8rem', fontWeight: '700', color: '#94a3b8',
+                textTransform: 'uppercase', letterSpacing: '1px',
+                display: 'flex', alignItems: 'center', gap: '0.4rem',
+                padding: '0', transition: 'color 0.2s'
+              }}
+            >
+              <Printer size={14} />
+              Download Full Report
+            </button>
+          </div>
         </section>
 
-        {/* 9. RECOMMENDED NEXT MEASUREMENT STEP (Perception to Behavior) */}
-        <section className="report-section next-stage-polish page-section">
-            <div className="next-stage-brief">
-               <div className="n-tag no-print">Decision Moment</div>
-               <h3>Next Measurement Stage</h3>
-               
-               {/* Screen CTA */}
-               <div className="screen-cta-only no-print">
-                 <p className="brief-desc">
-                    This report measures <strong>how the leadership team perceives its adaptiveness</strong>. The next phase moves from perception to behavioral observation, measuring how decisions actually unfold under pressure.
-                 </p>
-                 <div className="sim-focus-grid-document">
-                    <div className="f-item"><div className="f-dot" /> Signal recognition speed</div>
-                    <div className="f-item"><div className="f-dot" /> Decision convergence</div>
-                    <div className="f-item"><div className="f-dot" /> Resource reallocation velocity</div>
-                    <div className="f-item"><div className="f-dot" /> Coordinated system output</div>
-                 </div>
-                 <div className="stage-actions">
-                    <Link to="/how-measured" className="btn-institutional primary">Begin Behavioral Observation</Link>
-                    <button 
-                      className="btn-institutional outline premium-share-btn no-print"
-                      onClick={() => {
-                        navigator.clipboard.writeText(window.location.href);
-                        setCopied('report_footer');
-                        setTimeout(() => setCopied(null), 2000);
-                      }}
-                    >
-                      {copied === 'report_footer' ? <><CheckCircle size={16} /> URL Copied</> : <><LinkIcon size={16} /> Copy Report Link</>}
-                    </button>
-                    <button className="btn-institutional outline" onClick={() => window.print()}>Download Perception Brief</button>
-                 </div>
-               </div>
-
-               {/* Print Institutional Block */}
-               <div className="print-institutional-cta-block" style={{ display: 'none' }}>
-                 <p style={{ fontSize: '1.1rem', color: '#475569', lineHeight: '1.6', margin: '2rem 0' }}>
-                   <strong>Recommended Next Measurement Step:</strong><br />
-                   Behavioral Observation provides the next layer of insight by examining how leadership decisions unfold under pressure.
-                 </p>
-                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', textAlign: 'left', background: '#f8fafc', padding: '1.5rem', borderRadius: '12px' }}>
-                    <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#475569' }}>• Signal recognition speed</div>
-                    <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#475569' }}>• Decision convergence velocity</div>
-                    <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#475569' }}>• Resource reallocation mobility</div>
-                    <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#475569' }}>• Coordinated systemic transition</div>
-                 </div>
-               </div>
-            </div>
+        {/* Print version of the final section */}
+        <section className="report-section page-section print-linear-only" style={{ display: 'none' }}>
+          <div style={{ borderTop: '2px solid #0f172a', paddingTop: '2rem', marginTop: '2rem' }}>
+            <div className="print-subheading-label">Recommended Next Step</div>
+            <p style={{ fontSize: '1.1rem', color: '#0f172a', fontWeight: '700', lineHeight: '1.6', marginBottom: '1rem' }}>
+              This report captures perception. The next phase maps behavioral reality.
+            </p>
+            <p style={{ fontSize: '0.95rem', color: '#475569', lineHeight: '1.6' }}>
+              Behavioral Observation measures how leadership decisions actually unfold under pressure — signal recognition speed, decision convergence, and resource reallocation velocity.
+            </p>
+          </div>
         </section>
 
         <footer className="footer-document no-print">
