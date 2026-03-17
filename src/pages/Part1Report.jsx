@@ -587,8 +587,8 @@ const Part1Report = () => {
               </div>
             </div>
             
-            <div className="perception-layout-grid-narrative">
-               <div className="perception-analysis-col">
+            <div className="perception-layout-grid-narrative" style={{ display: 'flex', gap: '3rem', alignItems: 'stretch' }}>
+               <div className="perception-analysis-col" style={{ flex: '1 1 60%', display: 'flex', flexDirection: 'column' }}>
                   <h3 className="alignment-status-label">
                     {teamData?.variance && Object.values(teamData.variance).some(v => (v?.diff > 25) || (typeof v === 'string' && v?.toLowerCase()?.includes('high'))) 
                       ? "Fragmented Perception" 
@@ -605,13 +605,13 @@ const Part1Report = () => {
                     }
                   </p>
                   
-                   <div className="shared-divergent-callouts" style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
-                      <div className="callout-box" style={{ padding: '1.25rem', background: '#f0fdf4', border: '1px solid #bcf0da', borderRadius: '12px' }}>
+                   <div className="shared-divergent-callouts" style={{ marginTop: 'auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                      <div className="callout-box" style={{ padding: '1.25rem', background: '#f0fdf4', border: '1px solid #bcf0da', borderRadius: '12px', display: 'flex', flexDirection: 'column' }}>
                          <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#166534', fontWeight: '800', letterSpacing: '0.5px' }}>Most Shared Dimension</span>
                          <h4 style={{ margin: '0.5rem 0', fontSize: '1.1rem', color: '#166534' }}>{most_aligned_dimension?.name || 'Cognitive Framing'}</h4>
                          <p style={{ fontSize: '0.85rem', color: '#14532d', margin: 0, lineHeight: '1.4' }}>This dimension represents the highest level of perceptual agreement and shared reality within the leadership team.</p>
                       </div>
-                      <div className="callout-box" style={{ padding: '1.25rem', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '12px' }}>
+                      <div className="callout-box" style={{ padding: '1.25rem', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '12px', display: 'flex', flexDirection: 'column' }}>
                          <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#9f1239', fontWeight: '800', letterSpacing: '0.5px' }}>Most Divergent Dimension</span>
                          <h4 style={{ margin: '0.5rem 0', fontSize: '1.1rem', color: '#9f1239' }}>{most_divergent_dimension?.name || 'Decision Alignment'}</h4>
                          <p style={{ fontSize: '0.85rem', color: '#881337', margin: 0, lineHeight: '1.4' }}>This dimension reveals the greatest variance in how adaptiveness is currently being experienced across the system.</p>
@@ -619,7 +619,7 @@ const Part1Report = () => {
                    </div>
                </div>
                
-               <div className="perception-stats-summary-col">
+               <div className="perception-stats-summary-col" style={{ flex: '1 1 40%', display: 'flex', flexDirection: 'column' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
                     <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
                        <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', fontWeight: '800', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>Team Avg</div>
