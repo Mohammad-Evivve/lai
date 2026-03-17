@@ -280,7 +280,7 @@ const Part1Report = () => {
   let riskSignal = null;
   const hasLowScore = Object.values(scores).some(s => s !== undefined && s !== null && s <= 40);
   const frictionPattern = scores.decision_alignment <= 45 && scores.integrated_responsiveness <= 45;
-  const lowVarAlignmentThreshold = showVarianceAnalysis && teamData?.variance && Object.values(teamData.variance).some(v => v?.toLowerCase()?.includes('high'));
+  const lowVarAlignmentThreshold = showVarianceAnalysis && teamData?.variance && Object.values(teamData.variance).some(v => (v?.diff > 25) || (typeof v === 'string' && v?.toLowerCase()?.includes('high')));
 
   if (hasLowScore || lowVarAlignmentThreshold || frictionPattern) {
     if (scores.signal_detection <= 40) riskSignal = "Signal Recognition Risk";
@@ -619,7 +619,7 @@ const Part1Report = () => {
                   <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.5rem', marginTop: 'auto' }}>
                     <div style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.5px', marginBottom: '0.75rem' }}>What this suggests</div>
                     <p style={{ fontSize: '0.9rem', color: '#334155', margin: 0, lineHeight: '1.5' }}>
-                      {teamData?.variance && Object.values(teamData.variance).some(v => (v?.diff > 2) || (typeof v === 'string' && v.toLowerCase().includes('moderate')))
+                      {teamData?.variance && Object.values(teamData.variance).some(v => (v?.diff > 10) || (typeof v === 'string' && v.toLowerCase().includes('moderate')))
                         ? "Your leadership team appears aligned in how it sees change — but not necessarily in how it responds to it. This gap often creates systematic execution friction."
                         : "Your leadership team reports high interpretive alignment. The critical next step is verifying if this perception holds true under actual operational pressure."}
                     </p>
