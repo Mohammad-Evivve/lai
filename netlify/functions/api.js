@@ -265,23 +265,16 @@ app.get('/api/diagnostic/:id', async (req, res) => {
         // 3. Calculate Variance if 3+ members
         let variance = null;
         if (count >= 3) {
-          const { data: rawResponses } = await supabaseClient
-            .from('responses')
-            .select('dimension_id, score')
-            .eq('team_id', individual.team_id);
-          
-          if (rawResponses) {
-            variance = {};
-            const dims = ['signal_detection', 'cognitive_framing', 'decision_alignment', 'resource_calibration', 'integrated_responsiveness'];
-            dims.forEach(dim => {
-              const scores = rawResponses.filter(r => r.dimension_id === dim).map(r => r.score);
-              if (scores.length > 0) {
-                const diff = Math.max(...scores) - Math.min(...scores);
-                const label = diff <= 2 ? 'Low alignment variance' : diff <= 5 ? 'Moderate alignment variance' : 'High alignment variance';
-                variance[dim] = { label, diff };
-              }
-            });
-          }
+          variance = {};
+          const dims = ['signal_detection', 'cognitive_framing', 'decision_alignment', 'resource_calibration', 'integrated_responsiveness'];
+          dims.forEach(dim => {
+            const scores = teamMembers.map(m => Number(m[`${dim}_score`] || 0));
+            if (scores.length > 0) {
+              const diff = Math.max(...scores) - Math.min(...scores);
+              const label = diff <= 10 ? 'Low alignment variance' : diff <= 25 ? 'Moderate alignment variance' : 'High alignment variance';
+              variance[dim] = { label, diff };
+            }
+          });
         }
 
         teamData = { count, averages, variance };
