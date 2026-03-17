@@ -153,8 +153,8 @@ const RadarChart = ({ scores, teamScores }) => {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           points={pointsString}
-          fill="rgba(20, 184, 166, 0.2)"
-          stroke="#14b8a6"
+          fill="rgba(100, 116, 139, 0.15)"
+          stroke="#475569"
           strokeWidth="3"
         />
         {dimensions.map((d, i) => {
@@ -237,15 +237,25 @@ const Part1Report = () => {
   }, [id]);
 
   useEffect(() => {
-    // Ensure the page always loads at the very top
+    // Ensure the page always loads at the very top and stays there during hydration
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
     window.scrollTo(0, 0);
-  }, []);
+    
+    if (data) {
+      const timer = setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [data]);
 
   if (loading) return <div className="report-loading">Synthesizing Institutional Profile...</div>;
   if (!data) return (
     <div className="report-error-container">
       <div className="error-card">
-        <Activity size={48} className="text-rose mb-4" />
+        <Activity size={48} color="#64748b" className="mb-4" />
         <h2>Institutional Profile Not Found</h2>
         <p>We were unable to locate this specific perception profile.</p>
         <div className="error-actions">
@@ -389,11 +399,11 @@ const Part1Report = () => {
         {riskSignal && (
           <section className="report-section risk-signal-section page-section">
             <div className="risk-banner-inner">
-               <AlertCircle size={40} className="text-rose" />
+               <AlertCircle size={40} color="#475569" />
                <div style={{ flex: 1 }}>
                   <h3 className="risk-tag">Institutional Alert</h3>
                   <div className="risk-title">{riskSignal}</div>
-                  <div className="risk-content-expanded" style={{ marginTop: '1.5rem', borderTop: '1px solid rgba(244, 63, 94, 0.2)', paddingTop: '1.5rem' }}>
+                  <div className="risk-content-expanded" style={{ marginTop: '1.5rem', borderTop: '1px solid rgba(100, 116, 139, 0.2)', paddingTop: '1.5rem' }}>
                     <p className="risk-desc" style={{ fontSize: '1.1rem', fontWeight: '700', color: '#0f172a', marginBottom: '1rem' }}>
                       Why this matters operationally:
                     </p>
@@ -405,9 +415,9 @@ const Part1Report = () => {
                       {(!riskSignal || !["Decision Friction Risk", "Signal Recognition Risk", "Resource Reallocation Risk", "Leadership Alignment Risk"].includes(riskSignal)) && "A pattern in perception suggests a structural friction point that may impede systemic adaptiveness during periods of rapid environmental shift."}
                     </p>
                     <ul style={{ listStyle: 'none', padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                      <li style={{ fontSize: '0.85rem', color: '#9f1239', fontWeight: '700', padding: '0.5rem', background: 'rgba(244, 63, 94, 0.05)', borderRadius: '6px' }}>• Delayed Strategic Response</li>
-                      <li style={{ fontSize: '0.85rem', color: '#9f1239', fontWeight: '700', padding: '0.5rem', background: 'rgba(244, 63, 94, 0.05)', borderRadius: '6px' }}>• Persistence in Outdated Assumptions</li>
-                      <li style={{ fontSize: '0.85rem', color: '#9f1239', fontWeight: '700', padding: '0.5rem', background: 'rgba(244, 63, 94, 0.05)', borderRadius: '6px' }}>• Fragmented Regional Execution</li>
+                      <li style={{ fontSize: '0.85rem', color: '#475569', fontWeight: '700', padding: '0.5rem', background: 'rgba(100, 116, 139, 0.05)', borderRadius: '6px' }}>• Delayed Strategic Response</li>
+                      <li style={{ fontSize: '0.85rem', color: '#475569', fontWeight: '700', padding: '0.5rem', background: 'rgba(100, 116, 139, 0.05)', borderRadius: '6px' }}>• Persistence in Outdated Assumptions</li>
+                      <li style={{ fontSize: '0.85rem', color: '#475569', fontWeight: '700', padding: '0.5rem', background: 'rgba(100, 116, 139, 0.05)', borderRadius: '6px' }}>• Fragmented Regional Execution</li>
                     </ul>
                   </div>
                </div>
@@ -456,8 +466,8 @@ const Part1Report = () => {
                  <div className="radar-comparison-callout" style={{ padding: '1.5rem', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '2rem' }}>
                     <h4 style={{ color: '#64748b', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem' }}>Perception Gap Insight</h4>
                     <p style={{ fontSize: '0.95rem', color: '#0f172a', lineHeight: '1.4', margin: 0 }}>
-                      You rated <strong>Decision Alignment</strong> at <strong style={{ color: '#f43f5e' }}>{scores.decision_alignment}</strong>. 
-                      The leadership team average is <strong style={{ color: '#14b8a6' }}>{Math.round(teamData?.averages?.decision_alignment || 0)}</strong>.
+                      You rated <strong>Decision Alignment</strong> at <strong style={{ color: '#475569' }}>{scores.decision_alignment}</strong>. 
+                      The leadership team average is <strong style={{ color: '#64748b' }}>{Math.round(teamData?.averages?.decision_alignment || 0)}</strong>.
                     </p>
                     <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.5rem' }}>
                       This variance suggests you may be experiencing decision latency that is not yet visible to the broader team.
@@ -585,10 +595,10 @@ const Part1Report = () => {
         {showTeamView && (
           <section className="report-section team-alignment-section page-section">
             <div className="section-header-row-brief" style={{ alignItems: 'flex-start', marginBottom: '2rem' }}>
-              <div style={{ marginTop: '0.25rem' }}><Users size={20} /></div>
+              <div style={{ marginTop: '0.25rem' }}><Users size={20} color="#475569" /></div>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <h2 style={{ marginBottom: '0.25rem' }}>Leadership Alignment Status (Perceived)</h2>
-                <div style={{ fontSize: '0.95rem', color: '#166534', fontWeight: '600' }}>How consistently your leadership team believes it interprets and responds to change.</div>
+                <div style={{ fontSize: '0.95rem', color: '#475569', fontWeight: '600' }}>How consistently your leadership team believes it interprets and responds to change.</div>
               </div>
             </div>
             
@@ -611,15 +621,15 @@ const Part1Report = () => {
                   </p>
                   
                    <div className="shared-divergent-callouts" style={{ marginTop: 'auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
-                      <div className="callout-box" style={{ padding: '1.25rem', background: '#f0fdf4', border: '1px solid #bcf0da', borderRadius: '12px', display: 'flex', flexDirection: 'column' }}>
-                         <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#166534', fontWeight: '800', letterSpacing: '0.5px' }}>Most Shared Dimension</span>
-                         <h4 style={{ margin: '0.5rem 0', fontSize: '1.1rem', color: '#166534' }}>{most_aligned_dimension?.name || 'Cognitive Framing'}</h4>
-                         <p style={{ fontSize: '0.85rem', color: '#14532d', margin: 0, lineHeight: '1.4' }}>This dimension represents the highest level of perceptual agreement and shared reality within the leadership team.</p>
+                      <div className="callout-box" style={{ padding: '1.25rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', display: 'flex', flexDirection: 'column' }}>
+                         <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', fontWeight: '800', letterSpacing: '0.5px' }}>Most Shared Dimension</span>
+                         <h4 style={{ margin: '0.5rem 0', fontSize: '1.1rem', color: '#0f172a' }}>{most_aligned_dimension?.name || 'Cognitive Framing'}</h4>
+                         <p style={{ fontSize: '0.85rem', color: '#475569', margin: 0, lineHeight: '1.4' }}>This dimension represents the highest level of perceptual agreement and shared reality within the leadership team.</p>
                       </div>
-                      <div className="callout-box" style={{ padding: '1.25rem', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '12px', display: 'flex', flexDirection: 'column' }}>
-                         <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#9f1239', fontWeight: '800', letterSpacing: '0.5px' }}>Most Divergent Dimension</span>
-                         <h4 style={{ margin: '0.5rem 0', fontSize: '1.1rem', color: '#9f1239' }}>{most_divergent_dimension?.name || 'Decision Alignment'}</h4>
-                         <p style={{ fontSize: '0.85rem', color: '#881337', margin: 0, lineHeight: '1.4' }}>This dimension reveals the greatest variance in how adaptiveness is currently being experienced across the system.</p>
+                      <div className="callout-box" style={{ padding: '1.25rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', display: 'flex', flexDirection: 'column' }}>
+                         <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', fontWeight: '800', letterSpacing: '0.5px' }}>Most Divergent Dimension</span>
+                         <h4 style={{ margin: '0.5rem 0', fontSize: '1.1rem', color: '#0f172a' }}>{most_divergent_dimension?.name || 'Decision Alignment'}</h4>
+                         <p style={{ fontSize: '0.85rem', color: '#475569', margin: 0, lineHeight: '1.4' }}>This dimension reveals the greatest variance in how adaptiveness is currently being experienced across the system.</p>
                       </div>
                    </div>
                </div>
@@ -635,13 +645,12 @@ const Part1Report = () => {
                        <div style={{ fontSize: '2rem', fontWeight: '900', color: '#0f172a', lineHeight: '1' }}>{teamMemberCount}</div>
                     </div>
                   </div>
-                  
-                  <div style={{ background: 'linear-gradient(to bottom right, #f8fafc, #f1f5f9)', border: '1px solid #e2e8f0', borderLeft: '4px solid #3b82f6', borderRadius: '12px', padding: '1.5rem', marginTop: 'auto', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderLeft: '4px solid #94a3b8', borderRadius: '12px', padding: '1.5rem', marginTop: 'auto', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-                      <Lightbulb size={18} color="#2563eb" strokeWidth={2.5} />
-                      <div style={{ fontSize: '0.8rem', fontWeight: '800', textTransform: 'uppercase', color: '#2563eb', letterSpacing: '0.5px' }}>What this suggests</div>
+                      <Lightbulb size={18} color="#64748b" strokeWidth={2.5} />
+                      <div style={{ fontSize: '0.8rem', fontWeight: '800', textTransform: 'uppercase', color: '#475569', letterSpacing: '0.5px' }}>What this suggests</div>
                     </div>
-                    <p style={{ fontSize: '0.95rem', color: '#334155', margin: 0, lineHeight: '1.6', fontWeight: '500' }}>
+                    <p style={{ fontSize: '0.95rem', color: '#1e293b', margin: 0, lineHeight: '1.6', fontWeight: '500' }}>
                       {teamData?.variance && Object.values(teamData.variance).some(v => (v?.diff > 10) || (typeof v === 'string' && v.toLowerCase().includes('moderate')))
                         ? "Your leadership team appears aligned in how it sees change — but not necessarily in how it responds to it. This gap often creates systematic execution friction."
                         : "Your leadership team reports high interpretive alignment. The critical next step is verifying if this perception holds true under actual operational pressure."}
@@ -654,18 +663,18 @@ const Part1Report = () => {
                <h3 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', marginBottom: '1.5rem' }}>What this likely looks like inside your team</h3>
                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '1rem' }}>
                   <div style={{ display: 'flex', gap: '1.5rem', background: '#f8fafc', padding: '1.5rem', borderRadius: '12px', alignItems: 'flex-start' }}>
-                     <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '50%', background: '#dcfce7', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>+</div>
+                     <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '50%', background: '#f1f5f9', color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', border: '1px solid #e2e8f0' }}>+</div>
                      <div>
-                        <div style={{ fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase', color: '#16a34a', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>Shared Pattern: {most_aligned_dimension?.name}</div>
+                        <div style={{ fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase', color: '#475569', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>Shared Pattern: {most_aligned_dimension?.name}</div>
                         <div style={{ fontSize: '0.95rem', color: '#334155', lineHeight: '1.5' }}>
                           {getBehavioralText(most_aligned_dimension?.id, 'shared')}
                         </div>
                      </div>
                   </div>
                   <div style={{ display: 'flex', gap: '1.5rem', background: '#f8fafc', padding: '1.5rem', borderRadius: '12px', alignItems: 'flex-start' }}>
-                     <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '50%', background: '#fee2e2', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>−</div>
+                     <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '50%', background: '#f1f5f9', color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', border: '1px solid #e2e8f0' }}>−</div>
                      <div>
-                        <div style={{ fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase', color: '#dc2626', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>Divergent Pattern: {most_divergent_dimension?.name}</div>
+                        <div style={{ fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase', color: '#475569', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>Divergent Pattern: {most_divergent_dimension?.name}</div>
                         <div style={{ fontSize: '0.95rem', color: '#334155', lineHeight: '1.5' }}>
                           {getBehavioralText(most_divergent_dimension?.id, 'divergent')}
                         </div>
@@ -677,17 +686,17 @@ const Part1Report = () => {
             <div style={{ marginTop: '4rem', background: '#0f172a', borderRadius: '16px', padding: '3rem' }}>
                <h3 style={{ color: 'white', fontSize: '1.75rem', fontWeight: '800', marginBottom: '2rem', textAlign: 'center' }}>Your system is telling two different stories</h3>
                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px', borderLeft: '4px solid #14b8a6' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px', borderLeft: '4px solid #64748b' }}>
                      <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: '700', letterSpacing: '1px', marginBottom: '0.5rem' }}>You believe</div>
                      <div style={{ color: 'white', fontSize: '1.1rem', fontWeight: '600', lineHeight: '1.4' }}>Your team sees change the exact same way.</div>
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px', borderLeft: '4px solid #f43f5e' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px', borderLeft: '4px solid #64748b' }}>
                      <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: '700', letterSpacing: '1px', marginBottom: '0.5rem' }}>At the same time</div>
                      <div style={{ color: 'white', fontSize: '1.1rem', fontWeight: '600', lineHeight: '1.4' }}>Your team does not align on what to do about it.</div>
                   </div>
                </div>
                <div style={{ textAlign: 'center', marginTop: '2.5rem', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                 <div style={{ color: '#38bdf8', fontSize: '1.25rem', fontWeight: '700' }}>Alignment in awareness is not producing alignment in action.</div>
+                 <div style={{ color: '#94a3b8', fontSize: '1.25rem', fontWeight: '700' }}>Alignment in awareness is not producing alignment in action.</div>
                </div>
             </div>
           </section>
@@ -697,7 +706,7 @@ const Part1Report = () => {
         {teamMemberCount < 3 && data?.team_code && (
           <section className="report-section invite-team-brief page-section no-print">
             <div className="invite-box-institutional" style={{ background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '24px', padding: '3rem', textAlign: 'center' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '64px', height: '64px', borderRadius: '16px', background: '#f1f5f9', color: '#14b8a6', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '64px', height: '64px', borderRadius: '16px', background: '#f1f5f9', color: '#475569', marginBottom: '1.5rem' }}>
                 <Users size={32} />
               </div>
               <h3 style={{ fontSize: '1.5rem', fontWeight: '950', color: '#0f172a', marginBottom: '0.75rem', letterSpacing: '-0.02em' }}>Build Your Team Benchmark</h3>
@@ -719,7 +728,7 @@ const Part1Report = () => {
                   }}
                   style={{ background: '#0f172a', color: 'white', border: 'none', padding: '1rem 1.5rem', borderRadius: '12px', fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                 >
-                  {copied === 'team_invite' ? <><CheckCircle size={18} color="#14b8a6" /> Copied!</> : <><LinkIcon size={18} /> Copy Invite Link</>}
+                  {copied === 'team_invite' ? <><CheckCircle size={18} color="#94a3b8" /> Copied!</> : <><LinkIcon size={18} /> Copy Invite Link</>}
                 </button>
               </div>
               <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: '600' }}>Invite colleagues to complete their perception diagnostic.</div>
@@ -823,7 +832,7 @@ const Part1Report = () => {
 
         .report-title-block { margin-bottom: 4rem; }
         .report-main-title { font-size: 48px !important; font-weight: 950; margin-bottom: 0.75rem !important; margin-top: 0 !important; border: none !important; padding: 0 !important; }
-        .report-subtitle-intelligence { font-size: 22px !important; font-weight: 800 !important; color: #14b8a6 !important; text-transform: none !important; letter-spacing: 0 !important; margin-bottom: 1rem !important; border: none !important; padding: 0 !important; }
+        .report-subtitle-intelligence { font-size: 22px !important; font-weight: 800 !important; color: #475569 !important; text-transform: none !important; letter-spacing: 0 !important; margin-bottom: 1rem !important; border: none !important; padding: 0 !important; }
         .report-description-institutional { font-size: 16px; color: #475569; max-width: 700px; line-height: 1.5; margin-bottom: 1.5rem; }
         .confidential-seal { font-size: 11px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; display: inline-block; padding: 4px 0; border-top: 1px solid #f1f5f9; }
 
@@ -837,15 +846,15 @@ const Part1Report = () => {
         .summary-grid { display: grid; grid-template-columns: 1fr 280px; gap: 3rem; }
         .m-bullets { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
         .m-bullets li { font-size: 1rem; color: #475569; font-weight: 500; }
-        .primary-risk-card { background: white; border: 1px solid #fda4af; padding: 1.5rem; border-radius: 12px; }
-        .primary-risk-card h4 { color: #f43f5e; margin: 0 0 0.5rem; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        .primary-risk-card { background: white; border: 1px solid #cbd5e1; padding: 1.5rem; border-radius: 12px; }
+        .primary-risk-card h4 { color: #475569; margin: 0 0 0.5rem; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
 
         .high-insight { text-align: center; max-width: 800px; margin: 3rem auto; p { font-size: 24px; font-weight: 950; color: #0f172a; line-height: 1.25; } .sub-insight { font-size: 1.1rem; color: #64748b; margin-top: 1rem; } }
 
         /* Risk Banner */
-        .risk-signal-section { background: #fff1f2; border: 1px solid #fda4af; border-radius: 20px; padding: 2.5rem; }
+        .risk-signal-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 2.5rem; }
         .risk-banner-inner { display: flex; gap: 1.5rem; align-items: center; }
-        .risk-tag { margin: 0; color: #9f1239; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.25rem; border: none; }
+        .risk-tag { margin: 0; color: #64748b; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.25rem; border: none; }
         .risk-title { font-size: 1.75rem; font-weight: 950; color: #0f172a; letter-spacing: -0.02em; }
         .risk-desc { margin: 0.5rem 0 0; color: #475569; font-size: 0.95rem; }
 
@@ -854,7 +863,7 @@ const Part1Report = () => {
         .radar-legend-brief { display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; }
         .legend-item { display: flex; align-items: center; gap: 0.75rem; font-size: 13px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 1px; }
         .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
-        .dot.perception { background: #14b8a6; }
+        .dot.perception { background: #64748b; }
         .dot.team { border: 2px dashed #0f172a; background: rgba(15, 23, 42, 0.1); }
 
         .radar-insight-text { font-size: 1rem; color: #475569; font-weight: 500; margin-bottom: 2.5rem; max-width: 600px; }
@@ -864,7 +873,7 @@ const Part1Report = () => {
         .interpretation-scale-document h4 { margin: 0 0 1rem; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; }
         .scale-node { display: flex; justify-content: space-between; font-size: 11px; padding: 0.5rem 0; border-bottom: 1px solid #f1f5f9; }
         .s-range { font-weight: 800; color: #0f172a; }
-        .s-critical { border-left: 2px solid #f43f5e; padding-left: 0.5rem; }
+        .s-critical { border-left: 2px solid #94a3b8; padding-left: 0.5rem; }
 
         .document-dim-entry { margin-bottom: 1.5rem; }
         .d-meta { display: flex; justify-content: space-between; margin-bottom: 0.25rem; align-items: flex-end; }
@@ -874,9 +883,9 @@ const Part1Report = () => {
         .d-bar-fill { height: 100%; border-radius: 3px; }
 
         /* Score States */
-        .score-high { color: #1FA37A !important; } .d-bar-fill.score-high { background: #1FA37A !important; }
-        .score-medium { color: #F2A93B !important; } .d-bar-fill.score-medium { background: #F2A93B !important; }
-        .score-low { color: #D64545 !important; } .d-bar-fill.score-low { background: #D64545 !important; }
+        .score-high { color: #475569 !important; } .d-bar-fill.score-high { background: #475569 !important; }
+        .score-medium { color: #64748b !important; } .d-bar-fill.score-medium { background: #64748b !important; }
+        .score-low { color: #94a3b8 !important; } .d-bar-fill.score-low { background: #94a3b8 !important; }
 
         /* Dimension Insight Grid Update */
         .document-insight-grid { display: flex; flex-direction: column; gap: 3rem; }
@@ -887,7 +896,7 @@ const Part1Report = () => {
         .dim-narrative { margin-top: 1rem; color: #475569; line-height: 1.5; font-size: 15px; }
 
         .research-insight-brief { background: #0f172a; color: white; padding: 3rem 4rem; border-radius: 20px; max-width: 900px; margin: 0 auto 5rem; }
-        .insight-box-m-document h3 { color: #14b8a6; text-transform: uppercase; font-size: 11px; letter-spacing: 2px; margin-bottom: 1.5rem; border: none; }
+        .insight-box-m-document h3 { color: #94a3b8; text-transform: uppercase; font-size: 11px; letter-spacing: 2px; margin-bottom: 1.5rem; border: none; }
         .insight-box-m-document p { font-size: 22px; font-weight: 800; line-height: 1.3; }
         .insight-brief-body { margin-top: 1.5rem; color: #94a3b8; font-size: 16px; line-height: 1.6; max-width: 720px; margin-left: auto; margin-right: auto; }
 
@@ -905,10 +914,10 @@ const Part1Report = () => {
         /* Pass 1 Logic & Layout Updates */
         .radar-layout-grid-refined { display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: center; }
         .team-invitation-block { background: #0f172a; color: white; padding: 2rem; border-radius: 20px; margin-bottom: 2.5rem; }
-        .team-invitation-block h4 { color: #14b8a6; margin: 0 0 0.5rem; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .team-invitation-block h4 { color: #94a3b8; margin: 0 0 0.5rem; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
         .team-invitation-block p { font-size: 0.9rem; color: #94a3b8; line-height: 1.5; margin-bottom: 1.5rem; }
         .invite-actions-brief { display: flex; flex-direction: column; gap: 1rem; }
-        .btn-invite { background: #14b8a6; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 14px; }
+        .btn-invite { background: #475569; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 14px; }
         .team-code-display { display: flex; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
         .team-code-display .code-label { color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .team-code-display .code-value { color: white; font-family: monospace; font-weight: 800; }
@@ -935,8 +944,8 @@ const Part1Report = () => {
         .team-stats-row-brief { display: flex; gap: 3rem; margin-bottom: 1.5rem; }
         .ts-label { display: block; font-size: 11px; font-weight: 900; text-transform: uppercase; color: #94a3b8; }
         .ts-val { font-size: 2rem; font-weight: 950; color: #0f172a; }
-        .ts-val.high-delta { color: #f43f5e; }
-        .team-interpretation-box { background: #f8fafc; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #14b8a6; color: #475569; line-height: 1.6; }
+        .ts-val.high-delta { color: #64748b; }
+        .team-interpretation-box { background: #f8fafc; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #94a3b8; color: #475569; line-height: 1.6; }
         
         /* Alignment Status Refined */
         .perception-layout-grid-narrative { display: grid; grid-template-columns: 2fr 1fr; gap: 4rem; align-items: start; }
@@ -972,7 +981,7 @@ const Part1Report = () => {
           }
 
           .summary-box { background: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          .risk-signal-section { background: #fff1f2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .risk-signal-section { background: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .research-insight-brief { background: #0f172a !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .interpretation-scale-document, .sim-focus-grid-document { background: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .doc-stat-card { background: #0f172a !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
