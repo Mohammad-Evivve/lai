@@ -53,7 +53,7 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justify-content: 'center', background: '#f8fafc', padding: '2rem', fontFamily: 'sans-serif' }}>
+        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', padding: '2rem', fontFamily: 'sans-serif' }}>
           <div style={{ background: 'white', padding: '3rem', borderRadius: '1rem', boxShadow: '0 20px 50px rgba(0,0,0,0.1)', maxWidth: '500px', textAlign: 'center' }}>
             <h1 style={{ color: '#0f172a', marginBottom: '1rem' }}>Something went wrong</h1>
             <p style={{ color: '#64748b', marginBottom: '2rem' }}>The application encountered an unexpected error. Please refresh the page or contact support if the issue persists.</p>
