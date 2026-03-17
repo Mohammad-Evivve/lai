@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   FileText, ShieldCheck, Info, ArrowRight, 
   Activity, Users, Brain, Target, Compass,
-  AlertCircle, CheckCircle, Link as LinkIcon
+  AlertCircle, CheckCircle, Lightbulb, Link as LinkIcon
 } from 'lucide-react';
 import { supabase } from '../supabase';
 
@@ -620,18 +620,23 @@ const Part1Report = () => {
                </div>
                
                <div className="perception-stats-summary-col">
-                  <div className="doc-stat-card-lean" style={{ marginBottom: '1rem' }}>
-                     <div className="s-label">Team Avg</div>
-                     <div className="s-value">{team_average_score}</div>
-                  </div>
-                  <div className="doc-stat-card-lean" style={{ marginBottom: '2rem' }}>
-                     <div className="s-label">Participants</div>
-                     <div className="s-value">{teamMemberCount}</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+                    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
+                       <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', fontWeight: '800', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>Team Avg</div>
+                       <div style={{ fontSize: '2rem', fontWeight: '900', color: '#0f172a', lineHeight: '1' }}>{team_average_score}</div>
+                    </div>
+                    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
+                       <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', fontWeight: '800', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>Participants</div>
+                       <div style={{ fontSize: '2rem', fontWeight: '900', color: '#0f172a', lineHeight: '1' }}>{teamMemberCount}</div>
+                    </div>
                   </div>
                   
-                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.5rem', marginTop: 'auto' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.5px', marginBottom: '0.75rem' }}>What this suggests</div>
-                    <p style={{ fontSize: '0.9rem', color: '#334155', margin: 0, lineHeight: '1.5' }}>
+                  <div style={{ background: 'linear-gradient(to bottom right, #f8fafc, #f1f5f9)', border: '1px solid #e2e8f0', borderLeft: '4px solid #3b82f6', borderRadius: '12px', padding: '1.5rem', marginTop: 'auto', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                      <Lightbulb size={18} color="#2563eb" strokeWidth={2.5} />
+                      <div style={{ fontSize: '0.8rem', fontWeight: '800', textTransform: 'uppercase', color: '#2563eb', letterSpacing: '0.5px' }}>What this suggests</div>
+                    </div>
+                    <p style={{ fontSize: '0.95rem', color: '#334155', margin: 0, lineHeight: '1.6', fontWeight: '500' }}>
                       {teamData?.variance && Object.values(teamData.variance).some(v => (v?.diff > 10) || (typeof v === 'string' && v.toLowerCase().includes('moderate')))
                         ? "Your leadership team appears aligned in how it sees change — but not necessarily in how it responds to it. This gap often creates systematic execution friction."
                         : "Your leadership team reports high interpretive alignment. The critical next step is verifying if this perception holds true under actual operational pressure."}
