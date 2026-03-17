@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -16,6 +16,52 @@ const dimensions = [
   { id: 'integrated_responsiveness', name: 'Integrated Responsiveness', subtitle: 'How strategy becomes action', desc: 'Systemic translation of strategy into behavioral output.' }
 ];
 
+const summaries = {
+  A: {
+    headline: "Leaders believe change is recognized and understood, but decision convergence may lag behind awareness.",
+    bullets: [
+      "Awareness of emerging signals is notably high across the leadership system.",
+      "Change is interpreted strategically, but often lacks a unified tactical roadmap.",
+      "A visible gap exists between recognition of disruption and coordinated systemic action."
+    ],
+    risk: "Awareness without coordination creates 'strategic paralysis'—the organization sees the need to change but fails to move as a single unit."
+  },
+  B: {
+    headline: "The leadership system may not yet interpret emerging change with sufficient clarity or shared awareness.",
+    bullets: [
+      "Detection of weak signals appears inconsistent across varying organizational layers.",
+      "The system may be filter-heavy, potentially missing early geopolitical or market shifts.",
+      "Strategic response often becomes reactive and fragmented rather than intentional."
+    ],
+    risk: "Consistent recognition lag means the organization remains optimized for past conditions while new threats materialize unnoticed."
+  },
+  C: {
+    headline: "Leadership appears aligned on direction but may struggle with the velocity of resource reallocation.",
+    bullets: [
+      "Decision convergence is relatively high, indicating shared strategic intent.",
+      "There is strong agreement on the path forward among key decision-makers.",
+      "Capital and talent do not yet shift quickly enough to match the speed of decisions."
+    ],
+    risk: "Alignment without resource mobility creates 'strategy gridlock'—decisions are made but the organizational mass remains anchored to legacy priorities."
+  },
+  D: {
+    headline: "Perception across the five dimensions appears balanced without a dominant strength or constraint.",
+    bullets: [
+      "Confidence is evenly distributed across the adaptiveness framework.",
+      "No single dimension indicates critical systemic failure or exceptional capability.",
+      "The leadership system appears stable but potentially optimized for moderate environments."
+    ],
+    risk: "A balanced profile can mask underlying bottlenecks that only manifest under periods of extreme or non-linear systemic pressure."
+  }
+};
+
+const getScoreInterpretation = (score) => {
+  if (score >= 75) return "strong perceived capability";
+  if (score >= 60) return "moderate perceived capability";
+  if (score >= 40) return "mixed confidence";
+  return "potential structural friction";
+};
+
 const PrintFooter = ({ reportId }) => (
   <footer className="print-only-persistent-footer">
     <div className="pf-left">LEADERSHIP ADAPTIVENESS INSTITUTE</div>
@@ -27,9 +73,9 @@ const PrintFooter = ({ reportId }) => (
 );
 
 const RadarChart = ({ scores, teamScores }) => {
-  const size = 400; // Increased size to provide more room for labels
+  const size = 400;
   const center = size / 2;
-  const radius = size * 0.35; // Slightly reduced radius ratio for padding
+  const radius = size * 0.35;
   const angleStep = (Math.PI * 2) / 5;
   const gridLevels = [0.2, 0.4, 0.6, 0.8, 1.0];
   
@@ -50,7 +96,6 @@ const RadarChart = ({ scores, teamScores }) => {
   return (
     <div className="radar-container-brief">
       <svg width="100%" height="auto" viewBox={`0 0 ${size} ${size}`} preserveAspectRatio="xMidYMid meet">
-        {/* Grid levels */}
         {gridLevels.map((level, i) => (
           <polygon
             key={i}
@@ -63,14 +108,10 @@ const RadarChart = ({ scores, teamScores }) => {
             strokeWidth="1"
           />
         ))}
-        
-        {/* Axis lines */}
         {dimensions.map((_, i) => {
           const p = getPoint(100, i);
           return <line key={i} x1={center} y1={center} x2={p.x} y2={p.y} stroke="#f1f5f9" strokeWidth="1" />;
         })}
-
-        {/* Team Average Area */}
         {teamPointsString && (
           <motion.polygon
             initial={{ opacity: 0 }}
@@ -82,8 +123,6 @@ const RadarChart = ({ scores, teamScores }) => {
             strokeDasharray="4 2"
           />
         )}
-
-        {/* Individual Data Area */}
         <motion.polygon
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -92,10 +131,8 @@ const RadarChart = ({ scores, teamScores }) => {
           stroke="#14b8a6"
           strokeWidth="3"
         />
-
-        {/* Labels with improved positioning */}
         {dimensions.map((d, i) => {
-          const p = getPoint(105, i); // Bring labels in more to prevent cutting
+          const p = getPoint(105, i);
           return (
             <text
               key={i} x={p.x} y={p.y} fontSize="10" fontWeight="950" fill="#94a3b8"
@@ -125,67 +162,12 @@ const Part1Report = () => {
   const [loading, setLoading] = useState(true);
   const [teamData, setTeamData] = useState(null);
   const [activeTabs, setActiveTabs] = useState({});
-  const [copied, setCopied] = useState(null); // 'report' or 'team'
-  const reportIdDisplay = id.substring(0, 8).toUpperCase();
+  const [copied, setCopied] = useState(null);
 
-  useEffect(() => {
-    const fetchReport = async () => {
-      try {
-        const response = await fetch(`/api/diagnostic/${id}`);
-        if (!response.ok) throw new Error('Report not found');
-        const report = await response.json();
-        setData(report);
+  const reportIdDisplay = useMemo(() => id ? id.substring(0, 8).toUpperCase() : '', [id]);
 
-        if (report.team_insights) {
-          setTeamData(report.team_insights);
-        }
-      } catch (err) {
-        console.error('Report Error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchReport();
-  }, [id]);
-
-  if (loading) return <div className="report-loading">Synthesizing Institutional Profile...</div>;
-  if (!data) return (
-    <div className="report-error-container">
-      <div className="error-card">
-        <Activity size={48} className="text-rose mb-4" />
-        <h2>Institutional Profile Not Found</h2>
-        <p>We were unable to locate this specific perception profile. This may occur if the session expired or the record is still being synchronized.</p>
-        <div className="error-actions">
-          <Link to="/diagnostic" className="btn-institutional primary">Take Diagnostic</Link>
-          <a href="mailto:support@lai.institute" className="btn-institutional outline">Contact Support</a>
-        </div>
-        <div className="debug-info">
-          Attempted ID: {id}
-        </div>
-      </div>
-      <style dangerouslySetInnerHTML={{ __html: `
-        .report-error-container { 
-          min-height: 100vh; display: flex; align-items: center; justify-content: center; 
-          background: #f8fafc; padding: 2rem;
-        }
-        .error-card { 
-          background: white; border: 1px solid #e2e8f0; border-radius: 24px; padding: 4rem; 
-          max-width: 600px; text-align: center; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.05);
-        }
-        .text-rose { color: #f43f5e; }
-        .mb-4 { margin-bottom: 1rem; }
-        h2 { font-size: 2rem; font-weight: 900; color: #0f172a; margin-bottom: 1rem; }
-        p { color: #64748b; margin-bottom: 2rem; line-height: 1.6; }
-        .error-actions { display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; }
-        .debug-info { font-size: 0.7rem; color: #94a3b8; font-family: monospace; border-top: 1px solid #f1f5f9; padding-top: 1rem; }
-      `}} />
-    </div>
-  );
-
-  // 1. Data Preparation (Memoized for Stability)
-  const reportLogic = React.useMemo(() => {
-    if (!data) return null;
+  const reportLogic = useMemo(() => {
+    if (!data) return { scores: {}, team_average_score: 0, summaryPattern: 'D' };
 
     const scoresObj = {
       signal_detection: data.signal_detection_score || 0,
@@ -208,24 +190,47 @@ const Part1Report = () => {
     else if (pB) pattern = 'B';
     else if (pC) pattern = 'C';
 
-    return { 
-      scores: scoresObj, 
-      team_average_score: team_avg,
-      summaryPattern: pattern,
-      patterns: { pA, pB, pC }
-    };
+    return { scores: scoresObj, team_average_score: team_avg, summaryPattern: pattern };
   }, [data, teamData]);
 
-  if (!reportLogic) return null; // Safety fallback
+  useEffect(() => {
+    const fetchReport = async () => {
+      try {
+        const response = await fetch(`/api/diagnostic/${id}`);
+        if (!response.ok) throw new Error('Report not found');
+        const report = await response.json();
+        setData(report);
+        if (report.team_insights) setTeamData(report.team_insights);
+      } catch (err) {
+        console.error('Report Error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReport();
+  }, [id]);
+
+  if (loading) return <div className="report-loading">Synthesizing Institutional Profile...</div>;
+  if (!data) return (
+    <div className="report-error-container">
+      <div className="error-card">
+        <Activity size={48} className="text-rose mb-4" />
+        <h2>Institutional Profile Not Found</h2>
+        <p>We were unable to locate this specific perception profile.</p>
+        <div className="error-actions">
+          <Link to="/diagnostic" className="btn-institutional primary">Take Diagnostic</Link>
+          <a href="mailto:support@lai.institute" className="btn-institutional outline">Contact Support</a>
+        </div>
+        <div className="debug-info">Attempted ID: {id}</div>
+      </div>
+    </div>
+  );
 
   const { scores, team_average_score, summaryPattern } = reportLogic;
-
-  // 2. Team Logic Primitives
   const teamMemberCount = teamData?.count || 0;
   const showTeamView = teamMemberCount > 0;
   const showVarianceAnalysis = teamMemberCount >= 3;
 
-  // 3. Alignment Narrative Helpers
   const most_aligned_dimension = teamData?.variance 
     ? dimensions.find(d => teamData?.variance?.[d.id]?.toLowerCase()?.includes('low'))
     : null;
@@ -233,49 +238,8 @@ const Part1Report = () => {
     ? dimensions.find(d => teamData?.variance?.[d.id]?.toLowerCase()?.includes('high'))
     : null;
 
-  // 4. Executive Summary patterns
-  const summaries = {
-    A: {
-      headline: "Leaders believe change is recognized and understood, but decision convergence may lag behind awareness.",
-      bullets: [
-        "Awareness of emerging signals is notably high across the leadership system.",
-        "Change is interpreted strategically, but often lacks a unified tactical roadmap.",
-        "A visible gap exists between recognition of disruption and coordinated systemic action."
-      ],
-      risk: "Awareness without coordination creates 'strategic paralysis'—the organization sees the need to change but fails to move as a single unit."
-    },
-    B: {
-      headline: "The leadership system may not yet interpret emerging change with sufficient clarity or shared awareness.",
-      bullets: [
-        "Detection of weak signals appears inconsistent across varying organizational layers.",
-        "The system may be filter-heavy, potentially missing early geopolitical or market shifts.",
-        "Strategic response often becomes reactive and fragmented rather than intentional."
-      ],
-      risk: "Consistent recognition lag means the organization remains optimized for past conditions while new threats materialize unnoticed."
-    },
-    C: {
-      headline: "Leadership appears aligned on direction but may struggle with the velocity of resource reallocation.",
-      bullets: [
-        "Decision convergence is relatively high, indicating shared strategic intent.",
-        "There is strong agreement on the path forward among key decision-makers.",
-        "Capital and talent do not yet shift quickly enough to match the speed of decisions."
-      ],
-      risk: "Alignment without resource mobility creates 'strategy gridlock'—decisions are made but the organizational mass remains anchored to legacy priorities."
-    },
-    D: {
-      headline: "Perception across the five dimensions appears balanced without a dominant strength or constraint.",
-      bullets: [
-        "Confidence is evenly distributed across the adaptiveness framework.",
-        "No single dimension indicates critical systemic failure or exceptional capability.",
-        "The leadership system appears stable but potentially optimized for moderate environments."
-      ],
-      risk: "A balanced profile can mask underlying bottlenecks that only manifest under periods of extreme or non-linear systemic pressure."
-    }
-  };
-
   const selectedSummary = summaries[summaryPattern];
-
-  // 2. Risk Signal Banner (Keep It Rare)
+  
   let riskSignal = null;
   const hasLowScore = Object.values(scores).some(s => s !== undefined && s !== null && s <= 40);
   const frictionPattern = scores.decision_alignment <= 45 && scores.integrated_responsiveness <= 45;
@@ -288,14 +252,6 @@ const Part1Report = () => {
     else if (frictionPattern) riskSignal = "Decision Friction Risk";
     else riskSignal = "Institutional Alignment Risk";
   }
-
-  // --- RENDER HELPERS ---
-  const getScoreInterpretation = (score) => {
-    if (score >= 75) return "strong perceived capability";
-    if (score >= 60) return "moderate perceived capability";
-    if (score >= 40) return "mixed confidence";
-    return "potential structural friction";
-  };
 
   const toggleTab = (dimId, tab) => {
     setActiveTabs(prev => ({ ...prev, [dimId]: tab }));
@@ -475,7 +431,7 @@ const Part1Report = () => {
                 const activeTab = activeTabs[dim.id] || 'your';
                 const delta = teamAvg ? s - teamAvg : null;
 
-                const YourPerceptionPane = () => (
+                const renderYourPerception = () => (
                   <div className="tab-pane-brief">
                     <div className="t-score-indicator">
                       <span className="t-label">Your Score</span>
@@ -492,7 +448,7 @@ const Part1Report = () => {
                   </div>
                 );
 
-                const TeamPerceptionPane = () => (
+                const renderTeamPerception = () => (
                   <div className="tab-pane-brief team-tab">
                     <div className="team-stats-row-brief">
                       <div className="t-stat">
@@ -501,7 +457,7 @@ const Part1Report = () => {
                       </div>
                       <div className="t-stat">
                         <span className="ts-label">Your Delta</span>
-                        <span className={`ts-val ${Math.abs(delta) > 15 ? 'high-delta' : ''}`}>
+                        <span className={`ts-val ${Math.abs(delta) > 15 ? highDeltaClass : ''}`}>
                           {delta > 0 ? `+${Math.round(delta)}` : Math.round(delta)}
                         </span>
                       </div>
@@ -517,6 +473,8 @@ const Part1Report = () => {
                     </div>
                   </div>
                 );
+
+                const highDeltaClass = 'high-delta';
 
                 return (
                   <div key={dim.id} className="phased-dim-row">
@@ -546,18 +504,18 @@ const Part1Report = () => {
                     <div className="phased-dim-content">
                        {/* Mobile/Screen View: Interactive Tabs */}
                        <div className="screen-tabs-only no-print">
-                         {activeTab === 'your' ? <YourPerceptionPane /> : <TeamPerceptionPane />}
+                         {activeTab === 'your' ? renderYourPerception() : renderTeamPerception()}
                        </div>
 
                        {/* Print View: Linearized Sections */}
                        <div className="print-linear-only" style={{ display: 'none' }}>
                          <div className="print-subheading-label">Individual Perception</div>
-                         <YourPerceptionPane />
+                         {renderYourPerception()}
                          
                          {showTeamView && (
                            <div style={{ marginTop: '2rem', borderTop: '1px dashed #e2e8f0', paddingTop: '2rem' }}>
                              <div className="print-subheading-label">Team Alignment Analysis</div>
-                             <TeamPerceptionPane />
+                             {renderTeamPerception()}
                            </div>
                          )}
                        </div>
