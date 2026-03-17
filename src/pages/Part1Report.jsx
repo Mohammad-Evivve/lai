@@ -257,7 +257,7 @@ const Part1Report = () => {
   const showTeamView = teamMemberCount > 0;
   const showVarianceAnalysis = teamMemberCount >= 3;
 
-  const { most_aligned_dimension, most_divergent_dimension } = useMemo(() => {
+  const { most_aligned_dimension, most_divergent_dimension } = (() => {
     if (!teamData?.variance || Object.keys(teamData.variance).length === 0) return { most_aligned_dimension: dimensions[0], most_divergent_dimension: dimensions[1] };
     
     // Sort ascending based on explicitly provided numerical diff or fallback categorical strings.
@@ -273,7 +273,7 @@ const Part1Report = () => {
       most_aligned_dimension: sorted[0], 
       most_divergent_dimension: sorted[sorted.length - 1] 
     };
-  }, [teamData?.variance]);
+  })();
 
   const selectedSummary = summaries[summaryPattern];
   
