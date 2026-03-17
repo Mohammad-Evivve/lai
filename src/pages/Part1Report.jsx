@@ -577,16 +577,16 @@ const Part1Report = () => {
             <div className="perception-layout-grid-narrative">
                <div className="perception-analysis-col">
                   <h3 className="alignment-status-label">
-                    {teamData?.variance && Object.values(teamData.variance).some(v => (v?.diff > 5) || (typeof v === 'string' && v.toLowerCase().includes('high'))) 
+                    {teamData?.variance && Object.values(teamData.variance).some(v => (v?.diff > 25) || (typeof v === 'string' && v?.toLowerCase()?.includes('high'))) 
                       ? "Fragmented Perception" 
-                      : (Object.values(teamData?.variance || {}).some(v => (v?.diff > 2) || (typeof v === 'string' && v.toLowerCase().includes('moderate'))) 
+                      : (Object.values(teamData?.variance || {}).some(v => (v?.diff > 10) || (typeof v === 'string' && v?.toLowerCase()?.includes('moderate'))) 
                        ? "Mixed Perception" 
                        : "Shared Perception")}
                   </h3>
                   <p className="alignment-description-narrative">
-                    {teamData?.variance && Object.values(teamData.variance).some(v => (v?.diff > 5) || (typeof v === 'string' && v.toLowerCase().includes('high'))) 
+                    {teamData?.variance && Object.values(teamData.variance).some(v => (v?.diff > 25) || (typeof v === 'string' && v?.toLowerCase()?.includes('high'))) 
                       ? "Leadership team members are experiencing the organization’s capability in significantly different ways. This fragmentation often indicates that operational realities vary across different parts of the leadership system."
-                      : (Object.values(teamData?.variance || {}).some(v => (v?.diff > 2) || (typeof v === 'string' && v.toLowerCase().includes('moderate')))
+                      : (Object.values(teamData?.variance || {}).some(v => (v?.diff > 10) || (typeof v === 'string' && v?.toLowerCase()?.includes('moderate')))
                         ? "There is moderate divergence in how leaders experience the system. While shared understanding exists in some areas, key dimensions of adaptiveness are being interpreted differently across the team."
                         : "Leaders share a consistently strong understanding of how the organization responds to change. This alignment is a critical foundation for coordinated action during transitions.")
                     }
