@@ -15,7 +15,7 @@ app.get('/api/health', async (req, res) => {
   try {
     const health = {
       status: 'ok',
-      version: '1.2.0-FINAL',
+      version: '1.2.0-DEBUG',
       timestamp: new Date().toISOString(),
       env: {
         has_url: !!process.env.SUPABASE_URL,
@@ -215,11 +215,22 @@ app.get('/api/diagnostic/:id', async (req, res) => {
     // 1. Fetch individual result
     const { data: individual, error: individualError } = await supabaseClient
       .from('diagnostic_results')
-      .select('*, participants(name, email)')
+      .select('*')
       .eq('id', id)
       .single();
 
     if (individualError) throw individualError;
+
+    // 1b. Fetch participant separately (Join might fail due to schema cache/missing FK)
+    const { data: participant } = await supabaseClient
+      .from('participants')
+      .select('name, email')
+      .eq('id', individual.participant_id)
+      .single();
+    
+    if (participant) {
+      individual.participants = participant;
+    }
 
     let teamData = null;
     if (individual.team_id) {
@@ -266,8 +277,8 @@ app.get('/api/diagnostic/:id', async (req, res) => {
 
     res.json({ ...individual, team_insights: teamData });
   } catch (err) {
-    console.error('Diagnostic Fetch Error:', err.message);
-    res.status(404).json({ error: 'Report not found' });
+    console.error(`[API] Diagnostic Fetch Error for ID ${id}:`, err.message);
+    res.status(404).json({ error: 'Report not found', details: err.message });
   }
 });
 

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   FileText, ShieldCheck, Info, ArrowRight, 
   Activity, Users, Brain, Target, Compass,
-  AlertCircle, CheckCircle2, Link as LinkIcon
+  AlertCircle, CheckCircle, Link as LinkIcon
 } from 'lucide-react';
 import { supabase } from '../supabase';
 
@@ -164,7 +164,7 @@ const Part1Report = () => {
           Attempted ID: {id}
         </div>
       </div>
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .report-error-container { 
           min-height: 100vh; display: flex; align-items: center; justify-content: center; 
           background: #f8fafc; padding: 2rem;
@@ -178,8 +178,8 @@ const Part1Report = () => {
         h2 { font-size: 2rem; font-weight: 900; color: #0f172a; margin-bottom: 1rem; }
         p { color: #64748b; margin-bottom: 2rem; line-height: 1.6; }
         .error-actions { display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; }
-        .debug-info { font-size: 0.7rem; color: #94a3b8; font-family: monospace; border-top: 1px solid #f1f5f9; pt: 1rem; }
-      `}</style>
+        .debug-info { font-size: 0.7rem; color: #94a3b8; font-family: monospace; border-top: 1px solid #f1f5f9; padding-top: 1rem; }
+      `}} />
     </div>
   );
 
@@ -689,7 +689,7 @@ const Part1Report = () => {
         </footer>
       </div>
 
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .report-page { background: #f1f5f9; min-height: 100vh; padding: 4rem 2rem; color: #0f172a; font-family: 'Inter', -apple-system, sans-serif; }
         .report-container { 
           width: 900px; margin: 0 auto; background: white; 
@@ -890,7 +890,7 @@ const Part1Report = () => {
         }
 
         .print-only-persistent-footer { display: none; }
-      `}</style>
+      `}} />
       <PrintFooter reportId={reportIdDisplay} />
     </div>
   );
