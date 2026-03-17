@@ -309,15 +309,15 @@ app.post('/api/diagnostic', async (req, res) => {
     let team_id = null;
     let final_team_code = team_code;
 
-    // 1. Team Logic
-    if (participation_mode === 'team_create') {
+    // 1. Team Logic (Universal: Individuals also get a Personal Team)
+    if (participation_mode === 'team_create' || participation_mode === 'individual') {
       // Generate unique code LAI-XXXX
       final_team_code = `LAI-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
       const { data: newTeam, error: teamError } = await supabaseClient
         .from('teams')
         .insert([{ 
           team_code: final_team_code, 
-          organization_name: organization_name || null,
+          organization_name: organization_name || (participation_mode === 'individual' ? `${name}'s Profile` : null),
           creator_email: email 
         }])
         .select()

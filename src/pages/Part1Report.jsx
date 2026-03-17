@@ -580,6 +580,40 @@ const Part1Report = () => {
           </section>
         )}
 
+        {/* 7. INVITE YOUR TEAM (Conditional for small teams) */}
+        {teamMemberCount < 3 && data?.team_code && (
+          <section className="report-section invite-team-brief page-section no-print">
+            <div className="invite-box-institutional" style={{ background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '24px', padding: '3rem', textAlign: 'center' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '64px', height: '64px', borderRadius: '16px', background: '#f1f5f9', color: '#14b8a6', marginBottom: '1.5rem' }}>
+                <Users size={32} />
+              </div>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: '950', color: '#0f172a', marginBottom: '0.75rem', letterSpacing: '-0.02em' }}>Build Your Team Benchmark</h3>
+              <p style={{ color: '#64748b', fontSize: '1rem', marginBottom: '2rem', maxWidth: '500px', marginInline: 'auto' }}>
+                Comparison averages and alignment mapping activate when 3+ leaders contribute to this profile.
+              </p>
+              
+              <div style={{ background: 'white', border: '1px solid #e2e8f0', padding: '1.5rem 2rem', borderRadius: '16px', display: 'inline-flex', alignItems: 'center', gap: '2rem', marginBottom: '1rem' }}>
+                <div>
+                  <div style={{ fontSize: '0.65rem', fontWeight: '900', color: '#94a3b8', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Access Code</div>
+                  <div style={{ fontSize: '2rem', fontWeight: '900', color: '#0f172a', fontFamily: 'monospace', letterSpacing: '0.1em' }}>{data.team_code}</div>
+                </div>
+                <button 
+                  onClick={() => {
+                    const url = `${window.location.origin}/diagnostic?team=${data.team_code}`;
+                    navigator.clipboard.writeText(url);
+                    setCopied('team_invite');
+                    setTimeout(() => setCopied(null), 2000);
+                  }}
+                  style={{ background: '#0f172a', color: 'white', border: 'none', padding: '1rem 1.5rem', borderRadius: '12px', fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                >
+                  {copied === 'team_invite' ? <><CheckCircle size={18} color="#14b8a6" /> Copied!</> : <><LinkIcon size={18} /> Copy Invite Link</>}
+                </button>
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: '600' }}>Invite colleagues to complete their perception diagnostic.</div>
+            </div>
+          </section>
+        )}
+
         {/* 8. RESEARCH INTERPRETATION (Flywheel Context) */}
         <section className="report-section research-insight-brief page-section">
            <div className="insight-box-m-document">
