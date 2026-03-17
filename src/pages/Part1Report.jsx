@@ -236,6 +236,11 @@ const Part1Report = () => {
     fetchReport();
   }, [id]);
 
+  useEffect(() => {
+    // Ensure the page always loads at the very top
+    window.scrollTo(0, 0);
+  }, []);
+
   if (loading) return <div className="report-loading">Synthesizing Institutional Profile...</div>;
   if (!data) return (
     <div className="report-error-container">
@@ -621,11 +626,11 @@ const Part1Report = () => {
                
                <div className="perception-stats-summary-col" style={{ flex: '1 1 40%', display: 'flex', flexDirection: 'column' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-                    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
+                    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem 1rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
                        <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', fontWeight: '800', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>Team Avg</div>
                        <div style={{ fontSize: '2rem', fontWeight: '900', color: '#0f172a', lineHeight: '1' }}>{team_average_score}</div>
                     </div>
-                    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
+                    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem 1rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
                        <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', fontWeight: '800', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>Participants</div>
                        <div style={{ fontSize: '2rem', fontWeight: '900', color: '#0f172a', lineHeight: '1' }}>{teamMemberCount}</div>
                     </div>
