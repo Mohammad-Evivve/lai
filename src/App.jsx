@@ -48,15 +48,25 @@ class ErrorBoundary extends React.Component {
     super(props);
     this.state = { hasError: false };
   }
-  static getDerivedStateFromError(error) { return { hasError: true }; }
-  componentDidCatch(error, errorInfo) { console.error("LAI Root Crash:", error, errorInfo); }
+  static getDerivedStateFromError(error) { return { hasError: true, error }; }
+  componentDidCatch(error, errorInfo) { 
+    console.error("LAI Root Crash:", error, errorInfo);
+    this.setState({ error });
+  }
   render() {
     if (this.state.hasError) {
       return (
         <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', padding: '2rem', fontFamily: 'sans-serif' }}>
-          <div style={{ background: 'white', padding: '3rem', borderRadius: '1rem', boxShadow: '0 20px 50px rgba(0,0,0,0.1)', maxWidth: '500px', textAlign: 'center' }}>
+          <div style={{ background: 'white', padding: '3rem', borderRadius: '1rem', boxShadow: '0 20px 50px rgba(0,0,0,0.1)', maxWidth: '600px', textAlign: 'center' }}>
             <h1 style={{ color: '#0f172a', marginBottom: '1rem' }}>Something went wrong</h1>
             <p style={{ color: '#64748b', marginBottom: '2rem' }}>The application encountered an unexpected error. Please refresh the page or contact support if the issue persists.</p>
+            
+            <div style={{ background: '#fff1f2', border: '1px solid #fda4af', padding: '1rem', borderRadius: '0.5rem', marginBottom: '2rem', textAlign: 'left', overflow: 'auto', maxHeight: '200px' }}>
+              <code style={{ color: '#9f1239', fontSize: '0.85rem', whiteSpace: 'pre-wrap' }}>
+                {this.state.error && this.state.error.toString()}
+              </code>
+            </div>
+
             <button onClick={() => window.location.reload()} style={{ background: '#0f172a', color: 'white', border: 'none', padding: '0.75rem 1.5rem', borderRadius: '0.5rem', cursor: 'pointer', fontWeight: 'bold' }}>Refresh Application</button>
           </div>
         </div>
