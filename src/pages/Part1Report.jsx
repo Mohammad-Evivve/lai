@@ -62,6 +62,32 @@ const getScoreInterpretation = (score) => {
   return "potential structural friction";
 };
 
+const getBehavioralText = (id, type) => {
+  const map = {
+    'signal_detection': {
+      shared: "Leaders consistently recognize the same external signals. There is little disagreement on what is happening.",
+      divergent: "The team recognizes entirely different external shifts. There is fundamental disagreement on what signals actually matter to the organization."
+    },
+    'cognitive_framing': {
+      shared: "The team shares a common lens for interpreting disruption. Threats and opportunities are framed in the exact same way.",
+      divergent: "Leaders are interpreting the same external shifts differently. What one views as an opportunity, another may view as a threat."
+    },
+    'decision_alignment': {
+      shared: "There is unified agreement on how the organization must respond. The team actively coordinates its strategic priorities.",
+      divergent: "When action is required, interpretations begin to diverge. Some leaders push urgency, while others maintain the status quo. This creates misalignment in timing, priorities, and ownership."
+    },
+    'resource_calibration': {
+      shared: "Capital, talent, and attention are reallocated systematically. The team aligns heavily on where and when to invest resources to meet the new reality.",
+      divergent: "There is significant friction in how resources should be deployed. While the strategy may be agreed upon, disagreements remain regarding budget adjustments and talent distribution."
+    },
+    'integrated_responsiveness': {
+      shared: "Strategy translates cleanly into systemic momentum. The combined actions of the leadership team are creating a unified, agile response.",
+      divergent: "The organization’s execution feels disconnected across different divisions. Even if initial decisions align, the implementation is fracturing across the broader system."
+    }
+  };
+  return map[id]?.[type] || "Insufficient data to translate behavioral pattern.";
+};
+
 const PrintFooter = ({ reportId }) => (
   <footer className="print-only-persistent-footer">
     <div className="pf-left">LEADERSHIP ADAPTIVENESS INSTITUTE</div>
@@ -231,12 +257,23 @@ const Part1Report = () => {
   const showTeamView = teamMemberCount > 0;
   const showVarianceAnalysis = teamMemberCount >= 3;
 
-  const most_aligned_dimension = teamData?.variance 
-    ? dimensions.find(d => teamData?.variance?.[d.id]?.toLowerCase()?.includes('low'))
-    : null;
-  const most_divergent_dimension = teamData?.variance
-    ? dimensions.find(d => teamData?.variance?.[d.id]?.toLowerCase()?.includes('high'))
-    : null;
+  const { most_aligned_dimension, most_divergent_dimension } = useMemo(() => {
+    if (!teamData?.variance || Object.keys(teamData.variance).length === 0) return { most_aligned_dimension: dimensions[0], most_divergent_dimension: dimensions[1] };
+    
+    // Sort ascending based on explicitly provided numerical diff or fallback categorical strings.
+    const sorted = [...dimensions].sort((a, b) => {
+      const vA = teamData.variance[a.id];
+      const vB = teamData.variance[b.id];
+      const diffA = vA?.diff !== undefined ? vA.diff : (vA?.toLowerCase()?.includes('low') ? 0 : vA?.toLowerCase()?.includes('moderate') ? 3 : 6);
+      const diffB = vB?.diff !== undefined ? vB.diff : (vB?.toLowerCase()?.includes('low') ? 0 : vB?.toLowerCase()?.includes('moderate') ? 3 : 6);
+      return diffA - diffB;
+    });
+
+    return { 
+      most_aligned_dimension: sorted[0], 
+      most_divergent_dimension: sorted[sorted.length - 1] 
+    };
+  }, [teamData?.variance]);
 
   const selectedSummary = summaries[summaryPattern];
   
@@ -529,24 +566,27 @@ const Part1Report = () => {
         {/* 6. LEADERSHIP ALIGNMENT STATUS (Narrative Translation) */}
         {showTeamView && (
           <section className="report-section team-alignment-section page-section">
-            <div className="section-header-row-brief">
-              <Users size={20} />
-              <h2>Leadership Alignment Status</h2>
+            <div className="section-header-row-brief" style={{ alignItems: 'flex-start', marginBottom: '2rem' }}>
+              <div style={{ marginTop: '0.25rem' }}><Users size={20} /></div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <h2 style={{ marginBottom: '0.25rem' }}>Leadership Alignment Status (Perceived)</h2>
+                <div style={{ fontSize: '0.95rem', color: '#166534', fontWeight: '600' }}>How consistently your leadership team believes it interprets and responds to change.</div>
+              </div>
             </div>
             
             <div className="perception-layout-grid-narrative">
                <div className="perception-analysis-col">
                   <h3 className="alignment-status-label">
-                    {teamData?.variance && Object.values(teamData.variance).some(v => v?.toLowerCase()?.includes('high')) 
+                    {teamData?.variance && Object.values(teamData.variance).some(v => (v?.diff > 5) || (typeof v === 'string' && v.toLowerCase().includes('high'))) 
                       ? "Fragmented Perception" 
-                      : (Object.values(teamData?.variance || {}).some(v => v?.toLowerCase()?.includes('moderate')) 
+                      : (Object.values(teamData?.variance || {}).some(v => (v?.diff > 2) || (typeof v === 'string' && v.toLowerCase().includes('moderate'))) 
                        ? "Mixed Perception" 
                        : "Shared Perception")}
                   </h3>
                   <p className="alignment-description-narrative">
-                    {teamData?.variance && Object.values(teamData.variance).some(v => v?.toLowerCase()?.includes('high')) 
+                    {teamData?.variance && Object.values(teamData.variance).some(v => (v?.diff > 5) || (typeof v === 'string' && v.toLowerCase().includes('high'))) 
                       ? "Leadership team members are experiencing the organization’s capability in significantly different ways. This fragmentation often indicates that operational realities vary across different parts of the leadership system."
-                      : (Object.values(teamData?.variance || {}).some(v => v?.toLowerCase()?.includes('moderate'))
+                      : (Object.values(teamData?.variance || {}).some(v => (v?.diff > 2) || (typeof v === 'string' && v.toLowerCase().includes('moderate')))
                         ? "There is moderate divergence in how leaders experience the system. While shared understanding exists in some areas, key dimensions of adaptiveness are being interpreted differently across the team."
                         : "Leaders share a consistently strong understanding of how the organization responds to change. This alignment is a critical foundation for coordinated action during transitions.")
                     }
@@ -556,25 +596,75 @@ const Part1Report = () => {
                       <div className="callout-box" style={{ padding: '1.25rem', background: '#f0fdf4', border: '1px solid #bcf0da', borderRadius: '12px' }}>
                          <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#166534', fontWeight: '800', letterSpacing: '0.5px' }}>Most Shared Dimension</span>
                          <h4 style={{ margin: '0.5rem 0', fontSize: '1.1rem', color: '#166534' }}>{most_aligned_dimension?.name || 'Cognitive Framing'}</h4>
-                         <p style={{ fontSize: '0.85rem', color: '#14532d', margin: 0, lineHeight: '1.4' }}>This dimension represents the highest level of perceptual agreement within the leadership team.</p>
+                         <p style={{ fontSize: '0.85rem', color: '#14532d', margin: 0, lineHeight: '1.4' }}>This dimension represents the highest level of perceptual agreement and shared reality within the leadership team.</p>
                       </div>
                       <div className="callout-box" style={{ padding: '1.25rem', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '12px' }}>
                          <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#9f1239', fontWeight: '800', letterSpacing: '0.5px' }}>Most Divergent Dimension</span>
                          <h4 style={{ margin: '0.5rem 0', fontSize: '1.1rem', color: '#9f1239' }}>{most_divergent_dimension?.name || 'Decision Alignment'}</h4>
-                         <p style={{ fontSize: '0.85rem', color: '#881337', margin: 0, lineHeight: '1.4' }}>This reflects the greatest variance in how adaptiveness is being experienced across the system.</p>
+                         <p style={{ fontSize: '0.85rem', color: '#881337', margin: 0, lineHeight: '1.4' }}>This dimension reveals the greatest variance in how adaptiveness is currently being experienced across the system.</p>
                       </div>
                    </div>
                </div>
                
                <div className="perception-stats-summary-col">
-                  <div className="doc-stat-card-lean">
+                  <div className="doc-stat-card-lean" style={{ marginBottom: '1rem' }}>
                      <div className="s-label">Team Avg</div>
                      <div className="s-value">{team_average_score}</div>
                   </div>
-                  <div className="doc-stat-card-lean">
+                  <div className="doc-stat-card-lean" style={{ marginBottom: '2rem' }}>
                      <div className="s-label">Participants</div>
                      <div className="s-value">{teamMemberCount}</div>
                   </div>
+                  
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.5rem', marginTop: 'auto' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.5px', marginBottom: '0.75rem' }}>What this suggests</div>
+                    <p style={{ fontSize: '0.9rem', color: '#334155', margin: 0, lineHeight: '1.5' }}>
+                      {teamData?.variance && Object.values(teamData.variance).some(v => (v?.diff > 2) || (typeof v === 'string' && v.toLowerCase().includes('moderate')))
+                        ? "Your leadership team appears aligned in how it sees change — but not necessarily in how it responds to it. This gap often creates systematic execution friction."
+                        : "Your leadership team reports high interpretive alignment. The critical next step is verifying if this perception holds true under actual operational pressure."}
+                    </p>
+                  </div>
+               </div>
+            </div>
+
+            <div style={{ marginTop: '4rem', paddingTop: '3rem', borderTop: '1px solid #e2e8f0' }}>
+               <h3 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', marginBottom: '1.5rem' }}>What this likely looks like inside your team</h3>
+               <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '1rem' }}>
+                  <div style={{ display: 'flex', gap: '1.5rem', background: '#f8fafc', padding: '1.5rem', borderRadius: '12px', alignItems: 'flex-start' }}>
+                     <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '50%', background: '#dcfce7', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>+</div>
+                     <div>
+                        <div style={{ fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase', color: '#16a34a', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>Shared Pattern: {most_aligned_dimension?.name}</div>
+                        <div style={{ fontSize: '0.95rem', color: '#334155', lineHeight: '1.5' }}>
+                          {getBehavioralText(most_aligned_dimension?.id, 'shared')}
+                        </div>
+                     </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '1.5rem', background: '#f8fafc', padding: '1.5rem', borderRadius: '12px', alignItems: 'flex-start' }}>
+                     <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '50%', background: '#fee2e2', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>−</div>
+                     <div>
+                        <div style={{ fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase', color: '#dc2626', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>Divergent Pattern: {most_divergent_dimension?.name}</div>
+                        <div style={{ fontSize: '0.95rem', color: '#334155', lineHeight: '1.5' }}>
+                          {getBehavioralText(most_divergent_dimension?.id, 'divergent')}
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
+            <div style={{ marginTop: '4rem', background: '#0f172a', borderRadius: '16px', padding: '3rem' }}>
+               <h3 style={{ color: 'white', fontSize: '1.75rem', fontWeight: '800', marginBottom: '2rem', textAlign: 'center' }}>Your system is telling two different stories</h3>
+               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px', borderLeft: '4px solid #14b8a6' }}>
+                     <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: '700', letterSpacing: '1px', marginBottom: '0.5rem' }}>You believe</div>
+                     <div style={{ color: 'white', fontSize: '1.1rem', fontWeight: '600', lineHeight: '1.4' }}>Your team sees change the exact same way.</div>
+                  </div>
+                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px', borderLeft: '4px solid #f43f5e' }}>
+                     <div style={{ color: '#94a3b8', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: '700', letterSpacing: '1px', marginBottom: '0.5rem' }}>At the same time</div>
+                     <div style={{ color: 'white', fontSize: '1.1rem', fontWeight: '600', lineHeight: '1.4' }}>Your team does not align on what to do about it.</div>
+                  </div>
+               </div>
+               <div style={{ textAlign: 'center', marginTop: '2.5rem', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                 <div style={{ color: '#38bdf8', fontSize: '1.25rem', fontWeight: '700' }}>Alignment in awareness is not producing alignment in action.</div>
                </div>
             </div>
           </section>

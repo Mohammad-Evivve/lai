@@ -277,7 +277,8 @@ app.get('/api/diagnostic/:id', async (req, res) => {
               const scores = rawResponses.filter(r => r.dimension_id === dim).map(r => r.score);
               if (scores.length > 0) {
                 const diff = Math.max(...scores) - Math.min(...scores);
-                variance[dim] = diff <= 2 ? 'Low alignment variance' : diff <= 5 ? 'Moderate alignment variance' : 'High alignment variance';
+                const label = diff <= 2 ? 'Low alignment variance' : diff <= 5 ? 'Moderate alignment variance' : 'High alignment variance';
+                variance[dim] = { label, diff };
               }
             });
           }
