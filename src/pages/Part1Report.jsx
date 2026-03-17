@@ -264,8 +264,8 @@ const Part1Report = () => {
     const sorted = [...dimensions].sort((a, b) => {
       const vA = teamData.variance[a.id];
       const vB = teamData.variance[b.id];
-      const diffA = vA?.diff !== undefined ? vA.diff : (vA?.toLowerCase()?.includes('low') ? 0 : vA?.toLowerCase()?.includes('moderate') ? 3 : 6);
-      const diffB = vB?.diff !== undefined ? vB.diff : (vB?.toLowerCase()?.includes('low') ? 0 : vB?.toLowerCase()?.includes('moderate') ? 3 : 6);
+      const diffA = vA?.diff !== undefined ? vA.diff : (typeof vA === 'string' && vA.toLowerCase().includes('low') ? 0 : typeof vA === 'string' && vA.toLowerCase().includes('moderate') ? 3 : 6);
+      const diffB = vB?.diff !== undefined ? vB.diff : (typeof vB === 'string' && vB.toLowerCase().includes('low') ? 0 : typeof vB === 'string' && vB.toLowerCase().includes('moderate') ? 3 : 6);
       return diffA - diffB;
     });
 
