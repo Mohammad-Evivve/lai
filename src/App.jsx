@@ -31,6 +31,7 @@ import AFERRPage from './pages/AFERRPage';
 import DiagnosticPage from './pages/DiagnosticPage';
 import BenchmarkPage from './pages/BenchmarkPage';
 import Part1Report from './pages/Part1Report';
+import OffsiteIntakePage from './pages/OffsiteIntakePage';
 // import MeasurementJourneyPage from './pages/MeasurementJourneyPage'; // [NEW]
 
 // Phase 5: Institutional Foundation
@@ -106,6 +107,7 @@ function App() {
               <Route path="/diagnostic" element={<DiagnosticPage />} />
               <Route path="/report/perception/:id" element={<Part1Report />} />
               <Route path="/benchmark" element={<BenchmarkPage />} />
+              <Route path="/intake" element={<OffsiteIntakePage />} />
 
               {/* Phase 5: Institutional Foundation */}
               <Route path="/about" element={<AboutPage />} />
