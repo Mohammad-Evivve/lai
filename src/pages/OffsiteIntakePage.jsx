@@ -234,9 +234,15 @@ export default function OffsiteIntakePage() {
   };
 
   const next = () => {
-    if (validate(step)) setStep(s => Math.min(4, s + 1));
+    if (validate(step)) {
+      setStep(s => Math.min(4, s + 1));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
-  const back = () => setStep(s => Math.max(1, s - 1));
+  const back = () => {
+    setStep(s => Math.max(1, s - 1));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleSubmit = async () => {
     if (!validate(4)) return;
