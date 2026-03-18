@@ -1091,23 +1091,24 @@ const Part1Report = () => {
           /* Page setup */
           @page { size: A4 portrait; margin: 18mm 20mm; }
 
-          /* Kill everything except the report container */
+          /* React SPA print isolation: use visibility (overridable by children),
+             NOT display:none on body>* which kills the #root element entirely */
           html, body { background: white !important; margin: 0 !important; padding: 0 !important; }
-          body > * { display: none !important; }
-          .report-page { display: block !important; background: white !important; padding: 0 !important; }
+          body * { visibility: hidden; }
+          .report-container, .report-container * { visibility: visible; }
           .report-container {
-            display: block !important;
+            position: static !important;
             width: 100% !important;
             max-width: 100% !important;
-            padding: 0 !important;
-            margin: 0 !important;
+            padding: 2rem !important;
+            margin: 0 auto !important;
             box-shadow: none !important;
             border: none !important;
           }
 
           /* Hide all interactive / screen-only UI */
           .no-print,
-          nav, .site-header, .site-nav, footer.footer-nav,
+          nav, .site-header, .site-nav,
           button, a.btn-institutional, .btn-invite,
           .p-dim-tabs, .screen-tabs-only,
           .team-invitation-block, .invite-team-brief,
@@ -1122,7 +1123,7 @@ const Part1Report = () => {
           /* Color preservation */
           * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
-          /* Preserve dark background blocks */
+          /* Preserve background blocks */
           .summary-box { background: #f8fafc !important; }
           .risk-signal-section { background: #fff1f2 !important; }
           .team-interpretation-box { background: #f8fafc !important; }
