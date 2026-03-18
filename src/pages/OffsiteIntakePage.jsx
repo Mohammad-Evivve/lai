@@ -103,7 +103,7 @@ const SUPPORT_TYPES = [
 
 /* ─────────────── STEP METADATA ─────────────── */
 const STEPS = [
-  { label: 'OFFSITE CONTEXT', title: 'What is prompting this offsite?', framing: 'Describe the situation your leadership team is navigating.' },
+  { label: 'OFFSITE CONTEXT', title: 'About you and the offsite', framing: 'Start with your details, then tell us what your leadership team is navigating.' },
   { label: 'TEAM COMPOSITION', title: 'Who needs to be in the room?', framing: 'Focus on decision-makers, not just attendees.' },
   { label: 'OBJECTIVES', title: 'What must be different after this offsite?', framing: 'Define the outcome, not just the agenda.' },
   { label: 'DIAGNOSTIC READINESS', title: 'Is this a situation that requires deeper insight?', framing: 'Help us determine whether a diagnostic-led intervention is appropriate.' },
