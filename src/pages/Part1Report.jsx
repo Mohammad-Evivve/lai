@@ -457,6 +457,7 @@ const Part1Report = () => {
                <RadarChart scores={scores} teamScores={teamData?.averages} />
             </div>
             
+            {/* Screen: invitation + interpretation */}
             <div className="invitation-cta-column no-print">
                <div className="team-invitation-block">
                   <h4>Enable Systems Intelligence</h4>
@@ -501,6 +502,50 @@ const Part1Report = () => {
                   <div className="scale-node"><span className="s-range">40–59</span> <span className="s-label">Mixed confidence</span></div>
                   <div className="scale-node s-critical"><span className="s-range">&lt; 40</span> <span className="s-label">Structural friction</span></div>
                </div>
+            </div>
+
+            {/* Print-only: informative side panel */}
+            <div className="print-linear-only" style={{ display: 'none', flexDirection: 'column', gap: '1.5rem' }}>
+              {/* Legend */}
+              <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: '#475569' }}>
+                  <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#14b8a6', display: 'inline-block' }} />
+                  Individual
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: '#475569' }}>
+                  <span style={{ width: '10px', height: '10px', borderRadius: '50%', border: '2px dashed #0f172a', display: 'inline-block' }} />
+                  Team Avg
+                </div>
+              </div>
+
+              {/* Score overview */}
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem' }}>
+                <div style={{ fontSize: '0.65rem', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#94a3b8', marginBottom: '1rem' }}>Your Scores</div>
+                {dimensions.map(d => (
+                  <div key={d.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.4rem 0', borderBottom: '1px solid #f1f5f9' }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: '600', color: '#475569' }}>{d.name}</span>
+                    <span style={{ fontSize: '0.9rem', fontWeight: '900', color: scores[d.id] >= 70 ? '#14b8a6' : scores[d.id] >= 50 ? '#f2a93b' : '#f43f5e' }}>
+                      {scores[d.id]}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Interpretation scale */}
+              <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.25rem' }}>
+                <div style={{ fontSize: '0.65rem', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#94a3b8', marginBottom: '0.75rem' }}>Score Interpretation</div>
+                {[
+                  { range: '80–100', label: 'Strong perceived capability', color: '#14b8a6' },
+                  { range: '60–79', label: 'Moderate capability', color: '#f2a93b' },
+                  { range: '40–59', label: 'Mixed confidence', color: '#f97316' },
+                  { range: '< 40',  label: 'Structural friction', color: '#f43f5e' },
+                ].map(({ range, label, color }) => (
+                  <div key={range} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.35rem 0' }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: '900', color, minWidth: '48px' }}>{range}</span>
+                    <span style={{ fontSize: '0.8rem', color: '#475569' }}>{label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -906,16 +951,65 @@ const Part1Report = () => {
           </div>
         </section>
 
-        {/* Print version of the final section */}
+        {/* Print version of the Research Signal + CTA with QR code */}
         <section className="report-section page-section print-linear-only" style={{ display: 'none' }}>
-          <div style={{ borderTop: '2px solid #0f172a', paddingTop: '2rem', marginTop: '2rem' }}>
-            <div className="print-subheading-label">Recommended Next Step</div>
-            <p style={{ fontSize: '1.1rem', color: '#0f172a', fontWeight: '700', lineHeight: '1.6', marginBottom: '1rem' }}>
-              This report captures perception. The next phase maps behavioral reality.
-            </p>
-            <p style={{ fontSize: '0.95rem', color: '#475569', lineHeight: '1.6' }}>
-              Behavioral Observation measures how leadership decisions actually unfold under pressure — signal recognition speed, decision convergence, and resource reallocation velocity.
-            </p>
+          <div style={{
+            background: '#0f172a',
+            borderRadius: '16px',
+            padding: '2.5rem 3rem',
+            display: 'flex',
+            gap: '3rem',
+            alignItems: 'flex-start',
+            breakInside: 'avoid'
+          }}>
+
+            {/* Left: Research narrative */}
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '0.6rem', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '2px', color: '#14b8a6', marginBottom: '1rem' }}>
+                Research Signal
+              </div>
+
+              <p style={{ fontSize: '1.1rem', fontWeight: '800', color: 'white', lineHeight: '1.4', margin: '0 0 1rem' }}>
+                Most leadership teams believe they adapt quickly.<br />
+                <span style={{ color: '#94a3b8' }}>Behavioral observation shows they don't.</span>
+              </p>
+              <p style={{ fontSize: '0.85rem', color: '#94a3b8', lineHeight: '1.6', margin: '0 0 1.25rem' }}>
+                When decisions and resources don't realign at the speed of change, strategy begins to drift. Often invisibly. Often before leaders notice.
+              </p>
+              <div style={{ borderLeft: '2px solid #475569', paddingLeft: '1rem', color: '#64748b', fontSize: '0.85rem', fontStyle: 'italic', marginBottom: '1.5rem' }}>
+                "By the time decisions are acted on, the world has already moved."
+              </div>
+
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.25rem' }}>
+                <div style={{ fontSize: '0.6rem', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '2px', color: '#94a3b8', marginBottom: '0.75rem' }}>
+                  You've seen how your system is perceived
+                </div>
+                <p style={{ fontSize: '1rem', fontWeight: '700', color: 'white', lineHeight: '1.4', margin: 0 }}>
+                  The question is: does it behave the same way under pressure?
+                </p>
+              </div>
+            </div>
+
+            {/* Right: QR Code */}
+            <div style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              gap: '0.75rem', flexShrink: 0
+            }}>
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&color=ffffff&bgcolor=0f172a&margin=10&data=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/diagnostic` : 'https://lai.com/diagnostic')}`}
+                alt="QR Code: Run Behavioral Diagnostic"
+                style={{ width: '160px', height: '160px', borderRadius: '8px' }}
+              />
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '0.7rem', fontWeight: '900', color: '#14b8a6', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '0.25rem' }}>
+                  Run Behavioral Diagnostic
+                </div>
+                <div style={{ fontSize: '0.65rem', color: '#64748b', lineHeight: '1.4' }}>
+                  Scan to test how your leadership<br />team behaves under pressure.
+                </div>
+              </div>
+            </div>
+
           </div>
         </section>
 
