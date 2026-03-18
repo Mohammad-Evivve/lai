@@ -863,7 +863,7 @@ const Part1Report = () => {
 
               {/* Primary CTA */}
               <Link
-                to="/how-measured"
+                to="/intake"
                 style={{
                   display: 'block', textAlign: 'center',
                   background: '#14b8a6', color: 'white',
