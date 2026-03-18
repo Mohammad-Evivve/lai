@@ -359,18 +359,18 @@ const Part1Report = () => {
               <div className="meta-entry"><span className="m-label">Assessment Date</span> <span className="m-val">{new Date(data.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span></div>
               <div className="meta-entry"><span className="m-label">Report ID</span> <span className="m-val">{id.substring(0, 8).toUpperCase()}</span></div>
             </div>
-            <div className="meta-col-actions no-print" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <div className="meta-col-actions no-print" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'nowrap' }}>
               <button 
                 className="btn-institutional premium-download-btn"
                 onClick={() => window.print()}
                 style={{ 
                   background: '#0f172a', color: 'white', border: 'none', 
-                  padding: '12px 24px', borderRadius: '12px', fontWeight: '800', 
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem',
-                  fontSize: '14px', transition: 'all 0.2s'
+                  padding: '10px 20px', borderRadius: '10px', fontWeight: '700', 
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem',
+                  fontSize: '13px', transition: 'all 0.2s', whiteSpace: 'nowrap'
                 }}
               >
-                <Printer size={18} /> Download Intelligence Report
+                <Printer size={15} /> Download Report
               </button>
               <button 
                 className="btn-institutional outline premium-share-btn"
@@ -380,13 +380,13 @@ const Part1Report = () => {
                   setTimeout(() => setCopied(null), 2000);
                 }}
                 style={{
-                  background: 'transparent', color: '#14b8a6', border: '2px solid #14b8a6',
-                  padding: '10px 20px', borderRadius: '12px', fontWeight: '800',
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem',
-                  fontSize: '14px', transition: 'all 0.2s'
+                  background: 'transparent', color: '#14b8a6', border: '1.5px solid #14b8a6',
+                  padding: '9px 18px', borderRadius: '10px', fontWeight: '700',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem',
+                  fontSize: '13px', transition: 'all 0.2s', whiteSpace: 'nowrap'
                 }}
               >
-                {copied === 'report_header' ? <><ShieldCheck size={18} /> URL Copied</> : <><FileText size={18} /> Copy Report Link</>}
+                {copied === 'report_header' ? <><ShieldCheck size={15} /> Copied</> : <><FileText size={15} /> Copy Link</>}
               </button>
             </div>
           </div>
@@ -780,7 +780,7 @@ const Part1Report = () => {
               </p>
 
               <p style={{ fontSize: '1rem', color: '#94a3b8', lineHeight: '1.7', maxWidth: '640px', margin: '0 0 1.5rem' }}>
-                When decisions and resources don't realign at the speed of change, strategy begins to drift — often before leaders notice.
+                When decisions and resources don't realign at the speed of change, strategy begins to drift. Often invisibly. Often before leaders notice.
               </p>
 
               <div style={{
@@ -791,7 +791,7 @@ const Part1Report = () => {
                 fontStyle: 'italic',
                 lineHeight: '1.6'
               }}>
-                "Signals move faster than decisions and resources realign."
+                "By the time decisions are acted on, the world has already moved."
               </div>
             </div>
 
@@ -808,7 +808,7 @@ const Part1Report = () => {
               </div>
 
               <p style={{ fontSize: '1.25rem', fontWeight: '700', color: 'white', lineHeight: '1.5', margin: '0', maxWidth: '560px' }}>
-                The question is —<br />
+                The question is:<br />
                 <span style={{ color: '#e2e8f0' }}>does it behave the same way under pressure?</span>
               </p>
             </div>
@@ -1088,42 +1088,64 @@ const Part1Report = () => {
         }
 
         @media print {
-          @page { size: A4; margin: 20mm; }
-          body { background: white !important; }
-          
-          /* Print Isolation */
-          body * { visibility: hidden; }
-          .report-container, .report-container * { visibility: visible; }
-          .report-container { 
-            position: absolute; left: 0; top: 0; width: 100% !important; 
-            max-width: 100% !important; padding: 0 !important; box-shadow: none !important; margin: 0 !important; 
+          /* Page setup */
+          @page { size: A4 portrait; margin: 18mm 20mm; }
+
+          /* Kill everything except the report container */
+          html, body { background: white !important; margin: 0 !important; padding: 0 !important; }
+          body > * { display: none !important; }
+          .report-page { display: block !important; background: white !important; padding: 0 !important; }
+          .report-container {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
           }
 
-          nav, header, .menu, .sidebar, .footer-nav, button, .cta, .download-button, .site-header, .btn-institutional, .breadcrumb { 
-            display: none !important; 
+          /* Hide all interactive / screen-only UI */
+          .no-print,
+          nav, .site-header, .site-nav, footer.footer-nav,
+          button, a.btn-institutional, .btn-invite,
+          .p-dim-tabs, .screen-tabs-only,
+          .team-invitation-block, .invite-team-brief,
+          .radar-comparison-callout {
+            display: none !important;
           }
 
-          .summary-box { background: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          .risk-signal-section { background: #fff1f2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          .research-insight-brief { background: #0f172a !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          .interpretation-scale-document, .sim-focus-grid-document { background: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          .doc-stat-card { background: #0f172a !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          .d-bar-bg { background: #f1f5f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          .f-item { color: #475569 !important; }
-
-          .no-print { display: none !important; }
-          .page-section { page-break-inside: avoid !important; }
-          
+          /* Show print-only content */
           .print-linear-only { display: block !important; }
           .print-institutional-cta-block { display: block !important; }
-          .print-subheading-label { 
-            font-size: 0.75rem; 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
-            font-weight: 800; 
-            color: #94a3b8; 
-            margin-bottom: 1rem; 
+
+          /* Color preservation */
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+          /* Preserve dark background blocks */
+          .summary-box { background: #f8fafc !important; }
+          .risk-signal-section { background: #fff1f2 !important; }
+          .team-interpretation-box { background: #f8fafc !important; }
+
+          /* Page-break controls */
+          .page-section { page-break-inside: avoid !important; break-inside: avoid !important; }
+          .phased-dim-row { page-break-inside: avoid !important; break-inside: avoid !important; }
+          h2, h3 { page-break-after: avoid !important; break-after: avoid !important; }
+
+          /* Print subheading label */
+          .print-subheading-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 800;
+            color: #94a3b8;
+            margin-bottom: 0.75rem;
+            display: block;
           }
+
+          /* Footer */
+          .footer-document { display: flex !important; }
+          .print-only-persistent-footer { display: flex !important; }
         }
 
         .print-only-persistent-footer { display: none; }
