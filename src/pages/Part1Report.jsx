@@ -724,7 +724,7 @@ const Part1Report = () => {
                </div>
             </div>
 
-            <div style={{ marginTop: '4rem', paddingTop: '3rem', borderTop: '1px solid #e2e8f0' }}>
+            <div className="alignment-behavioral-narrative" style={{ marginTop: '4rem', paddingTop: '3rem', borderTop: '1px solid #e2e8f0' }}>
                <h3 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', marginBottom: '1.5rem' }}>What this likely looks like inside your team</h3>
                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '1rem' }}>
                   <div style={{ display: 'flex', gap: '1.5rem', background: '#f8fafc', padding: '1.5rem', borderRadius: '12px', alignItems: 'flex-start' }}>
@@ -748,7 +748,7 @@ const Part1Report = () => {
                </div>
             </div>
 
-            <div style={{ marginTop: '4rem', background: '#0f172a', borderRadius: '16px', padding: '3rem' }}>
+            <div className="alignment-two-stories" style={{ marginTop: '4rem', background: '#0f172a', borderRadius: '16px', padding: '3rem' }}>
                <h3 style={{ color: 'white', fontSize: '1.75rem', fontWeight: '800', marginBottom: '2rem', textAlign: 'center' }}>Your system is telling two different stories</h3>
                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
                   <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px', borderLeft: '4px solid #14b8a6' }}>
@@ -1276,6 +1276,30 @@ const Part1Report = () => {
             grid-template-columns: 1fr 1fr !important;
           }
           .team-alignment-section .page-section { margin-bottom: 1.5rem !important; }
+
+          /* Compress the large internal gaps inside Fragmented Perception */
+          .alignment-behavioral-narrative {
+            margin-top: 1.25rem !important;
+            padding-top: 1rem !important;
+          }
+          .alignment-behavioral-narrative h3 { font-size: 1rem !important; margin-bottom: 0.75rem !important; }
+          .alignment-behavioral-narrative > div > div { padding: 0.75rem !important; gap: 0.75rem !important; }
+          
+          .alignment-two-stories {
+            margin-top: 1rem !important;
+            padding: 1.25rem 1.5rem !important;
+            border-radius: 10px !important;
+          }
+          .alignment-two-stories h3 { font-size: 1rem !important; margin-bottom: 0.75rem !important; }
+          .alignment-two-stories > div { gap: 0.75rem !important; }
+          .alignment-two-stories > div > div { padding: 0.75rem !important; }
+          .alignment-two-stories > div:last-child { margin-top: 0.75rem !important; padding-top: 0.75rem !important; }
+          .alignment-two-stories > div:last-child > div { font-size: 0.9rem !important; }
+
+          /* Compress shared/divergent callouts */
+          .callout-box { padding: 0.75rem !important; }
+          .callout-box h4 { font-size: 0.9rem !important; margin: 0.25rem 0 !important; }
+          .callout-box p { font-size: 0.75rem !important; }
 
           /* Print subheading label */
           .print-subheading-label {
