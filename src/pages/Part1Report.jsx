@@ -1222,10 +1222,60 @@ const Part1Report = () => {
           .risk-signal-section { background: #fff1f2 !important; }
           .team-interpretation-box { background: #f8fafc !important; }
 
-          /* Page-break controls */
+          /* ── PAGE-BREAK CONTROLS ─────────────────────────── */
           .page-section { page-break-inside: avoid !important; break-inside: avoid !important; }
           .phased-dim-row { page-break-inside: avoid !important; break-inside: avoid !important; }
           h2, h3 { page-break-after: avoid !important; break-after: avoid !important; }
+
+          /* ── 1. RADAR: shrink chart column so radar page fits in one page ── */
+          .radar-layout-grid-refined {
+            display: grid !important;
+            grid-template-columns: 260px 1fr !important;
+            gap: 1.5rem !important;
+            align-items: start !important;
+          }
+          .radar-visual-column {
+            max-width: 260px !important;
+          }
+          .radar-container-brief {
+            max-width: 260px !important;
+          }
+          .profile-section { margin-bottom: 2rem !important; }
+          .radar-insight-text { font-size: 0.8rem !important; margin-bottom: 0.75rem !important; }
+          .profile-section h2 { margin-bottom: 0.75rem !important; }
+
+          /* ── 2. INSTITUTIONAL ALERT: compress so it fits with Executive Summary ── */
+          .risk-signal-section {
+            background: #fff1f2 !important;
+            margin-bottom: 1.5rem !important;
+            page-break-before: avoid !important;
+            break-before: avoid !important;
+          }
+          .risk-banner-inner { padding: 1.25rem !important; gap: 1rem !important; }
+          .risk-title { font-size: 1.1rem !important; }
+          .risk-content-expanded {
+            margin-top: 0.75rem !important;
+            padding-top: 0.75rem !important;
+          }
+          .risk-content-expanded ul { gap: 0.5rem !important; }
+          .risk-desc { font-size: 0.85rem !important; margin-bottom: 0.75rem !important; }
+
+          /* ── 3. TEAM ALIGNMENT (Fragmented Perception): keep on one page ── */
+          .team-alignment-section {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            page-break-before: auto !important;
+            break-before: auto !important;
+          }
+          .perception-layout-grid-narrative {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 1.5rem !important;
+          }
+          .shared-divergent-callouts {
+            grid-template-columns: 1fr 1fr !important;
+          }
+          .team-alignment-section .page-section { margin-bottom: 1.5rem !important; }
 
           /* Print subheading label */
           .print-subheading-label {
