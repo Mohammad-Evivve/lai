@@ -234,16 +234,21 @@ app.get('/api/diagnostic/:id', async (req, res) => {
       individual.participants = participant;
     }
 
+    // 2. Fetch team insights
     let teamData = null;
     const orgName = individual.organization_name;
-    const isGeneric = (org) => !org || ['none', 'n/a', 'na', 'test', 'personal'].includes(org.toLowerCase().trim());
+    const isGeneric = (org) => !org || ['none', 'n/a', 'na', 'test', 'personal', 'ntu'].includes(org.toLowerCase().trim());
 
-    if (orgName && !isGeneric(orgName)) {
-      // Fetch team context based on organization name (more robust than team_id alone)
-      const { data: teamMembers, error: teamError } = await supabaseClient
-        .from('diagnostic_results')
-        .select('overall_score, signal_detection_score, cognitive_framing_score, decision_alignment_score, resource_calibration_score, integrated_responsiveness_score')
-        .eq('organization_name', orgName);
+    // Strategy: Prioritize team_id, fallback to organization_name ONLY if not generic
+    let teamSearchQuery = null;
+    if (individual.team_id) {
+      teamSearchQuery = supabaseClient.from('diagnostic_results').select('overall_score, signal_detection_score, cognitive_framing_score, decision_alignment_score, resource_calibration_score, integrated_responsiveness_score').eq('team_id', individual.team_id);
+    } else if (orgName && !isGeneric(orgName)) {
+      teamSearchQuery = supabaseClient.from('diagnostic_results').select('overall_score, signal_detection_score, cognitive_framing_score, decision_alignment_score, resource_calibration_score, integrated_responsiveness_score').eq('organization_name', orgName);
+    }
+
+    if (teamSearchQuery) {
+      const { data: teamMembers, error: teamError } = await teamSearchQuery;
 
       if (!teamError && teamMembers && teamMembers.length > 0) {
         const count = teamMembers.length;
@@ -358,18 +363,30 @@ app.post('/api/diagnostic', async (req, res) => {
     // 1. Team Logic (Universal: Individuals also get a Personal Team)
     if (participation_mode === 'team_create' || participation_mode === 'individual') {
       // Generate unique code LAI-XXXX
-      final_team_code = `LAI-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-      const { data: newTeam, error: teamError } = await supabaseClient
+      const { data: existingTeam } = await supabaseClient
         .from('teams')
-        .insert([{ 
-          team_code: final_team_code, 
-          organization_name: organization_name || (participation_mode === 'individual' ? `${name}'s Profile` : null),
-          creator_email: email 
-        }])
-        .select()
+        .select('id, team_code')
+        .eq('creator_email', email)
+        .limit(1)
         .single();
-      if (teamError) throw teamError;
-      team_id = newTeam.id;
+
+      if (existingTeam) {
+        final_team_code = existingTeam.team_code;
+        team_id = existingTeam.id;
+      } else {
+        final_team_code = `LAI-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+        const { data: newTeam, error: teamError } = await supabaseClient
+          .from('teams')
+          .insert([{ 
+            team_code: final_team_code, 
+            organization_name: organization_name || (participation_mode === 'individual' ? `${name}'s Profile` : null),
+            creator_email: email 
+          }])
+          .select()
+          .single();
+        if (teamError) throw teamError;
+        team_id = newTeam.id;
+      }
     } else if (participation_mode === 'team_join' && team_code) {
       const { data: existingTeam } = await supabaseClient
         .from('teams')
@@ -389,51 +406,20 @@ app.post('/api/diagnostic', async (req, res) => {
         industry,
         role_level,
         org_size,
-        region: region || 'Global',
-        team_id
-      }], { onConflict: 'email, team_id' })
+        participation_mode,
+        team_id: team_id
+      }], { onConflict: 'email' })
       .select()
       .single();
 
     if (partError) throw partError;
 
-    // 3. Save granular responses for variance analysis
-    const responseRows = Object.keys(answers).map(key => {
-      const [dim, qIdx] = key.split('_');
-      return {
-        participant_id: participant.id,
-        team_id,
-        dimension_id: dim,
-        question_index: parseInt(qIdx),
-        score: parseInt(answers[key])
-      };
-    });
-
-    if (responseRows.length > 0) {
-      const { error: respError } = await supabaseClient.from('responses').insert(responseRows);
-      if (respError) console.error('Response save error:', respError);
-    }
-
-    // 4. v1.3.3: Auto-map by domain if email is provided
-    let verified_entity_id = null;
-    if (email && email.includes('@')) {
-      const domain = email.split('@')[1].toLowerCase();
-      const { data: org } = await supabaseClient
-        .from('organizations')
-        .select('id')
-        .eq('domain', domain)
-        .eq('is_verified', true)
-        .single();
-      if (org) verified_entity_id = org.id;
-    }
-
-    // 5. Final Diagnostic Result
-    const { data: finalResult, error: diagError } = await supabaseClient
+    // 3. Save Diagnostic Results
+    const { data: diagData, error: diagError } = await supabaseClient
       .from('diagnostic_results')
       .insert([{
         participant_id: participant.id,
-        team_id,
-        organization_name: organization_name || (participation_mode === 'team_join' ? 'Team Member' : 'Individual'),
+        organization_name,
         industry,
         region: region || 'Global',
         overall_score: overall_score || 0,
@@ -442,7 +428,8 @@ app.post('/api/diagnostic', async (req, res) => {
         resource_calibration_score: resource_calibration_score || 0,
         decision_alignment_score: decision_alignment_score || 0,
         integrated_responsiveness_score: integrated_responsiveness_score || 0,
-        verified_entity_id,
+        answers,
+        team_id: team_id,
         metadata: {
           ...metadata,
           source: 'Perceptual',
@@ -451,85 +438,90 @@ app.post('/api/diagnostic', async (req, res) => {
           role_level: role_level || 'Not Specified',
           org_size: org_size || 'Not Specified',
           is_published: true,
-          auto_mapped: !!verified_entity_id,
           recorded_at: new Date().toISOString()
         }
       }])
-      .select();
+      .select()
+      .single();
 
-    if (diagError) {
-      console.error('[DIAGNOSTIC] Insert Error:', JSON.stringify(diagError, null, 2));
-      throw diagError;
+    if (diagError) throw diagError;
+
+    // 4. Update User Status Tracking
+    try {
+      const dimScores = {
+        signal_detection: signal_detection_score || 0,
+        cognitive_framing: cognitive_framing_score || 0,
+        decision_alignment: decision_alignment_score || 0,
+        resource_calibration: resource_calibration_score || 0,
+        integrated_responsiveness: integrated_responsiveness_score || 0
+      };
+      const entries = Object.entries(dimScores).sort((a, b) => b[1] - a[1]);
+      const topDim = entries[0][0];
+      const lowestDim = entries[entries.length - 1][0];
+
+      await supabaseClient
+        .from('user_status')
+        .upsert({
+          email,
+          name,
+          company: organization_name,
+          has_completed: true,
+          role: role_level,
+          last_activity_at: new Date().toISOString(),
+          last_team_code: final_team_code,
+          top_dimension: topDim,
+          lowest_dimension: lowestDim
+        }, { onConflict: 'email' });
+    } catch (statusError) {
+      console.error('[API] Status Update Failed:', statusError.message);
     }
 
-    if (!finalResult || finalResult.length === 0) {
-      console.error('[DIAGNOSTIC] Insert failed: No data returned.');
-      throw new Error('No data returned from diagnostic insert');
-    }
-
-    const createdId = finalResult[0].id;
-    console.log('[DIAGNOSTIC] Success! Record ID:', createdId);
-
-    // 6. Minimum Delivery Layer (Emails)
-    // Async so it doesn't block the HTTP response
+    // 5. Background Notifications (Resend)
     (async () => {
       try {
-        const logEmail = async (email, template, meta) => {
-          console.log(`[DELIVERY] Stored email for ${email} (${template})`);
-          const { data, error } = await supabaseClient.from('email_logs').insert([{
-            recipient_email: email,
-            template_name: template,
-            delivery_status: 'Stored',
-            metadata: meta
-          }]).select().single();
-          
-          if (error) {
-             console.error('[DELIVERY] Error storing log:', error);
-             return; // Graceful degradation if table missing initially
-          }
+        const { INTERNAL, TEAM_INVITATION } = require('./lib/emailTemplates.cjs');
 
-          console.log(`[DELIVERY] Enqueued email for ${email} (${template})`);
-          await supabaseClient.from('email_logs').update({ delivery_status: 'Enqueued' }).eq('id', data.id);
-          
-          // Simulation of sending
-          setTimeout(async () => {
-            console.log(`[DELIVERY] Sent email for ${email} (${template})`);
-            await supabaseClient.from('email_logs').update({ delivery_status: 'Sent' }).eq('id', data.id);
-          }, 1000);
-        };
+        // Internal Alert
+        await sendEmail({
+          from: getSender('notifications'),
+          to: 'mmemon@evivve.com',
+          subject: `NEW REPORT: ${organization_name || email}`,
+          html: INTERNAL.diagnosticCompleted({
+            name, email, organization_name,
+            overall_score, top_dimension: '...',
+            report_link: `https://adaptiveness.institute/report/perception/${diagData.id}`
+          })
+        });
 
-        // Emit Completion Email
-        await logEmail(email, 'DIAGNOSTIC_COMPLETION', { report_id: createdId, team_code: final_team_code });
-
-        // Emit Invites (if Team Creator)
-        if (mode === 'team_create' && invites && invites.length > 0) {
-          for (const inv of invites) {
-             if (inv && inv.includes('@')) {
-                await logEmail(inv, 'TEAM_INVITATION', { team_code: final_team_code, inviter: name });
-             }
+        // Team Invitations (Flow 1: Early invites)
+        if (metadata.invites && metadata.invites.length > 0) {
+          for (const invEmail of metadata.invites) {
+            await sendEmail({
+              from: getSender('notifications'),
+              to: invEmail,
+              subject: 'Your team is measuring its leadership adaptiveness',
+              html: TEAM_INVITATION({
+                inviter: name,
+                organization: organization_name,
+                team_code: final_team_code
+              })
+            });
           }
         }
-
-        // Emit Join Notification to existing team (Optional: currently just completion is enough for the user themselves)
-        if (mode === 'team_join') {
-           // Can notify creator here if we had their email
-           console.log(`[DELIVERY] ${email} successfully joined team ${final_team_code}`);
-        }
-
-      } catch (deliveryErr) {
-        console.error('[DELIVERY] Delivery sub-system error:', deliveryErr);
+      } catch (bgError) {
+        console.error('[API] Background Notify Error:', bgError.message);
       }
     })();
 
     res.status(201).json({ 
-      id: createdId, 
+      id: diagData.id, 
       team_code: final_team_code,
-      team_id,
-      participant_id: participant.id 
+      message: 'Diagnostic synthesized successfully' 
     });
+
   } catch (err) {
-    console.error('Supabase Save Error:', err.message);
-    res.status(500).json({ error: `Save failed: ${err.message}` });
+    console.error('[API] Diagnostic Error:', err.message);
+    res.status(500).json({ error: 'Failed to synthesize diagnostic', details: err.message });
   }
 });
 

@@ -442,7 +442,7 @@ const Part1Report = () => {
 
         {/* 3. LEADERSHIP RISK SIGNAL (CONDITIONAL) */}
         {riskSignal && (
-          <section className="report-section risk-signal-section page-section">
+          <section className="report-section risk-signal-section page-section" style={{ pageBreakBefore: 'always' }}>
             <div className="risk-banner-inner">
                <AlertCircle size={40} className="text-rose" />
                <div style={{ flex: 1 }}>

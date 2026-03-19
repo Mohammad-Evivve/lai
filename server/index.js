@@ -200,15 +200,22 @@ app.get('/api/diagnostic/:id', async (req, res) => {
 
     if (individualError) throw individualError;
 
-    // 2. Fetch team insights if organization matches
+    // 2. Fetch team insights
     let teamData = null;
-    if (individual.organization_name) {
-      const { data: teamMembers, error: teamError } = await supabase
-        .from('diagnostic_results')
-        .select('overall_score, signal_detection_score, cognitive_framing_score, decision_alignment_score, resource_calibration_score, integrated_responsiveness_score')
-        .eq('organization_name', individual.organization_name);
+    const isGeneric = (org) => !org || ['none', 'n/a', 'na', 'test', 'personal', 'ntu'].includes(org.toLowerCase().trim());
 
-      if (!teamError && teamMembers.length > 0) {
+    // Strategy: Prioritize team_id, fallback to organization_name ONLY if not generic
+    let teamSearchQuery = null;
+    if (individual.team_id) {
+      teamSearchQuery = supabase.from('diagnostic_results').select('overall_score, signal_detection_score, cognitive_framing_score, decision_alignment_score, resource_calibration_score, integrated_responsiveness_score').eq('team_id', individual.team_id);
+    } else if (individual.organization_name && !isGeneric(individual.organization_name)) {
+      teamSearchQuery = supabase.from('diagnostic_results').select('overall_score, signal_detection_score, cognitive_framing_score, decision_alignment_score, resource_calibration_score, integrated_responsiveness_score').eq('organization_name', individual.organization_name);
+    }
+
+    if (teamSearchQuery) {
+      const { data: teamMembers, error: teamError } = await teamSearchQuery;
+
+      if (!teamError && teamMembers && teamMembers.length > 0) {
         const count = teamMembers.length;
         const averages = {
           overall: teamMembers.reduce((a, b) => a + Number(b.overall_score), 0) / count,
@@ -250,10 +257,22 @@ app.post('/api/diagnostic', async (req, res) => {
     resource_calibration_score, 
     decision_alignment_score, 
     integrated_responsiveness_score,
-    answers
+    answers,
+    team_code
   } = req.body;
   
   try {
+    // 0. Resolve team_id if team_code provided
+    let teamId = null;
+    if (team_code) {
+      const { data: teamData } = await supabase
+        .from('teams')
+        .select('id')
+        .eq('team_code', team_code.toUpperCase())
+        .single();
+      if (teamData) teamId = teamData.id;
+    }
+
     const { data: diagData, error: diagError } = await supabase
       .from('diagnostic_results')
       .insert([{
@@ -265,7 +284,8 @@ app.post('/api/diagnostic', async (req, res) => {
         cognitive_framing_score,
         resource_calibration_score,
         decision_alignment_score,
-        integrated_responsiveness_score
+        integrated_responsiveness_score,
+        team_id: teamId
       }])
       .select();
 

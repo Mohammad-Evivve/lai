@@ -173,7 +173,7 @@ const DiagnosticPage = () => {
       role_level: meta.role_level,
       org_size: meta.org_size,
       participation_mode: mode,
-      team_code: mode === 'team_join' ? teamCode : null, // team_create generates code on server
+      team_code: mode === 'team_join' ? teamCode : (mode === 'team_create' ? serverTeamCode : null),
       overall_score: overallScore,
       signal_detection_score: calculateDimScore('signal_detection'),
       cognitive_framing_score: calculateDimScore('cognitive_framing'),
