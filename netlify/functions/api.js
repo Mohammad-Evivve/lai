@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import serverless from 'serverless-http';
 import { supabase as supabaseClient } from './lib/supabase.cjs';
+import * as emailLib from './lib/email.cjs';
+const { sendEmail, getSender } = emailLib;
 
 const app = express();
 
@@ -312,8 +314,7 @@ app.post('/api/diagnostic/invite', async (req, res) => {
     const validInvites = invites.filter(inv => inv && inv.includes('@') && inv !== email);
     
     // We use the same logEmail pattern as the main diagnostic route
-    const { sendEmail, getSender } = require('./lib/email.cjs'); 
-    // Actually, Netlify functions might need a different import. Let's stick to the existing pattern in this file.
+    // (Imported at top: sendEmail, getSender)
     
     for (const inv of validInvites) {
       // In this Netlify function, we'll use a direct invitation logic or log it
