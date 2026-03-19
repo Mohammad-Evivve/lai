@@ -32,9 +32,6 @@ const HomeHeroInstitutional = () => {
             <Link to="/diagnostic" className="btn-institutional-hero primary">
               Measure Your Leadership System
             </Link>
-            <Link to="/research/reports/state-of-cognition" className="btn-institutional-hero highlight">
-              Explore Global Research
-            </Link>
             <Link to="/observatory" className="btn-institutional-hero outline">
               How the Observatory Works
             </Link>
