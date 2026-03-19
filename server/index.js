@@ -154,6 +154,7 @@ app.post('/api/diagnostic', async (req, res) => {
           for (const member of teamMembers) {
             const lastUpdateMs = member.last_team_update_at ? new Date(member.last_team_update_at).getTime() : 0;
             if (nowMs - lastUpdateMs >= rateLimitMs) {
+              /* 
               const { sendEmail, FROM_NOTIFICATIONS } = require('./lib/email');
               const { FLOW_4 } = require('./lib/emailTemplates');
               
@@ -163,6 +164,8 @@ app.post('/api/diagnostic', async (req, res) => {
                 subject: 'New diagnostic completed matching your team',
                 html: FLOW_4.teamUpdate(diagData[0].id)
               });
+              */
+              console.log('Email suppression (missing lib): Team update');
               
               await supabase
                 .from('user_status')
@@ -174,6 +177,7 @@ app.post('/api/diagnostic', async (req, res) => {
       }
 
       // --- Trigger Internal Alert ---
+      /* 
       const { sendEmail, FROM_NOTIFICATIONS } = require('./lib/email');
       const { INTERNAL } = require('./lib/emailTemplates');
       await sendEmail({
@@ -190,6 +194,8 @@ app.post('/api/diagnostic', async (req, res) => {
           report_link: `https://lai.institute/report/perception/${diagData[0].id}`
         })
       });
+      */
+      console.log('Email suppression (missing lib): Internal alert');
     }
 
     res.status(201).json({ id: diagData[0].id });
@@ -272,6 +278,62 @@ app.post('/api/demo-request', async (req, res) => {
   }
 });
 
+// Submit Report Request (State of Cognition) → Supabase + Email
+app.post('/api/report-request', async (req, res) => {
+  const { name, email, organization, role, region } = req.body;
+  try {
+    const { data, error } = await supabase
+      .from('report_leads')
+      .insert([{ name, email, organization, role, region, source: 'state_of_cognition' }])
+      .select();
+
+    if (error) throw error;
+
+    // Trigger Internal Alert and User Email
+    /*
+    try {
+      const { sendEmail, getSender } = require('./lib/email');
+      
+      // Internal Alert
+      await sendEmail({
+        from: getSender('notifications'),
+        to: 'LAI <insights@lai.institute>',
+        subject: `REPORT DOWNLOAD: State of Cognition 2026 | ${organization || email}`,
+        html: `<h3>New Research Lead</h3>
+               <p>A user has requested the State of Cognition 2026 report.</p>
+               <ul>
+                 <li><strong>Name:</strong> ${name}</li>
+                 <li><strong>Email:</strong> ${email}</li>
+                 <li><strong>Organization:</strong> ${organization || 'N/A'}</li>
+                 <li><strong>Role:</strong> ${role || 'N/A'}</li>
+                 <li><strong>Region:</strong> ${region || 'N/A'}</li>
+               </ul>`
+      });
+
+      // User Email with PDF link
+      await sendEmail({
+        from: getSender('insights'),
+        to: email,
+        subject: 'Your Download: The State of Cognition 2026',
+        html: `<p>Dear ${name},</p>
+               <p>Thank you for your interest in the Leadership Adaptiveness Institute’s latest research.</p>
+               <p>You can access the full "State of Cognition 2026" report via the secure link below:</p>
+               <p><a href="https://lai.institute/docs/State_of_Cognition_2026.pdf" style="display:inline-block;padding:12px 24px;background:#2dd4bf;color:#0a192f;text-decoration:none;font-weight:bold;border-radius:4px;">Download Full Report (PDF)</a></p>
+               <p>Best regards,<br/>The LAI Research Team</p>`
+      });
+    } catch (e) {
+      console.error('Report email trigger failed:', e);
+    }
+    */
+    console.log('Email suppression (missing lib): Report download lead');
+
+    res.status(201).json({ success: true });
+  } catch (err) {
+    console.error('Report request error:', err);
+    res.status(500).json({ error: 'Failed to process report request' });
+  }
+});
+
 // Get Global Analytics (Heatmap/Regional Data) → Supabase
 app.get('/api/analytics/global', async (req, res) => {
   try {
@@ -317,9 +379,11 @@ app.get('/api/analytics/global', async (req, res) => {
   }
 });
 
+/* 
 // Email Scheduler & Templates
 const { sendEmail } = require('./lib/email');
 const { FLOW_1, FLOW_2, FLOW_3, FLOW_4, INTERNAL } = require('./lib/emailTemplates');
+*/
 
 // Initialize Scheduler
 const runEmailScheduler = async () => {

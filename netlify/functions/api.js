@@ -481,6 +481,34 @@ app.post('/api/diagnostic', async (req, res) => {
   }
 });
 
+// Submit Report Request (State of Cognition) → Supabase
+app.post('/api/report-request', async (req, res) => {
+  const { name, email, organization, role, region } = req.body;
+  try {
+    const { data, error } = await supabaseClient
+      .from('report_leads')
+      .insert([{ 
+          name, 
+          email, 
+          organization, 
+          role, 
+          region, 
+          source: 'state_of_cognition' 
+      }])
+      .select();
+
+    if (error) throw error;
+
+    // Trigger Internal Alert and User Email (Placeholder for Netlify)
+    console.log(`[REPORT_REQUEST] Lead captured: ${email} (${organization || 'N/A'})`);
+    
+    res.status(201).json({ success: true });
+  } catch (err) {
+    console.error('Report request error:', err);
+    res.status(500).json({ error: 'Failed to process report request' });
+  }
+});
+
 // Global Analytics — Identity Resolution & Variance (v1.3.3)
 app.get('/api/analytics/global', async (req, res) => {
   try {

@@ -256,6 +256,48 @@ const ResearchPage = () => {
               Grounded in a decade of behavioral science and 600+ high-fidelity leadership simulations, the LAI Research Engine is a self-publishing intelligence platform that synthesizes AFERR data into actionable business intelligence.
             </p>
           </motion.div>
+
+          {/* Featured Report Card */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            style={{
+              marginTop: '4rem',
+              background: '#0a192f',
+              borderRadius: 32,
+              padding: '3rem',
+              color: 'white',
+              display: 'flex',
+              flexDirection: 'column',
+              md: { flexDirection: 'row' },
+              gap: '2rem',
+              alignItems: 'center',
+              border: '1px solid rgba(45,212,191,0.2)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+          >
+            <div style={{ position: 'absolute', top: 0, right: 0, width: '300px', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(45,212,191,0.05))', pointerEvents: 'none' }} />
+            <div style={{ flex: 1, position: 'relative', zIndex: 1 }}>
+              <span style={{ color: '#2dd4bf', fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '3px', display: 'block', marginBottom: '1rem' }}>Flagship Report 2026</span>
+              <h2 style={{ fontSize: '2.5rem', fontFamily: 'Georgia,serif', marginBottom: '1.5rem' }}>The State of Cognition</h2>
+              <p style={{ color: '#94a3b8', fontSize: '1.1rem', marginBottom: '2rem', fontWeight: 300, maxWidth: 500 }}>
+                A global behavioral analysis of how leadership systems translate awareness into action. 
+                Based on 20,000+ simulation data points.
+              </p>
+              <Link to="/research/reports/state-of-cognition" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', padding: '1rem 2rem', background: '#2dd4bf', color: '#0a192f', borderRadius: 9999, fontWeight: 700, textDecoration: 'none', transition: 'all 0.2s' }}>
+                Access Flagship Report <ArrowRight size={18} />
+              </Link>
+            </div>
+            <div style={{ width: '200px', height: '280px', background: 'white', borderRadius: 4, transform: 'rotate(5deg)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)', flexShrink: 0, display: 'flex', flexDirection: 'column', padding: '1.5rem' }}>
+              <span style={{ fontSize: '8px', fontWeight: 900, color: '#0a192f' }}>LAI</span>
+              <div style={{ marginTop: 'auto' }}>
+                <div style={{ height: '2px', width: '20px', background: '#2dd4bf', marginBottom: '8px' }} />
+                <p style={{ fontSize: '14px', fontFamily: 'Georgia,serif', color: '#0a192f', fontWeight: 600, lineHeight: 1.2 }}>State of <br/>Cognition</p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 

@@ -32,6 +32,9 @@ const HomeHeroInstitutional = () => {
             <Link to="/diagnostic" className="btn-institutional-hero primary">
               Measure Your Leadership System
             </Link>
+            <Link to="/research/reports/state-of-cognition" className="btn-institutional-hero highlight">
+              Explore Global Research
+            </Link>
             <Link to="/observatory" className="btn-institutional-hero outline">
               How the Observatory Works
             </Link>
@@ -119,11 +122,16 @@ const HomeHeroInstitutional = () => {
           background: #2dd4bf;
           color: #0a192f;
         }
-        .btn-institutional-hero.primary:hover {
-          background: #14b8a6;
+        .btn-institutional-hero.highlight {
+          background: #ffffff;
+          color: #0a192f;
+        }
+        .btn-institutional-hero.primary:hover, .btn-institutional-hero.highlight:hover {
           transform: translateY(-2px);
           box-shadow: 0 10px 30px rgba(45, 212, 191, 0.3);
         }
+        .btn-institutional-hero.primary:hover { background: #14b8a6; }
+        .btn-institutional-hero.highlight:hover { background: #f1f5f9; }
         .btn-institutional-hero.outline {
           background: transparent;
           border: 1px solid rgba(148, 163, 184, 0.3);

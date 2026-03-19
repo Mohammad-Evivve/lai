@@ -131,6 +131,11 @@ const FrameworkPage = () => {
         <div className="container narrow text-center">
           <h2 className="section-h2">From Concept to Measurement</h2>
           <p className="body-p">This framework serves as the structural foundation for the Global Leadership Adaptiveness Index. By defining these five observable dimensions, the Institute can measure how organizations actually behave when reality changes.</p>
+          <p className="text-teal font-bold mt-4 mb-2">
+            <Link to="/research/reports/state-of-cognition" className="inline-flex items-center gap-2">
+              See how this plays out globally in the State of Cognition Report <ArrowRight size={16} />
+            </Link>
+          </p>
           <div className="mt-5">
             <Link to="/how-measured" className="btn-institutional">
               Explore Our Measurement Methodology <ArrowRight size={18} />

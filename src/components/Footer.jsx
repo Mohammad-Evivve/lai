@@ -35,6 +35,7 @@ const Footer = () => {
               <li><Link to="/about">About the Institute</Link></li>
               <li><Link to="/council">Advisory / Research Council</Link></li>
               <li><Link to="/library">Research Library</Link></li>
+              <li><Link to="/research/reports/state-of-cognition">State of Cognition</Link></li>
               <li><Link to="/aferr">AFERR Research Program</Link></li>
               <li><Link to="/simulation">Simulation-Based Measurement</Link></li>
             </ul>

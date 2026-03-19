@@ -576,23 +576,23 @@ const DiagnosticPage = () => {
                 </div>
               </div>
 
-              <div className="next-steps-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-                <div style={{ background: 'white', padding: '2rem', borderRadius: '20px', border: '1px solid #e2e8f0', display: 'flex', gap: '1.5rem', alignItems: 'flex-start', textAlign: 'left' }}>
-                  <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justify_content: 'center', color: '#14b8a6', flexShrink: 0 }}>
+              <div className="next-steps-grid">
+                <div className="info-node-premium">
+                  <div className="info-icon">
                     <Mail size={24} />
                   </div>
-                  <div>
-                    <strong style={{ display: 'block', fontSize: '1.1rem', color: '#0f172a', marginBottom: '0.5rem' }}>Persistence Link</strong>
-                    <span style={{ fontSize: '0.9rem', color: '#64748b', lineHeight: '1.6' }}>A secure access link has been dispatched to <strong>{identity.email}</strong>.</span>
+                  <div className="info-content">
+                    <strong className="info-title">Persistence Link</strong>
+                    <span className="info-desc">A secure access link has been dispatched to <strong>{identity.email}</strong>.</span>
                   </div>
                 </div>
-                <div style={{ background: 'white', padding: '2rem', borderRadius: '20px', border: '1px solid #e2e8f0', display: 'flex', gap: '1.5rem', alignItems: 'flex-start', textAlign: 'left' }}>
-                  <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justify_content: 'center', color: '#14b8a6', flexShrink: 0 }}>
+                <div className="info-node-premium">
+                  <div className="info-icon">
                     <TrendingUp size={24} />
                   </div>
-                  <div>
-                    <strong style={{ display: 'block', fontSize: '1.1rem', color: '#0f172a', marginBottom: '0.5rem' }}>Analytics Threshold</strong>
-                    <span style={{ fontSize: '0.9rem', color: '#64748b', lineHeight: '1.6' }}>Team-wide variance mapping activates upon reaching <strong>3+ completions</strong>.</span>
+                  <div className="info-content">
+                    <strong className="info-title">Analytics Threshold</strong>
+                    <span className="info-desc">Team-wide variance mapping activates upon reaching <strong>3+ completions</strong>.</span>
                   </div>
                 </div>
               </div>
@@ -730,11 +730,23 @@ const DiagnosticPage = () => {
         .btn-institutional.full-width { width: 100%; justify-content: center; padding: 1.5rem; font-size: 1.25rem; }
 
         @media (max-width: 768px) {
-          .mode-grid, .meta-grid, .process-preview, .next-steps-info { grid-template-columns: 1fr; }
+          .mode-grid, .meta-grid, .process-preview, .next-steps-info, .next-steps-grid { grid-template-columns: 1fr; }
           .diag-card { padding: 2rem; }
-          .report-access-card { flex-direction: column; gap: 2rem; align-items: flex-start; }
-          .scale-options-10 { grid-template-columns: repeat(5, 1fr); }
+          .report-access-card { padding: 2rem !important; flex-direction: column !important; gap: 2rem !important; }
+          .report-access-card > div { width: 100%; }
+          .report-access-card .btn-institutional { width: 100%; }
+          .scale-options-10 { grid-template-columns: repeat(5, 1fr); gap: 0.5rem; }
+          .results-body h1 { font-size: 2rem !important; }
+          .results-body p { font-size: 1.1rem !important; }
+          .team-code-badge { padding: 1.5rem !important; }
+          .code-display { font-size: 2rem !important; gap: 0.75rem !important; }
         }
+
+        .next-steps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .info-node-premium { background: white; padding: 2rem; border-radius: 20px; border: 1px solid #e2e8f0; display: flex; gap: 1.5rem; align-items: flex-start; text-align: left; }
+        .info-icon { width: 48px; height: 48px; border-radius: 12px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #14b8a6; flex-shrink: 0; }
+        .info-title { display: block; fontSize: 1.1rem; color: #0f172a; margin-bottom: 0.5rem; }
+        .info-desc { fontSize: 0.9rem; color: #64748b; margin-bottom: 0.5rem; line-height: 1.6; }
       `}</style>
     </div>
   );

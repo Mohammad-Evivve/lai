@@ -45,6 +45,17 @@ db.exec(`
     trend TEXT,
     status TEXT
   );
+
+  CREATE TABLE IF NOT EXISTS report_leads (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    email TEXT,
+    organization TEXT,
+    role TEXT,
+    region TEXT,
+    source TEXT DEFAULT 'state_of_cognition',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
 // Seed Global Index Data if empty

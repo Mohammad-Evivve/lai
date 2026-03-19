@@ -1162,9 +1162,32 @@ const Part1Report = () => {
         .doc-stat-card-lean { background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 16px; text-align: center; }
 
         @media screen and (max-width: 900px) {
-           .report-container { width: 95%; padding: 2rem; }
-           .summary-grid, .radar-layout-grid, .dim-insight-row, .perception-layout-grid { grid-template-columns: 1fr; gap: 2rem; }
-           .dim-score-col { text-align: left; font-size: 32px; }
+          .report-container { width: 100%; padding: 1.5rem; }
+          .summary-grid, 
+          .radar-layout-grid, 
+          .radar-layout-grid-refined,
+          .dim-insight-row, 
+          .perception-layout-grid,
+          .perception-layout-grid-narrative,
+          .most-shared-fragmented-grid,
+          .alignment-behavioral-narrative > div,
+          .alignment-two-stories { 
+            grid-template-columns: 1fr !important; 
+            display: grid !important;
+            gap: 2rem; 
+          }
+          .alignment-two-stories { padding: 2rem 1.5rem !important; }
+          .alignment-two-stories > div { border-left: none !important; border-top: 4px solid; padding-top: 1.5rem; }
+          .alignment-two-stories > div:first-child { border-color: #14b8a6; }
+          .alignment-two-stories > div:last-child { border-color: #f43f5e; }
+          
+          .dim-score-col { text-align: left; font-size: 32px; }
+          .phased-dim-header { flex-direction: column; align-items: flex-start !important; gap: 1.5rem; }
+          .p-dim-tabs { width: 100%; display: flex; overflow-x: auto; padding-bottom: 0.5rem; }
+          .p-tab { flex: 1; white-space: nowrap; text-align: center; }
+          
+          .team-stats-row-brief { flex-direction: column; gap: 1rem; }
+          .t-stat { width: 100%; }
         }
 
         @media print {

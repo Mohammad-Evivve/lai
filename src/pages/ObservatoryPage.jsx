@@ -33,6 +33,12 @@ const ObservatoryPage = () => {
         <div className="container narrow">
           <h2 className="section-h2">A Structured Observation Platform</h2>
           <p className="large-p">The Observatory is not a real-time monitoring dashboard or a tactical command center. It is an institutional research platform designed to capture and synthesize behavioral evidence from across the global leadership landscape.</p>
+          <div className="bg-navy p-8 rounded-2xl text-white mb-8 border border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+            <p className="body-p text-slate-300 m-0">See the latest synthesis of this data in our flagship report.</p>
+            <Link to="/research/reports/state-of-cognition" className="text-teal font-bold flex items-center gap-2 whitespace-nowrap">
+              State of Cognition 2026 <ArrowRight size={16} />
+            </Link>
+          </div>
           <p className="body-p">By moving beyond static self-reporting, the Observatory provides a transparent view into how organizations actually behave when confronted with environmental shifts.</p>
         </div>
       </section>

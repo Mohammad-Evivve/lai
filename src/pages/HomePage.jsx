@@ -69,6 +69,12 @@ const HomePage = () => {
             </div>
 
             <div className="research-links">
+                <div className="research-link-card featured-card">
+                  <span className="r-label text-teal">Flagship Report</span>
+                  <h3>State of Cognition 2026</h3>
+                  <p className="text-slate-400 text-sm mb-6">A global behavioral analysis of how leaders translate awareness into action.</p>
+                  <Link to="/research/reports/state-of-cognition" className="r-button text-teal">Explore Report →</Link>
+               </div>
                <div className="research-link-card">
                   <span className="r-label">Recent Publication</span>
                   <h3>The 2024 Alignment Paradox</h3>
@@ -139,6 +145,14 @@ const HomePage = () => {
            color: #0a192f; margin-bottom: 24px;
            font-weight: 500;
         }
+        .featured-card {
+          background: #0a192f;
+          padding: 40px;
+          border-radius: 8px;
+          border-bottom: none;
+        }
+        .featured-card h3 { color: white; }
+        .featured-card .r-label { color: #2dd4bf; }
         .r-button {
            font-size: 12px; font-weight: 700;
            text-transform: uppercase; color: #2dd4bf;

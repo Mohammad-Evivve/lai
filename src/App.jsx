@@ -21,6 +21,7 @@ import CompletenessPage from './pages/CompletenessPage';
 
 // Phase 3: Research Layer
 import ResearchPage from './pages/ResearchPage'; // Research Library
+import StateOfCognitionPage from './pages/StateOfCognitionPage';
 import AFERRPage from './pages/AFERRPage';
 // import BehavioralSciencePage from './pages/BehavioralSciencePage'; // [NEW]
 // import SimulationMeasurementPage from './pages/SimulationMeasurementPage'; // [NEW]
@@ -101,6 +102,7 @@ function App() {
               
               {/* Phase 3: Research Layer */}
               <Route path="/research" element={<ResearchPage />} />
+              <Route path="/research/reports/state-of-cognition" element={<StateOfCognitionPage />} />
               <Route path="/aferr" element={<AFERRPage />} />
 
               {/* Phase 4: Participation Layer */}
