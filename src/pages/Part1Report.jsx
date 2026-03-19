@@ -349,7 +349,7 @@ const Part1Report = () => {
             <div className="confidential-seal">Confidential Executive Intelligence</div>
           </div>
 
-          <div className="header-metadata-grid">
+          <div className="header-metadata-grid" style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 640 ? '1fr' : 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
             <div className="meta-col">
               <div className="meta-entry"><span className="m-label">Institution</span> <span className="m-val">{data.organization_name}</span></div>
               <div className="meta-entry"><span className="m-label">Participant</span> <span className="m-val">{data.participants?.name || 'Leadership Team Member'}</span></div>
@@ -359,7 +359,7 @@ const Part1Report = () => {
               <div className="meta-entry"><span className="m-label">Assessment Date</span> <span className="m-val">{new Date(data.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span></div>
               <div className="meta-entry"><span className="m-label">Report ID</span> <span className="m-val">{id.substring(0, 8).toUpperCase()}</span></div>
             </div>
-            <div className="meta-col-actions no-print" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'nowrap' }}>
+            <div className="meta-col-actions no-print" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
               <button 
                 className="btn-institutional premium-download-btn"
                 onClick={() => window.print()}
@@ -367,26 +367,12 @@ const Part1Report = () => {
                   background: '#0f172a', color: 'white', border: 'none', 
                   padding: '10px 20px', borderRadius: '10px', fontWeight: '700', 
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem',
-                  fontSize: '13px', transition: 'all 0.2s', whiteSpace: 'nowrap'
+                  fontSize: '13px', transition: 'all 0.2s', whiteSpace: 'nowrap',
+                  width: window.innerWidth < 640 ? '100%' : 'auto',
+                  justifyContent: 'center'
                 }}
               >
                 <Printer size={15} /> Download Report
-              </button>
-              <button 
-                className="btn-institutional outline premium-share-btn"
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  setCopied('report_header');
-                  setTimeout(() => setCopied(null), 2000);
-                }}
-                style={{
-                  background: 'transparent', color: '#14b8a6', border: '1.5px solid #14b8a6',
-                  padding: '9px 18px', borderRadius: '10px', fontWeight: '700',
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem',
-                  fontSize: '13px', transition: 'all 0.2s', whiteSpace: 'nowrap'
-                }}
-              >
-                {copied === 'report_header' ? <><ShieldCheck size={15} /> Copied</> : <><FileText size={15} /> Copy Link</>}
               </button>
             </div>
           </div>

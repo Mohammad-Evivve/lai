@@ -350,16 +350,17 @@ const LeaderboardRow = React.memo(({ r, idx, expandedId, setExpandedId, setFocus
         className={`leaderboard-row ${glowClass}`}
         style={{ 
           display: 'grid', 
-          gridTemplateColumns: '80px 210px minmax(400px, 1fr) 200px 160px',
+          gridTemplateColumns: window.innerWidth < 1024 ? '50px 1fr 100px' : '80px 210px minmax(400px, 1fr) 200px 160px',
           alignItems: 'center', 
-          padding: '24px 40px', 
+          padding: window.innerWidth < 640 ? '16px 20px' : '24px 40px', 
           cursor: 'pointer',
           background: isOpen ? '#f8fafc' : (idx === 0 ? 'rgba(16, 185, 129, 0.03)' : 'white'),
           borderRadius: 4,
           boxShadow: idx === 0 ? '0 1px 4px rgba(0,0,0,0.05)' : 'none',
           borderLeft: idx === 0 ? '4px solid #10b981' : '4px solid transparent',
           transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-          zIndex: isOpen ? 10 : 1
+          zIndex: isOpen ? 10 : 1,
+          gap: '12px'
         }}
         whileHover={{ 
           background: idx === 0 ? 'rgba(16, 185, 129, 0.05)' : 'white',
@@ -387,7 +388,7 @@ const LeaderboardRow = React.memo(({ r, idx, expandedId, setExpandedId, setFocus
             </span>
           </div>
         </div>
-        <div style={{ display: 'contents' }}>
+        <div style={{ display: window.innerWidth < 1024 ? 'none' : 'contents' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
             <ScoreBar score={r.score} />
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -408,31 +409,11 @@ const LeaderboardRow = React.memo(({ r, idx, expandedId, setExpandedId, setFocus
             </div>
           </div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-          <span style={{ 
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            fontWeight: 900, 
-            fontSize: '1.1rem', 
-            color: r.score >= 50 ? '#059669' : '#dc2626', 
-            fontVariantNumeric: 'tabular-nums'
-          }}>
-            {r.score >= 50 ? <ArrowUp size={18} strokeWidth={3} /> : <ArrowDown size={18} strokeWidth={3} />}
-            {Math.round(r.evidence_density * 100)}%
-          </span>
-          <div style={{ fontSize: '0.55rem', fontWeight: 900, color: '#64748b', letterSpacing: 1.5, textTransform: 'uppercase' }}>
-             Evidence Density
-          </div>
-          <div className="fidelity-trigger" style={{ position: 'relative' }}>
-            <div style={{ fontSize: '0.55rem', fontWeight: 900, color: '#94a3b8', letterSpacing: 1, textTransform: 'uppercase' }}>
-              Tier: {r.is_triangulated ? 'Behavioral' : 'Environmental'}
-            </div>
-            <Tooltip text="Observability Tier: Indicates whether measurement is based on direct observation or external context." />
-          </div>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem' }}>
-          <FidelityBadge />
+        
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '12px' }}>
+          {window.innerWidth < 1024 && (
+             <span style={{ fontSize: '1.25rem', fontWeight: 950, color: getScoreColor(r.score) }}>{r.score}</span>
+          )}
           <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
             {isOpen ? <ChevronUp size={20} className="text-slate-400" /> : <ChevronDown size={20} className="text-slate-300" />}
           </motion.div>
@@ -734,32 +715,42 @@ const GlobalIndexPage = () => {
 
       {/* SYSTEM STATUS ROW (Observatory Context) */}
       <div style={{ background: '#071120', borderTop: '1px solid rgba(255,255,255,0.1)', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '0.6rem 0' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', gap: '2rem', color: '#64748b', fontSize: '0.62rem', fontWeight: 800, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1.2 }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+          <div style={{ display: 'flex', gap: '2rem', color: '#64748b', fontSize: '0.62rem', fontWeight: 800, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: 1.2, flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#2dd4bf', boxShadow: '0 0 8px #2dd4bf' }} />
               <span style={{ color: '#2dd4bf' }}>System Live</span>
             </div>
-            <span>Last Update: {Object.values(recentEvents).length > 0 ? new Date(Math.max(...Object.values(recentEvents).map(e => e.timestamp))).toLocaleTimeString('en-US', { timeZone: 'UTC', hour12: false }) + ' UTC' : 'T-00:00:00 SCANNING'}</span>
-            <span>Signals Today: <span style={{ color: '#94a3b8' }}>{stats.signalsProcessed.toLocaleString()}</span></span>
-            <span>Confidence: <span style={{ color: '#94a3b8' }}>94.2% Baseline</span></span>
+            <span style={{ display: window.innerWidth < 640 ? 'none' : 'inline' }}>Last Update: {Object.values(recentEvents).length > 0 ? new Date(Math.max(...Object.values(recentEvents).map(e => e.timestamp))).toLocaleTimeString('en-US', { timeZone: 'UTC', hour12: false }) + ' UTC' : 'T-00:00:00 SCANNING'}</span>
+            <span>Signals: <span style={{ color: '#94a3b8' }}>{stats.signalsProcessed.toLocaleString()}</span></span>
           </div>
           <div style={{ color: '#2dd4bf', fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: 2 }}>
-            Observatory Core v1.7.0
+            Core v1.7.0
           </div>
         </div>
       </div>
 
       {/* OPERATIONAL CONSOLE PANEL (Consolidated Summary) */}
-      <div style={{ maxWidth: 1100, margin: '2rem auto 0', padding: '0 32px' }}>
-        <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: 12, padding: '1.5rem 2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4rem' }}>
+      <div style={{ maxWidth: 1100, margin: '2rem auto 0', padding: window.innerWidth < 640 ? '0 20px' : '0 32px' }}>
+        <div style={{ 
+          background: 'white', 
+          border: '1px solid #e2e8f0', 
+          borderRadius: 12, 
+          padding: window.innerWidth < 640 ? '1.5rem' : '1.5rem 2.5rem', 
+          display: 'flex', 
+          flexDirection: window.innerWidth < 640 ? 'column' : 'row',
+          justifyContent: 'space-between', 
+          alignItems: window.innerWidth < 640 ? 'flex-start' : 'center', 
+          boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+          gap: '2rem'
+        }}>
+          <div style={{ display: 'flex', flexDirection: window.innerWidth < 1024 ? 'column' : 'row', alignItems: window.innerWidth < 1024 ? 'flex-start' : 'center', gap: window.innerWidth < 640 ? '1.5rem' : '4rem' }}>
             <div>
               <div style={{ fontSize: '0.6rem', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', opacity: 0.8, marginBottom: '4px' }}>Avg LAI Score</div>
               <div style={{ fontSize: '2.25rem', fontWeight: 950, color: '#0f172a', fontFamily: 'monospace' }}>{stats.avgScore.toFixed(1)}</div>
             </div>
             
-            <div style={{ display: 'flex', gap: '2.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem 2.5rem' }}>
               {[
                 { label: 'Antifragile', count: stats.antifragile, color: '#065f46' },
                 { label: 'Adaptive', count: stats.adaptive, color: '#1e40af' },
@@ -774,7 +765,7 @@ const GlobalIndexPage = () => {
             </div>
           </div>
 
-          <div style={{ textAlign: 'right', borderLeft: '1px solid #f1f5f9', paddingLeft: '2.5rem' }}>
+          <div style={{ textAlign: window.innerWidth < 640 ? 'left' : 'right', borderLeft: window.innerWidth < 640 ? 'none' : '1px solid #f1f5f9', paddingLeft: window.innerWidth < 640 ? '0' : '2.5rem', width: window.innerWidth < 640 ? '100%' : 'auto' }}>
             <div style={{ fontSize: '0.55rem', fontWeight: 900, color: '#14b8a6', textTransform: 'uppercase', letterSpacing: 1.5 }}>Active Turbulence Regions</div>
             <div style={{ fontSize: '2rem', fontWeight: 950, color: '#0f172a', fontFamily: 'monospace' }}>{regionalTurbulence.filter(r => r.avg_turbulence > 50).length}</div>
           </div>
@@ -782,8 +773,8 @@ const GlobalIndexPage = () => {
       </div>
 
       {/* REGIONAL TURBULENCE SNAPSHOT (Analytical context) */}
-      <div style={{ maxWidth: 1200, margin: '2rem auto 0', padding: '0 2rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1rem' }}>
+      <div style={{ maxWidth: 1200, margin: '2rem auto 0', padding: window.innerWidth < 640 ? '0 20px' : '0 2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 640 ? '1fr' : (window.innerWidth < 1024 ? 'repeat(3, 1fr)' : 'repeat(5, 1fr)'), gap: '1rem' }}>
           {['Global', 'Americas', 'Europe', 'APAC', 'MEA'].map(r => {
             const rObj = regionalTurbulence.find(t => t.region === r) || {};
             const turbScore = rObj.avg_turbulence || 0;

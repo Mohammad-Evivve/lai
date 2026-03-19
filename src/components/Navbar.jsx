@@ -167,8 +167,11 @@ const Navbar = () => {
         }
 
         @media (max-width: 992px) {
+          .navbar { padding: 1rem 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
           .desktop-menu { display: none; }
           .mobile-toggle { display: block; }
+          .logo { font-size: 1.4rem; }
+          .logo span { font-size: 0.5rem; letter-spacing: 1px; }
         }
 
         .mobile-menu {

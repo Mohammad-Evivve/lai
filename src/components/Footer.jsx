@@ -183,6 +183,24 @@ const Footer = () => {
           .footer-brand, .footer-links { grid-column: span 6; margin-bottom: 3rem; }
           .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
         }
+
+        @media (max-width: 640px) {
+          .persistent-cta { padding: 3rem 1.5rem; text-align: center; }
+          .cta-content { flex-direction: column; gap: 2rem; }
+          .cta-text h3 { font-size: 1.5rem; }
+          .cta-text p { font-size: 1rem; }
+          .btn-cta-footer { width: 100%; justify-content: center; white-space: normal; }
+          
+          .footer-top { padding: 4rem 0 2rem; display: flex; flex-direction: column; gap: 3rem; }
+          .footer-brand { margin-bottom: 0; }
+          .footer-brand p { max-width: 100%; }
+          .footer-links { margin-bottom: 0; }
+          .footer-links h4 { margin-bottom: 1rem; }
+          
+          .footer-bottom { margin-top: 3rem; padding-bottom: 2rem; }
+          .footer-meta { flex-direction: column; gap: 0.5rem; }
+          .footer-meta span { margin-left: 0 !important; }
+        }
       `}} />
     </footer>
   );
