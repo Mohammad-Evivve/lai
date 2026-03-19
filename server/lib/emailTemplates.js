@@ -130,6 +130,22 @@ const INTERNAL = {
     <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 20px 0;"/>
     <a href="${data.report_link}" style="color: #2dd4bf; text-decoration: none; font-weight: bold;">View Full Report Analysis &rarr;</a>
   `),
+  diagnosticStarted: (data) => wrap(`
+    <h2 style="font-size: 18px; border-left: 4px solid #2dd4bf; padding-left: 12px; color: #0f172a; text-transform: uppercase;">New High-Intent Lead: Diagnostic Started</h2>
+    <p>A user has just initiated the Leadership Adaptiveness Diagnostic.</p>
+    <p><strong>Name:</strong> ${data.name || 'N/A'}</p>
+    <p><strong>Email:</strong> ${data.email || 'N/A'}</p>
+    <p><strong>Organization:</strong> ${data.organization || 'N/A'}</p>
+    <p style="font-size: 12px; color: #64748b; margin-top: 20px;">Automated follow-ups (Flow 1) will trigger if they exit before completion.</p>
+  `),
+  demoRequested: (data) => wrap(`
+    <h2 style="font-size: 18px; border-left: 4px solid #f43f5e; padding-left: 12px; color: #0f172a; text-transform: uppercase;">Direct Inquiry: Demo Requested</h2>
+    <p>A user has requested a direct consultation/demo via the flagship form.</p>
+    <p><strong>Name:</strong> ${data.name || 'N/A'}</p>
+    <p><strong>Email:</strong> ${data.email || 'N/A'}</p>
+    <p><strong>Organization:</strong> ${data.organization || 'N/A'}</p>
+    <p style="margin-top: 20px;"><strong>Action Required:</strong> Please contact this lead within 24 hours.</p>
+  `),
   intakeSubmitted: (data) => wrap(`
     <h2 style="font-size: 18px; color: #64748b; text-transform: uppercase;">High Intent: Offsite Intake</h2>
     <p><strong>Organization:</strong> ${data.org_name || 'N/A'}</p>

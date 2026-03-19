@@ -69,6 +69,21 @@ app.post('/api/diagnostic/start', async (req, res) => {
       .upsert(updateData, { onConflict: 'email' });
 
     if (error) throw error;
+
+    // --- Trigger Internal Alert (New Lead) ---
+    try {
+      const { sendEmail, getSender } = require('./lib/email');
+      const { INTERNAL } = require('./lib/emailTemplates');
+      await sendEmail({
+        from: getSender('notifications'),
+        to: 'mmemon@evivve.com',
+        subject: `NEW LEAD: Diagnostic Started | ${organization || email}`,
+        html: INTERNAL.diagnosticStarted({ name, email, organization })
+      });
+    } catch (e) {
+      console.error('New lead email trigger failed:', e);
+    }
+
     res.status(201).json({ success: true });
   } catch (err) {
     console.error('Start Diagnostic Error:', err);
@@ -178,7 +193,7 @@ app.post('/api/diagnostic', async (req, res) => {
       const { INTERNAL } = require('./lib/emailTemplates');
       await sendEmail({
         from: getSender('notifications'),
-        to: 'LAI <insights@lai.institute>',
+        to: 'mmemon@evivve.com',
         subject: `New Diagnostic: ${organization_name}`,
         html: INTERNAL.diagnosticCompleted({
           name: req.body.name || (typeof identity !== 'undefined' ? identity.name : null),
@@ -265,6 +280,21 @@ app.post('/api/demo-request', async (req, res) => {
       .select();
 
     if (error) throw error;
+
+    // --- Trigger Internal Alert (Demo Request) ---
+    try {
+      const { sendEmail, getSender } = require('./lib/email');
+      const { INTERNAL } = require('./lib/emailTemplates');
+      await sendEmail({
+        from: getSender('notifications'),
+        to: 'mmemon@evivve.com',
+        subject: `DEMO REQUESTED: ${organization || email}`,
+        html: INTERNAL.demoRequested({ name, email, organization })
+      });
+    } catch (e) {
+      console.error('Demo request email trigger failed:', e);
+    }
+
     res.status(201).json({ id: data[0].id });
   } catch (err) {
     console.error('Supabase insert error:', err);
@@ -290,7 +320,7 @@ app.post('/api/report-request', async (req, res) => {
       // Internal Alert
       await sendEmail({
         from: getSender('notifications'),
-        to: 'LAI <insights@lai.institute>',
+        to: 'mmemon@evivve.com',
         subject: `REPORT DOWNLOAD: State of Cognition 2026 | ${organization || email}`,
         html: `<h3>New Research Lead</h3>
                <p>A user has requested the State of Cognition 2026 report.</p>
