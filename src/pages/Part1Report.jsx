@@ -187,6 +187,7 @@ const Part1Report = () => {
   const { id } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [teamData, setTeamData] = useState(null);
   const [activeTabs, setActiveTabs] = useState({});
   const [copied, setCopied] = useState(null);
@@ -221,21 +222,47 @@ const Part1Report = () => {
   }, [data, teamData]);
 
   useEffect(() => {
+    let retryCount = 0;
+    const MAX_RETRIES = 2;
+
     const fetchReport = async () => {
       try {
-        const response = await fetch(`/api/diagnostic/${id}`);
-        if (!response.ok) throw new Error('Report not found');
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Synthesis timed out')), 15000)
+        );
+
+        const fetchPromise = fetch(`/api/diagnostic/${id}`);
+        
+        const response = await Promise.race([fetchPromise, timeoutPromise]);
+        
+        if (!response.ok) {
+          if (response.status === 404 && id.startsWith('pending-')) {
+             // Stay in loading for a bit if it's a pending ID, or show specialized error
+             throw new Error('Record not yet propagate');
+          }
+          throw new Error('Report not found');
+        }
+
         const report = await response.json();
         setData(report);
         if (report.team_insights) setTeamData(report.team_insights);
+        setError(null);
       } catch (err) {
         console.error('Report Error:', err);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
     fetchReport();
   }, [id]);
+
+  const handleRetry = () => {
+    setLoading(true);
+    setError(null);
+    // Trigger re-fetch by keeping the same ID but resetting states
+    window.location.reload(); 
+  };
 
   useEffect(() => {
     // Ensure the page always loads at the very top and stays there during hydration
@@ -256,14 +283,25 @@ const Part1Report = () => {
   if (!data) return (
     <div className="report-error-container">
       <div className="error-card">
-        <Activity size={48} className="text-rose mb-4" />
-        <h2>Institutional Profile Not Found</h2>
-        <p>We were unable to locate this specific perception profile.</p>
+        <Activity size={48} className={`mb-4 ${error?.includes('timed out') ? 'text-amber-500' : 'text-rose'}`} />
+        <h2>{error?.includes('timed out') ? 'Synthesis Delayed' : 'Institutional Profile Not Found'}</h2>
+        <p>
+          {error?.includes('timed out') 
+            ? "The intensive synthesis of your behavioral profile is taking longer than expected." 
+            : "We were unable to locate this specific perception profile."}
+        </p>
         <div className="error-actions">
-          <Link to="/diagnostic" className="btn-institutional primary">Take Diagnostic</Link>
+          {error?.includes('timed out') || error?.includes('propagate') ? (
+            <button onClick={handleRetry} className="btn-institutional primary">Retry Synthesis</button>
+          ) : (
+            <Link to="/diagnostic" className="btn-institutional primary">Take Diagnostic</Link>
+          )}
           <a href="mailto:support@lai.institute" className="btn-institutional outline">Contact Support</a>
         </div>
-        <div className="debug-info">Attempted ID: {id}</div>
+        <div className="debug-info">
+          Attempted ID: {id}
+          {error && <div style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '0.5rem' }}>Status: {error}</div>}
+        </div>
       </div>
     </div>
   );

@@ -188,30 +188,42 @@ const DiagnosticPage = () => {
       }
     };
 
-    try {
-      const response = await fetch('/api/diagnostic', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(resultData),
-      });
+    let success = false;
+    let attempts = 0;
+    const MAX_ATTEMPTS = 2;
 
-      const data = await response.json();
-      console.log('[DIAGNOSTIC] Submission success:', data);
-      if (!response.ok) throw new Error(data.error || 'Failed to submit diagnostic');
-      
-      setReportId(data.id);
-      if (data.team_code) setServerTeamCode(data.team_code);
-      setStep(7);
-    } catch (err) {
-      console.error('Failed to save result:', err);
-      // Fallback for demo
-      setReportId('pending-' + Math.random().toString(36).substring(7));
-      setStep(7);
-    } finally {
-      setIsSubmitting(false);
+    while (attempts < MAX_ATTEMPTS && !success) {
+      try {
+        attempts++;
+        const response = await fetch('/api/diagnostic', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(resultData),
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Failed to submit diagnostic');
+        
+        console.log('[DIAGNOSTIC] Submission success:', data);
+        setReportId(data.id);
+        if (data.team_code) setServerTeamCode(data.team_code);
+        setStep(7);
+        success = true;
+      } catch (err) {
+        console.error(`[DIAGNOSTIC] Attempt ${attempts} failed:`, err);
+        if (attempts < MAX_ATTEMPTS) {
+          // Wait 1.5s before retry
+          await new Promise(r => setTimeout(r, 1500));
+        } else {
+          // Final failure fallback
+          setReportId('pending-' + Math.random().toString(36).substring(7));
+          setStep(7);
+        }
+      }
     }
+    setIsSubmitting(false);
   };
 
   const calculateDimScore = (dimId) => {

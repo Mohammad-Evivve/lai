@@ -35,6 +35,17 @@ app.use(express.static(distPath));
 
 // API Routes
 
+// Health Check
+app.get('/api/health', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('user_status').select('count', { count: 'exact', head: true });
+    if (error) throw error;
+    res.json({ status: 'healthy', database: 'connected' });
+  } catch (err) {
+    res.status(503).json({ status: 'unhealthy', database: 'disconnected', error: err.message });
+  }
+});
+
 // Get Global Index Stats (still from local SQLite seed data)
 app.get('/api/stats', (req, res) => {
   try {
@@ -223,63 +234,70 @@ app.post('/api/diagnostic', async (req, res) => {
         })
         .eq('email', email);
 
-      // --- Trigger Flow 4 (Team Update) ---
-      const isGenericOrg = (org) => !org || ['none', 'n/a', 'na', 'test', 'personal'].includes(org.toLowerCase().trim());
-      if (organization_name && !isGenericOrg(organization_name)) {
-        const { data: teamMembers } = await supabase
-          .from('user_status')
-          .select('email, last_team_update_at')
-          .eq('company', organization_name)
-          .eq('has_completed', true)
-          .eq('has_submitted_intake', false)
-          .neq('email', email);
-          
-        if (teamMembers && teamMembers.length > 0) {
-          const nowMs = Date.now();
-          const rateLimitMs = 6 * 60 * 60 * 1000; // 6 hours
-          
-          for (const member of teamMembers) {
-            const lastUpdateMs = member.last_team_update_at ? new Date(member.last_team_update_at).getTime() : 0;
-            if (nowMs - lastUpdateMs >= rateLimitMs) {
-              const { sendEmail, getSender } = require('./lib/email');
-              const { FLOW_4 } = require('./lib/emailTemplates');
+      res.status(201).json({ id: diagData[0].id });
+
+      // --- Background Processing: Notifications ---
+      (async () => {
+        try {
+          const { sendEmail, getSender } = require('./lib/email');
+          const { INTERNAL, FLOW_4 } = require('./lib/emailTemplates');
+
+          // 1. Team Update (Flow 4)
+          const isGenericOrg = (org) => !org || ['none', 'n/a', 'na', 'test', 'personal'].includes(org.toLowerCase().trim());
+          if (organization_name && !isGenericOrg(organization_name)) {
+            const { data: teamMembers } = await supabase
+              .from('user_status')
+              .select('email, last_team_update_at')
+              .eq('company', organization_name)
+              .eq('has_completed', true)
+              .eq('has_submitted_intake', false)
+              .neq('email', email);
               
-              await sendEmail({
-                from: getSender('notifications'),
-                to: member.email,
-                subject: 'New diagnostic completed matching your team',
-                html: FLOW_4.teamUpdate(diagData[0].id)
-              });
+            if (teamMembers && teamMembers.length > 0) {
+              const nowMs = Date.now();
+              const rateLimitMs = 6 * 60 * 60 * 1000; // 6 hours
               
-              await supabase
-                .from('user_status')
-                .update({ last_team_update_at: new Date(nowMs).toISOString() })
-                .eq('email', member.email);
+              for (const member of teamMembers) {
+                const lastUpdateMs = member.last_team_update_at ? new Date(member.last_team_update_at).getTime() : 0;
+                if (nowMs - lastUpdateMs >= rateLimitMs) {
+                  await sendEmail({
+                    from: getSender('notifications'),
+                    to: member.email,
+                    subject: 'New diagnostic completed matching your team',
+                    html: FLOW_4.teamUpdate(diagData[0].id)
+                  });
+                  
+                  await supabase
+                    .from('user_status')
+                    .update({ last_team_update_at: new Date(nowMs).toISOString() })
+                    .eq('email', member.email);
+                }
+              }
             }
           }
+
+          // 2. Internal Alert
+          await sendEmail({
+            from: getSender('notifications'),
+            to: 'mmemon@evivve.com',
+            subject: `New Diagnostic: ${organization_name}`,
+            html: INTERNAL.diagnosticCompleted({
+              name: req.body.name,
+              email,
+              organization_name,
+              role_level: req.body.role_level,
+              top_dimension: topDim,
+              lowest_dimension: lowestDim,
+              report_link: `https://lai.institute/report/perception/${diagData[0].id}`
+            })
+          });
+        } catch (bgErr) {
+          console.error('[BACKGROUND] Notification Error:', bgErr);
         }
-      }
-
-      // --- Trigger Internal Alert ---
-      const { sendEmail, getSender } = require('./lib/email');
-      const { INTERNAL } = require('./lib/emailTemplates');
-      await sendEmail({
-        from: getSender('notifications'),
-        to: 'mmemon@evivve.com',
-        subject: `New Diagnostic: ${organization_name}`,
-        html: INTERNAL.diagnosticCompleted({
-          name: req.body.name || (typeof identity !== 'undefined' ? identity.name : null),
-          email,
-          organization_name,
-          role_level: req.body.role_level,
-          top_dimension: topDim,
-          lowest_dimension: lowestDim,
-          report_link: `https://lai.institute/report/perception/${diagData[0].id}`
-        })
-      });
+      })();
+    } else {
+      res.status(201).json({ id: diagData[0].id });
     }
-
-    res.status(201).json({ id: diagData[0].id });
   } catch (err) {
     console.error('Supabase insert error:', err);
     res.status(500).json({ error: 'Failed to save diagnostic outcome' });
