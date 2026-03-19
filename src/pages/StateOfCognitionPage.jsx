@@ -66,15 +66,39 @@ const GlobalHeatmap = () => {
             }}
           />
         ))}
+
+        {/* Data Markers (Purposeful Evidence) */}
+        {[...Array(6)].map((_, i) => {
+          const x = 100 + (i * 120);
+          const y = 100 + (Math.sin(i) * 50);
+          return (
+            <g key={`marker-${i}`}>
+              <circle cx={x} cy={y} r="2" fill="#2dd4bf" />
+              <text x={x + 5} y={y + 3} fill="#94a3b8" className="text-[6px] font-mono uppercase">SIG_{i+102}</text>
+              <motion.rect 
+                x={x-4} y={y-4} width="8" height="8" stroke="#2dd4bf" strokeWidth="0.5" fill="none"
+                animate={{ opacity: [0, 1, 0], scale: [1, 1.5, 1] }}
+                transition={{ duration: 4, repeat: Infinity, delay: i }}
+              />
+            </g>
+          );
+        })}
       </svg>
       <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent" />
       
-      {/* Overlay Data Points */}
+      {/* Evidence Label */}
       <div className="absolute top-8 left-8">
         <div className="flex items-center gap-2 mb-4">
-          <div className="w-2 h-2 rounded-full bg-teal shadow-[0_0_8px_#2dd4bf] animate-pulse" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-teal">Live Signal Synthesis</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-teal shadow-[0_0_8px_#2dd4bf] animate-pulse" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-teal">Global Behavioral Evidence</span>
         </div>
+      </div>
+
+      {/* Caption */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-full px-6 text-center">
+        <p className="text-[10px] text-slate-500 font-medium uppercase tracking-[0.1em]">
+          A visual abstraction of the measured behavioral signals behind the 2026 State of Cognition report.
+        </p>
       </div>
     </div>
   );
@@ -220,17 +244,63 @@ const StateOfCognitionPage = () => {
               <GlobalHeatmap />
             </motion.div>
 
-            {/* Authority Metrics */}
+            {/* Authority Metrics Strip */}
             <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 border-t border-white/10 pt-12 text-left">
               {[
-                { label: 'Simulations', val: '20,000+' },
-                { label: 'Participants', val: '100k+' },
-                { label: 'Regions', val: 'Global' },
-                { label: 'Data Points', val: '1.2M+' }
+                { label: 'Behaviors Analyzed', val: '715 Records' },
+                { label: 'Locations', val: '10 Global' },
+                { label: 'Dimensions', val: '5 Measured' },
+                { label: 'Methodology', val: 'Evivve + LAI' }
               ].map((m, i) => (
                 <div key={i}>
                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-1">{m.label}</p>
-                  <p className="text-2xl font-serif text-white">{m.val}</p>
+                  <p className="text-xl font-serif text-white">{m.val}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Hero CTAs */}
+            <div className="mt-12 flex flex-col md:flex-row gap-6 justify-center">
+              <a href="#download" className="bg-teal text-slate-950 px-10 py-5 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-teal/90 transition-all group">
+                Download Full Report <Download size={20} />
+              </a>
+              <a href="#findings" className="px-10 py-5 rounded-2xl font-bold border border-white/20 text-white flex items-center justify-center gap-3 hover:bg-white/5 transition-all">
+                Explore Key Findings <ArrowRight size={20} />
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- KEY FINDINGS SECTION (Editorial) --- */}
+      <section id="findings" className="py-24 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <SectionHeader eyebrow="Executive Summary" title="Key Findings 2026" />
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                { 
+                  title: 'The Conversion Gap', 
+                  desc: 'Organizations are detecting disruption 14 months before they are able to pivot. This delay is the single largest contributor to competitive erosion.',
+                  stat: '14mo Lag'
+                },
+                { 
+                  title: 'Cognitive Geography', 
+                  desc: 'Adaptiveness is no longer bound by sector but by regulatory posture. High-trust societies demonstrate 2.4x higher velocity in signal processing.',
+                  stat: '2.4x Velocity'
+                },
+                { 
+                  title: 'Execution Bottlenecks', 
+                  desc: 'The primary constraint is not technical capability but social alignment. Decisions stall at the "mid-level freeze" during high-uncertainty events.',
+                  stat: '68% Stall'
+                }
+              ].map((card, i) => (
+                <div key={i} className="group p-10 bg-slate-50 rounded-3xl border border-slate-100 hover:bg-slate-950 hover:text-white transition-all duration-500">
+                  <p className="text-teal font-black text-sm mb-6 uppercase tracking-widest">{card.stat}</p>
+                  <h3 className="text-2xl font-serif mb-4 group-hover:text-white">{card.title}</h3>
+                  <p className="text-slate-500 group-hover:text-slate-400 font-light leading-relaxed">{card.desc}</p>
                 </div>
               ))}
             </div>
@@ -239,7 +309,8 @@ const StateOfCognitionPage = () => {
       </section>
 
       {/* --- PROBLEM SECTION --- */}
-      <section className="py-24 bg-white border-y border-slate-100">
+      <section id="problem" className="py-24 bg-slate-50 border-y border-slate-100">
+
         <div className="container mx-auto px-6">
           <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-16 items-center">
             <div>
@@ -284,72 +355,131 @@ const StateOfCognitionPage = () => {
         </div>
       </section>
 
-      {/* --- MEASUREMENT SECTION --- */}
-      <section className="py-24 bg-slate-50">
+      {/* --- ADVANCED MEASUREMENTS SECTION --- */}
+      <section id="measurements" className="py-24 bg-slate-950 text-white">
         <div className="container mx-auto px-6">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-20">
-              <SectionHeader eyebrow="Methodology" title="What This Report Measures" />
-            </div>
-            
-            <div className="grid md:grid-cols-3 gap-8">
-              {[
-                { 
-                  icon: <Target className="text-teal" size={32} />, 
-                  title: 'Perceptual Cognition', 
-                  desc: 'What leaders believe about their adaptiveness and environmental context.' 
-                },
-                { 
-                  icon: <Activity className="text-teal" size={32} />, 
-                  title: 'Behavioral Cognition', 
-                  desc: 'Direct telemetry from Evivve simulations capturing actual decision patterns.' 
-                },
-                { 
-                  icon: <Shield className="text-teal" size={32} />, 
-                  title: 'The Gap Index', 
-                  desc: 'The mathematical distance between intent and execution performance.' 
-                }
-              ].map((item, i) => (
-                <div key={i} className="bg-white p-10 rounded-2xl border border-slate-200 shadow-sm">
-                  <div className="mb-6">{item.icon}</div>
-                  <h3 className="text-xl font-serif text-slate-900 mb-4">{item.title}</h3>
-                  <p className="text-slate-600 font-light leading-relaxed">{item.desc}</p>
+            <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+              <div className="max-w-2xl">
+                <SectionHeader eyebrow="Deep Evidence" title="Measurement Architecture" light={true} />
+                <p className="text-slate-400 font-light text-lg">
+                  Visualizing the behavioral telemetry gathered from 715 global leadership records.
+                </p>
+              </div>
+              <div className="flex gap-4">
+                <div className="px-4 py-2 bg-white/5 rounded border border-white/10 text-[10px] font-bold uppercase tracking-widest text-teal">
+                  AFERR Telemetry
                 </div>
-              ))}
+                <div className="px-4 py-2 bg-white/5 rounded border border-white/10 text-[10px] font-bold uppercase tracking-widest text-teal">
+                  98.4% Confidence
+                </div>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Visual 1: Score by Location */}
+              <div className="bg-white/5 p-10 rounded-3xl border border-white/10">
+                <h4 className="font-serif text-xl mb-8">Adaptiveness by Location</h4>
+                <div className="space-y-6">
+                  {[
+                    { loc: 'Singapore', val: 74.2 },
+                    { loc: 'London', val: 68.5 },
+                    { loc: 'New York', val: 67.8 },
+                    { loc: 'Dubai', val: 62.1 }
+                  ].map((item, i) => (
+                    <div key={item.loc}>
+                      <div className="flex justify-between mb-2">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.loc}</span>
+                        <span className="text-teal font-serif">{item.val}</span>
+                      </div>
+                      <div className="h-1 bg-slate-800 rounded-full overflow-hidden">
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${item.val}%` }}
+                          transition={{ duration: 1, delay: i * 0.1 }}
+                          className="h-full bg-teal"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Visual 2: Forecasting Gap */}
+              <div className="bg-white/5 p-10 rounded-3xl border border-white/10 flex flex-col">
+                <h4 className="font-serif text-xl mb-6">Forecasting vs Realization Gap</h4>
+                <div className="flex-1 flex items-end gap-1 min-h-[160px]">
+                  {[40, 55, 45, 70, 85, 60, 45, 30].map((h, i) => (
+                    <div key={i} className="flex-1 space-y-1">
+                      <motion.div initial={{ height: 0 }} whileInView={{ height: `${h}%` }} className="bg-teal/20 rounded-t-sm" transition={{ duration: 1, delay: i * 0.05 }} />
+                      <motion.div initial={{ height: 0 }} whileInView={{ height: `${h * 0.6}%` }} className="bg-teal rounded-t-sm" transition={{ duration: 1, delay: 0.5 + (i * 0.05) }} />
+                    </div>
+                  ))}
+                </div>
+                <div className="flex justify-between mt-4 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                  <span>Recognition Velocity</span>
+                  <span>Execution Responsiveness</span>
+                </div>
+              </div>
+
+              {/* Visual 3: 5-Dimension Radar */}
+              <div className="bg-white/5 p-10 rounded-3xl border border-white/10">
+                <h4 className="font-serif text-xl mb-6">5-Dimension Portfolio</h4>
+                <div className="aspect-square relative flex items-center justify-center p-8">
+                   <svg viewBox="0 0 200 200" className="w-full max-w-[200px] overflow-visible">
+                      <circle cx="100" cy="100" r="80" stroke="rgba(255,255,255,0.05)" fill="none" />
+                      <circle cx="100" cy="100" r="60" stroke="rgba(255,255,255,0.05)" fill="none" />
+                      <circle cx="100" cy="100" r="40" stroke="rgba(255,255,255,0.05)" fill="none" />
+                      <motion.polygon 
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        points="100,20 180,80 150,160 50,160 20,80" 
+                        fill="rgba(45,212,191,0.15)" 
+                        stroke="#2dd4bf" 
+                        strokeWidth="1.5"
+                      />
+                   </svg>
+                   <div className="absolute inset-0 flex flex-col justify-between text-[7px] font-bold text-slate-500 uppercase p-2 text-center pointer-events-none">
+                      <span className="text-teal">Signal Detection</span>
+                      <div className="flex justify-between w-full mt-auto mb-10 translate-y-4">
+                        <span>Calibration</span>
+                        <span>Coherence</span>
+                      </div>
+                      <div className="flex justify-around w-full mb-4">
+                        <span>Velocity</span>
+                        <span>Resilience</span>
+                      </div>
+                   </div>
+                </div>
+              </div>
+
+              {/* Visual 4: Architecture */}
+              <div className="bg-white/5 p-10 rounded-3xl border border-white/10">
+                <h4 className="font-serif text-xl mb-8">Architecture of Measurement</h4>
+                <div className="flex flex-col gap-8">
+                  {[
+                    { label: 'Evivve Behavioral Simulation', desc: 'Raw telemetry from high-stakes leadership events.' },
+                    { label: 'AFERR Logics Engine', desc: 'Decoding 5 dimensions of systemic response.' },
+                    { label: 'Institutional LAI Score', desc: 'The definitive adaptive capacity benchmark.' }
+                  ].map((step, i) => (
+                    <div key={step.label} className="relative flex gap-6">
+                      <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-teal font-bold shrink-0">
+                        {i+1}
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-white mb-1">{step.label}</p>
+                        <p className="text-xs text-slate-500 font-light">{step.desc}</p>
+                      </div>
+                      {i < 2 && <div className="absolute left-5 top-10 w-px h-8 bg-white/10" />}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* --- KEY FINDINGS --- */}
-      <section className="py-24 bg-slate-950 text-white overflow-hidden">
-        <div className="container mx-auto px-6">
-          <div className="max-w-6xl mx-auto">
-            <SectionHeader eyebrow="Data Visualization" title="Key Findings 2026" light={true} />
-            
-            <div className="grid lg:grid-cols-3 gap-8 mb-8">
-              <div className="lg:col-span-2">
-                <AdaptivenessByRegion />
-              </div>
-              <div>
-                <GapIndexDistribution />
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
-              {[
-                'Signal Detection', 'Cognitive Framing', 'Decision Alignment', 
-                'Resource Calibration', 'Execution Responsiveness'
-              ].map((dim, i) => (
-                <div key={i} className="bg-white/5 border border-white/10 p-6 rounded-xl text-center">
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-3">Dimension {i+1}</p>
-                  <p className="text-sm font-bold text-white tracking-wide">{dim}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* --- INSIGHTS SECTION --- */}
       <section className="py-24 bg-white">
