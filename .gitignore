@@ -20,3 +20,22 @@ Thumbs.db
 
 # Local Netlify folder
 .netlify
+
+# Temporary Logs & Debug Outputs
+*.log
+results.txt
+build_log.txt
+build_output.txt
+harvest-state.json
+
+# Local Scratch Scripts & Junk
+.junk/
+*.cjs
+create_test_record*.js
+debug-db.js
+fix_report.*
+test_db.js
+test.js
+trigger-scoring.js
+verify-*.js
+verify_*.cjs
