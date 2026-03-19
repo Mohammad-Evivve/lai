@@ -15,6 +15,12 @@ const HomePatterns = () => {
       description: "Internal signals are recognized across the organization, but execution paths diverge as individual business units prioritize local stability over systemic pivot.",
       visualType: "DIVERGENCE",
       tag: "PATTERN 02"
+    },
+    {
+      title: "Decision Confidence, Resource Drift",
+      description: "Confidence remains high even as operating choices lose coherence across the system. Strategic intent weakens as resources drift toward legacy outcomes.",
+      visualType: "STALL",
+      tag: "PATTERN 03"
     }
   ];
 

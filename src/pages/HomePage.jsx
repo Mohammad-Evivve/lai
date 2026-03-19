@@ -7,6 +7,7 @@ import HomeObservedSystems from '../components/HomeObservedSystems';
 import HomePatterns from '../components/HomePatterns';
 import HomeObservatoryLogic from '../components/HomeObservatoryLogic';
 import HomeFinalCTA from '../components/HomeFinalCTA';
+import SignalVisual from '../components/SignalVisual';
 
 const pageMeta = {
   id: "home",
@@ -25,8 +26,13 @@ const HomePage = () => {
       <HomeObservatoryLogic />
 
       {/* ── SECTION 6: OBSERVATORY / RESEARCH (Institutional Depth) ─────────── */}
-      <section className="research-depth-section py-24 bg-white border-y border-slate-100">
-        <div className="container">
+      <section className="research-depth-section py-24 bg-white border-y border-slate-100 relative overflow-hidden">
+        {/* Background Signal Visual */}
+        <div className="absolute top-0 right-0 w-1/2 h-full opacity-10 pointer-events-none transform translate-x-1/4">
+          <SignalVisual type="NETWORK" width={800} height={600} color="#2dd4bf" />
+        </div>
+
+        <div className="container relative z-10">
           <div className="editorial-header mb-16">
             <span className="eyebrow-label text-teal">From the Global Observatory</span>
             <h2 className="section-headline text-navy">Global Adaptiveness Index</h2>

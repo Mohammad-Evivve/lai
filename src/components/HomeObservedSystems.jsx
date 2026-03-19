@@ -260,22 +260,45 @@ const VisualElement = ({ type }) => {
       <svg width="240" height="100" viewBox="0 0 240 100">
         <motion.g
           animate={{ 
-            x: [0, 1.5, -1.5, 0],
-            filter: ["blur(0px)", "blur(0.8px)", "blur(0px)"]
+            x: [0, 2, -2, 1, -1, 0],
+            filter: ["blur(0px)", "blur(1.2px)", "blur(0.5px)", "blur(1px)", "blur(0px)"]
           }}
-          transition={{ duration: 0.4, repeat: Infinity, repeatDelay: 3 }}
+          transition={{ 
+            duration: 0.8, 
+            repeat: Infinity, 
+            repeatDelay: 2.5,
+            ease: "easeInOut"
+          }}
         >
           <motion.line
             x1="30" y1="45" x2="210" y2="45"
-            stroke="#0a192f" strokeWidth="1"
-            animate={{ x1: [30, 110, 30], x2: [210, 130, 210] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+            stroke="#0a192f" strokeWidth="1.5"
+            animate={{ 
+              x1: [30, 105, 30], 
+              x2: [210, 135, 210],
+              opacity: [0.8, 1, 0.8]
+            }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           />
           <motion.line
             x1="30" y1="55" x2="210" y2="55"
-            stroke="#0a192f" strokeWidth="1"
-            animate={{ x1: [30, 115, 30], x2: [210, 125, 210] }}
-            transition={{ duration: 5, repeat: Infinity, delay: 0.3, ease: "easeInOut" }}
+            stroke="#0a192f" strokeWidth="1.5"
+            animate={{ 
+              x1: [30, 112, 30], 
+              x2: [210, 128, 210],
+              opacity: [0.6, 1, 0.6]
+            }}
+            transition={{ duration: 4, repeat: Infinity, delay: 0.2, ease: "easeInOut" }}
+          />
+          {/* Subtle fragmentation particles at midpoint */}
+          <motion.circle 
+            cx="120" cy="50" r="1.5" fill="#2dd4bf"
+            animate={{ 
+              opacity: [0, 0.8, 0],
+              scale: [0, 1.5, 0],
+              x: [0, 15, -15, 0]
+            }}
+            transition={{ duration: 2, repeat: Infinity, delay: 1 }}
           />
         </motion.g>
       </svg>
