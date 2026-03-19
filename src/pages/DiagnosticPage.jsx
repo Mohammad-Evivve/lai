@@ -15,8 +15,14 @@ const dimensions = [
     name: 'Signal Detection', 
     description: 'Ability to detect emerging technological, geopolitical, and market signals.',
     questions: [
-      "How quickly does your leadership system recognize emerging technological and market shifts?",
-      "How frequently are external 'weak signals' accurately prioritized in strategic discussions?"
+      {
+        text: "How quickly does your leadership system recognize emerging technological and market shifts?",
+        labels: ["Significant Lag", "Instantaneous"]
+      },
+      {
+        text: "How frequently are external 'weak signals' accurately prioritized in strategic discussions?",
+        labels: ["Frequently Minimized", "Systemically Prioritized"]
+      }
     ] 
   },
   { 
@@ -24,8 +30,14 @@ const dimensions = [
     name: 'Cognitive Framing', 
     description: 'Interpretation of market shifts (Opportunity vs. Threat).',
     questions: [
-      "When facing disruption, how often do leaders frame change as an opportunity rather than a threat?",
-      "How effectively does the leadership system challenge its own core assumptions when reality shifts?"
+      {
+        text: "When facing disruption, how often do leaders frame change as an opportunity rather than a threat?",
+        labels: ["Perceived as Threat", "Perceived as Opportunity"]
+      },
+      {
+        text: "How effectively does the leadership system challenge its own core assumptions when reality shifts?",
+        labels: ["Rigid Assumptions", "Continuous Recalibration"]
+      }
     ] 
   },
   { 
@@ -33,8 +45,14 @@ const dimensions = [
     name: 'Decision Alignment', 
     description: 'Convergence of actions across the simulated system.',
     questions: [
-      "How consistently do leadership decisions converge around a shared response to environmental changes?",
-      "How clearly are strategic shifts translated into coherent decisions across all leadership levels?"
+      {
+        text: "How consistently do leadership decisions converge around a shared response to environmental changes?",
+        labels: ["Strategic Fragmentation", "Systems-wide Convergence"]
+      },
+      {
+        text: "How clearly are strategic shifts translated into coherent decisions across all leadership levels?",
+        labels: ["Significant Dilution", "Total Strategic Coherence"]
+      }
     ] 
   },
   { 
@@ -42,8 +60,14 @@ const dimensions = [
     name: 'Resource Calibration', 
     description: 'Velocity of capital and talent reallocation.',
     questions: [
-      "How quickly can your organization redirect capital and talent to support new strategic priorities?",
-      "How often are resources withdrawn from legacy projects that no longer align with the environment?"
+      {
+        text: "How quickly can your organization redirect capital and talent to support new strategic priorities?",
+        labels: ["Stagnant Allocation", "Dynamic Resource Mobility"]
+      },
+      {
+        text: "How often are resources withdrawn from legacy projects that no longer align with the environment?",
+        labels: ["Legacy Retention", "Immediate Realignment"]
+      }
     ] 
   },
   { 
@@ -51,8 +75,14 @@ const dimensions = [
     name: 'Integrated Responsiveness', 
     description: 'Systemic translation of strategy into behavioral output.',
     questions: [
-      "How effectively is systemic behavioral change synchronized across the entire organization?",
-      "How quickly does execution across teams adjust once a leadership pivot has been decided?"
+      {
+        text: "How effectively is systemic behavioral change synchronized across the entire organization?",
+        labels: ["Operational Silos", "Total Interdependence"]
+      },
+      {
+        text: "How quickly does execution across teams adjust once a leadership pivot has been decided?",
+        labels: ["Extended Execution Lag", "Immediate Behavioral Shift"]
+      }
     ] 
   }
 ];
@@ -95,12 +125,18 @@ const DiagnosticPage = () => {
       setStep(1); // Jump to mode to confirm joining
       
       // Fetch team context if code provided
-      fetch(`/.netlify/functions/api/teams/${code}`)
+      fetch(`/api/teams/${code}`)
         .then(res => res.json())
         .then(data => {
           if (data.organization_name) {
             setTeamOrgName(data.organization_name);
-            setMeta(prev => ({ ...prev, organization_name: data.organization_name }));
+            setMeta(prev => ({ 
+              ...prev, 
+              organization_name: data.organization_name,
+              industry: data.industry || prev.industry,
+              org_size: data.org_size || prev.org_size
+              // Note: role_level and region are omitted as per user request (personal data)
+            }));
           }
         })
         .catch(err => console.error('Team verify error:', err));
@@ -291,7 +327,25 @@ const DiagnosticPage = () => {
               </div>
 
               <div className="diag-actions">
-                <button disabled={!identity.name || !identity.email || !identity.email.includes('@')} onClick={() => setStep(3)} className="btn-institutional primary">Continue</button>
+                <button 
+                  disabled={!identity.name || !identity.email || !identity.email.includes('@')} 
+                  onClick={async () => {
+                    setStep(3);
+                    try {
+                      await fetch('/api/diagnostic/start', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                          email: identity.email,
+                          name: identity.name,
+                          organization: meta.organization_name || teamOrgName
+                        })
+                      });
+                    } catch (e) {
+                      console.error('Failed to notify start:', e);
+                    }
+                  }} 
+                  className="btn-institutional primary">Continue</button>
               </div>
             </motion.div>
           )}
@@ -440,10 +494,10 @@ const DiagnosticPage = () => {
 
               <div className="question-content">
                 <motion.div key={currentGlobalIndex} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}>
-                  <p className="q-text">{dimensions[currentDimIndex].questions[currentQIndex]}</p>
+                  <p className="q-text">{dimensions[currentDimIndex].questions[currentQIndex].text}</p>
                   <div className="scale-legend">
-                    <span>Rarely True</span>
-                    <span>Consistently True</span>
+                    <span>{dimensions[currentDimIndex].questions[currentQIndex].labels[0]}</span>
+                    <span>{dimensions[currentDimIndex].questions[currentQIndex].labels[1]}</span>
                   </div>
                   <div className="scale-options-10">
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(val => (
