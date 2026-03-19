@@ -271,7 +271,6 @@ const ResearchPage = () => {
               color: 'white',
               display: 'flex',
               flexDirection: 'column',
-              md: { flexDirection: 'row' },
               gap: '2rem',
               alignItems: 'center',
               border: '1px solid rgba(45,212,191,0.2)',
