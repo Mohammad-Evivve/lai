@@ -15,7 +15,7 @@ app.use(express.json({ limit: '10mb' }));
 // API Routes
 
 // Health Check - Enhanced Deep Diagnostic
-app.get('/api/health', async (req, res) => {
+app.get('/health', async (req, res) => {
   try {
     const health = {
       status: 'ok',
@@ -89,7 +89,7 @@ app.get('/api/health', async (req, res) => {
 });
 
 // Signal Attribution — Fetch evidence signals for a specific event
-app.get('/api/intelligence/history', async (req, res) => {
+app.get('/intelligence/history', async (req, res) => {
   const { id } = req.query;
   if (!id) return res.json([]);
   const { data, error } = await supabaseClient
@@ -104,7 +104,7 @@ app.get('/api/intelligence/history', async (req, res) => {
 });
 
 // Scraper Logs Audit
-app.get('/api/scraper-logs', async (req, res) => {
+app.get('/scraper-logs', async (req, res) => {
   try {
     const { data, error } = await supabaseClient
       .from('scraper_logs')
@@ -121,7 +121,7 @@ app.get('/api/scraper-logs', async (req, res) => {
 });
 
 // Signal Attribution — Fetch evidence signals for a specific event
-app.get('/api/intelligence/attribution', async (req, res) => {
+app.get('/intelligence/attribution', async (req, res) => {
   const { ids } = req.query;
   if (!ids) return res.json([]);
   
@@ -142,7 +142,7 @@ app.get('/api/intelligence/attribution', async (req, res) => {
 });
 
 // Intelligence Events — Chronological feed for a specific institution
-app.get('/api/intelligence/events', async (req, res) => {
+app.get('/intelligence/events', async (req, res) => {
   const { id } = req.query;
   if (!id) return res.json([]);
   try {
@@ -160,7 +160,7 @@ app.get('/api/intelligence/events', async (req, res) => {
 });
 
 // Intelligence History — Historical snapshots for sparklines
-app.get('/api/intelligence/history', async (req, res) => {
+app.get('/intelligence/history', async (req, res) => {
   const { id } = req.query;
   if (!id) return res.json([]);
   try {
@@ -196,7 +196,7 @@ app.get('/api/intelligence/history', async (req, res) => {
 
 // ## Verification Plan
 // Team Verification — Check if a team code exists and return context
-app.get('/api/teams/:code', async (req, res) => {
+app.get('/teams/:code', async (req, res) => {
   const { code } = req.params;
   try {
     const { data, error } = await supabaseClient
@@ -213,7 +213,7 @@ app.get('/api/teams/:code', async (req, res) => {
 });
 
 // Diagnostic Results — Enhanced for Team Insights
-app.get('/api/diagnostic/:id', async (req, res) => {
+app.get('/diagnostic/:id', async (req, res) => {
   const { id } = req.params;
   try {
     // 1. Fetch individual result
@@ -289,7 +289,7 @@ app.get('/api/diagnostic/:id', async (req, res) => {
   }
 });
 
-app.post('/api/diagnostic/invite', async (req, res) => {
+app.post('/diagnostic/invite', async (req, res) => {
   const { email, name, organization, invites } = req.body;
   
   if (!email || !invites || !Array.isArray(invites)) {
@@ -347,7 +347,7 @@ app.post('/api/diagnostic/invite', async (req, res) => {
   }
 });
 
-app.post('/api/diagnostic', async (req, res) => {
+app.post('/diagnostic', async (req, res) => {
   const { 
     name, email, organization_name, industry, region,
     overall_score, signal_detection_score, cognitive_framing_score, resource_calibration_score, decision_alignment_score, integrated_responsiveness_score,
@@ -526,7 +526,7 @@ app.post('/api/diagnostic', async (req, res) => {
 });
 
 // Submit Report Request (State of Cognition) → Supabase
-app.post('/api/report-request', async (req, res) => {
+app.post('/report-request', async (req, res) => {
   const { name, email, organization, role, region } = req.body;
   try {
     const { data, error } = await supabaseClient
@@ -554,7 +554,7 @@ app.post('/api/report-request', async (req, res) => {
 });
 
 // Global Analytics — Identity Resolution & Variance (v1.3.3)
-app.get('/api/analytics/global', async (req, res) => {
+app.get('/analytics/global', async (req, res) => {
   try {
     // Fetch both results and verified org metadata
     const [resultsRes, orgsRes] = await Promise.all([
@@ -755,7 +755,7 @@ app.get('/api/analytics/global', async (req, res) => {
 
 
 // Demo Request
-app.post('/api/demo-request', async (req, res) => {
+app.post('/demo-request', async (req, res) => {
   const { name, email, organization } = req.body;
   try {
     const { data: check, error: checkError } = await supabaseClient
@@ -772,7 +772,7 @@ app.post('/api/demo-request', async (req, res) => {
 });
 
 // Research Resources — Production Logic (v1.2.0-FINAL)
-app.get('/api/resources', async (req, res) => {
+app.get('/resources', async (req, res) => {
   try {
     const { data: dbAssets, error } = await supabaseClient
       .from('research_resources')
