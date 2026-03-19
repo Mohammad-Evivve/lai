@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import RelatedPathwaysSection from '../components/RelatedPathwaysSection';
+import HomeObservedSystems from '../components/HomeObservedSystems';
 
 const pageMeta = {
   id: "home",
@@ -43,6 +44,8 @@ const HomePage = () => {
           </div>
         </div>
       </section>
+
+      <HomeObservedSystems />
 
       {/* ── SECTION 1: DISRUPTION (The Context) ────────────────────────────────── */}
       <section className="disruption-section py-20">
