@@ -15,7 +15,7 @@ app.use(express.json({ limit: '10mb' }));
 // API Routes
 
 // Health Check - Enhanced Deep Diagnostic
-app.get('/api/health', async (req, res) => {
+app.get(['/api/health', '/health'], async (req, res) => {
   try {
     const health = {
       status: 'ok',
@@ -56,7 +56,7 @@ app.get('/api/health', async (req, res) => {
 });
 
 // Diagnostic Results — Enhanced for Team Insights
-app.get('/api/diagnostic/:id', async (req, res) => {
+app.get(['/api/diagnostic/:id', '/diagnostic/:id'], async (req, res) => {
   const { id } = req.params;
   try {
     const { data: individual, error: individualError } = await supabaseClient
@@ -112,7 +112,7 @@ app.get('/api/diagnostic/:id', async (req, res) => {
   }
 });
 
-app.post('/api/diagnostic', async (req, res) => {
+app.post(['/api/diagnostic', '/diagnostic'], async (req, res) => {
   const { 
     name, email, organization_name, industry, region,
     overall_score, signal_detection_score, cognitive_framing_score, resource_calibration_score, decision_alignment_score, integrated_responsiveness_score,
@@ -167,7 +167,7 @@ app.post('/api/diagnostic', async (req, res) => {
 });
 
 // Health Checks & Other Routes
-app.get('/api/teams/:code', async (req, res) => {
+app.get(['/api/teams/:code', '/teams/:code'], async (req, res) => {
   const { code } = req.params;
   try {
     const { data, error } = await supabaseClient.from('teams').select('id, organization_name').eq('team_code', code.toUpperCase()).single();
