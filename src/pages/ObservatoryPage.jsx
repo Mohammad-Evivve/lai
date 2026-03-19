@@ -24,7 +24,7 @@ const ObservatoryPage = () => {
         </div>
         <div className="container mx-auto px-6 relative z-10 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <span className="inline-block px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-teal text-[11px] font-bold uppercase tracking-[0.2em] mb-8">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-white/5 text-teal text-[11px] font-bold uppercase tracking-[0.2em] mb-8">
               Structured Observation
             </span>
             <h1 className="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight leading-[1.1]">

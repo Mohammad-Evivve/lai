@@ -151,6 +151,16 @@ const INTERNAL = {
     <p><strong>Organization:</strong> ${data.org_name || 'N/A'}</p>
     <p><strong>Contact:</strong> ${data.contact_name || 'N/A'}</p>
     <p><strong>Status:</strong> Intake phase initiated.</p>
+  `),
+  teamInvitation: (data) => wrap(`
+    <h2 style="font-family: serif; font-size: 24px;">Your leadership system is measuring its adaptiveness</h2>
+    <p>Dear Colleague,</p>
+    <p><strong>${data.inviter || 'A member of your leadership team'}</strong> has invited you to contribute to the **${data.organization || 'your organization'}** Adaptiveness Profile.</p>
+    <p>Your input is critical to revealing the 'Divergent Dimensions'—the gaps between perception and action that define institutional resilience.</p>
+    <div style="text-align: center;">
+      <a href="https://lai.institute/diagnostic?team=${data.team_code}" style="${buttonStyles}">Join Measurement Cycle</a>
+    </div>
+    <p style="font-size: 12px; color: #64748b; margin-top: 20px;">Team Access Code: <strong style="color: #0f172a;">${data.team_code}</strong></p>
   `)
 };
 

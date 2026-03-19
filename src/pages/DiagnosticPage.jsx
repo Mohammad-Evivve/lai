@@ -110,6 +110,7 @@ const DiagnosticPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reportId, setReportId] = useState(null);
   const [serverTeamCode, setServerTeamCode] = useState('');
+  const [isInviting, setIsInviting] = useState(false);
   const [copied, setCopied] = useState(null); // 'report' or 'team'
 
   const totalQuestions = dimensions.length * 2;
@@ -492,7 +493,38 @@ const DiagnosticPage = () => {
               </div>
 
               <div className="diag-actions">
-                <button onClick={() => setStep(6)} className="btn-institutional primary">Continue to Assessment</button>
+                <button 
+                  disabled={isInviting}
+                  onClick={async () => {
+                    if (invites.some(i => i && i.includes('@'))) {
+                      setIsInviting(true);
+                      try {
+                        const res = await fetch('/api/diagnostic/invite', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            email: identity.email,
+                            name: identity.name,
+                            organization: meta.organization_name || teamOrgName,
+                            invites
+                          })
+                        });
+                        const data = await res.json();
+                        if (data.team_code) setServerTeamCode(data.team_code);
+                      } catch (e) {
+                        console.error('Invite failed:', e);
+                      } finally {
+                        setIsInviting(false);
+                        setStep(6);
+                      }
+                    } else {
+                      setStep(6);
+                    }
+                  }} 
+                  className="btn-institutional primary"
+                >
+                  {isInviting ? 'Sending Invites...' : 'Continue to Assessment'}
+                </button>
               </div>
             </motion.div>
           )}

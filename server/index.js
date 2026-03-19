@@ -101,11 +101,73 @@ app.post('/api/diagnostic/start', async (req, res) => {
   }
 });
 
+// Early Invite Colleagues
+app.post('/api/diagnostic/invite', async (req, res) => {
+  const { email, name, organization, invites } = req.body;
+  if (!email || !invites || !Array.isArray(invites)) {
+    return res.status(400).json({ error: 'Email and invites required' });
+  }
+
+  try {
+    // 1. Generate/Retrieve Team Code
+    // Check if user already has a team_code in user_status
+    let teamCode;
+    const { data: user } = await supabase
+      .from('user_status')
+      .select('last_team_code')
+      .eq('email', email)
+      .single();
+
+    if (user && user.last_team_code) {
+      teamCode = user.last_team_code;
+    } else {
+      teamCode = `LAI-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+      await supabase
+        .from('user_status')
+        .update({ last_team_code: teamCode })
+        .eq('email', email);
+    }
+
+    // 2. Dispatch Emails
+    const { sendEmail, getSender } = require('./lib/email');
+    const { INTERNAL, teamInvitation } = require('./lib/emailTemplates');
+
+    const validInvites = invites.filter(inv => inv && inv.includes('@') && inv !== email);
+    
+    for (const inv of validInvites) {
+      try {
+        await sendEmail({
+          from: getSender('notifications'),
+          to: inv,
+          subject: 'Your team is measuring its leadership adaptiveness',
+          html: teamInvitation({ 
+            inviter: name, 
+            organization: organization, 
+            team_code: teamCode 
+          })
+        });
+      } catch (e) {
+        console.error(`Failed to send invite to ${inv}:`, e);
+      }
+    }
+
+    res.status(200).json({ success: true, team_code: teamCode });
+  } catch (err) {
+    console.error('Invite Error:', err);
+    res.status(500).json({ error: 'Failed to send invitations' });
+  }
+});
+
 app.post('/api/diagnostic', async (req, res) => {
   const { 
     email,
-    organization_name, industry, region,
-    overall_score, signal_score, emotional_score, resource_score, decision_score, execution_score,
+    organization_name, industry, region, role_level, org_size,
+    overall_score, 
+    signal_detection_score, 
+    cognitive_framing_score, 
+    resource_calibration_score, 
+    decision_alignment_score, 
+    integrated_responsiveness_score,
     answers
   } = req.body;
   
@@ -117,11 +179,11 @@ app.post('/api/diagnostic', async (req, res) => {
         industry,
         region,
         overall_score,
-        signal_detection_score: signal_score,
-        cognitive_framing_score: emotional_score,
-        resource_calibration_score: resource_score,
-        decision_alignment_score: decision_score,
-        integrated_responsiveness_score: execution_score
+        signal_detection_score,
+        cognitive_framing_score,
+        resource_calibration_score,
+        decision_alignment_score,
+        integrated_responsiveness_score
       }])
       .select();
 
@@ -130,11 +192,11 @@ app.post('/api/diagnostic', async (req, res) => {
     if (email) {
       // Calculate top and lowest dimensions
       const dimScores = {
-        'Signal Detection': signal_score,
-        'Cognitive Framing': emotional_score,
-        'Decision Alignment': decision_score,
-        'Resource Calibration': resource_score,
-        'Integrated Responsiveness': execution_score
+        'Signal Detection': signal_detection_score || 0,
+        'Cognitive Framing': cognitive_framing_score || 0,
+        'Decision Alignment': decision_alignment_score || 0,
+        'Resource Calibration': resource_calibration_score || 0,
+        'Integrated Responsiveness': integrated_responsiveness_score || 0
       };
       const entries = Object.entries(dimScores).filter(([_, v]) => v !== undefined && v !== null);
       let topDim = null;

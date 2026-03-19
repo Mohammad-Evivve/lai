@@ -61,7 +61,7 @@ const FrameworkPage = () => {
       <header className="page-header pt-32 pb-20 bg-white">
         <div className="container mx-auto px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <span className="inline-block px-4 py-1.5 rounded-full bg-teal/5 border border-teal/10 text-teal text-[11px] font-bold uppercase tracking-[0.2em] mb-8">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-teal/5 text-teal text-[11px] font-bold uppercase tracking-[0.2em] mb-8">
               Institutional Standards
             </span>
             <h1 className="text-5xl md:text-7xl font-serif text-slate-900 mb-8 tracking-tight leading-[1.1]">
