@@ -3,7 +3,9 @@ import cors from 'cors';
 import serverless from 'serverless-http';
 import { supabase as supabaseClient } from './lib/supabase.cjs';
 import * as emailLib from './lib/email.cjs';
+import * as emailTemplates from './lib/emailTemplates.cjs';
 const { sendEmail, getSender } = emailLib;
+const { INTERNAL, TEAM_INVITATION } = emailTemplates;
 
 const app = express();
 
@@ -17,7 +19,7 @@ app.get('/api/health', async (req, res) => {
   try {
     const health = {
       status: 'ok',
-      version: '1.2.1-FIX',
+      version: '1.2.2-STABLE',
       timestamp: new Date().toISOString(),
       env: {
         has_url: !!process.env.SUPABASE_URL,
@@ -479,8 +481,6 @@ app.post('/api/diagnostic', async (req, res) => {
     // 5. Background Notifications (Resend)
     (async () => {
       try {
-        const { INTERNAL, TEAM_INVITATION } = require('./lib/emailTemplates.cjs');
-
         // Internal Alert
         await sendEmail({
           from: getSender('notifications'),
