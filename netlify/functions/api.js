@@ -233,25 +233,17 @@ app.get('/api/diagnostic/:id', async (req, res) => {
     }
 
     let teamData = null;
-    if (individual.team_id) {
-      // 1c. Fetch team code explicitly for UI convenience
-      const { data: teamRow } = await supabaseClient
-        .from('teams')
-        .select('team_code')
-        .eq('id', individual.team_id)
-        .single();
-      
-      if (teamRow) {
-        individual.team_code = teamRow.team_code;
-      }
+    const orgName = individual.organization_name;
+    const isGeneric = (org) => !org || ['none', 'n/a', 'na', 'test', 'personal'].includes(org.toLowerCase().trim());
 
-        // 2. Fetch team average and count
+    if (orgName && !isGeneric(orgName)) {
+      // Fetch team context based on organization name (more robust than team_id alone)
       const { data: teamMembers, error: teamError } = await supabaseClient
         .from('diagnostic_results')
         .select('overall_score, signal_detection_score, cognitive_framing_score, decision_alignment_score, resource_calibration_score, integrated_responsiveness_score')
-        .eq('team_id', individual.team_id);
+        .eq('organization_name', orgName);
 
-      if (!teamError && teamMembers.length > 0) {
+      if (!teamError && teamMembers && teamMembers.length > 0) {
         const count = teamMembers.length;
         const averages = {
           overall: teamMembers.reduce((a, b) => a + Number(b.overall_score), 0) / count,
@@ -271,7 +263,7 @@ app.get('/api/diagnostic/:id', async (req, res) => {
             const scores = teamMembers.map(m => Number(m[`${dim}_score`] || 0));
             if (scores.length > 0) {
               const diff = Math.max(...scores) - Math.min(...scores);
-              const label = diff <= 10 ? 'Low alignment variance' : diff <= 25 ? 'Moderate alignment variance' : 'High alignment variance';
+              const label = diff <= 15 ? 'Low alignment variance' : diff <= 30 ? 'Moderate alignment variance' : 'High alignment variance';
               variance[dim] = { label, diff };
             }
           });

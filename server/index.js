@@ -169,6 +169,77 @@ app.post('/api/diagnostic/invite', async (req, res) => {
   }
 });
 
+// --- Team Verification ---
+app.get('/api/teams/:code', async (req, res) => {
+  const { code } = req.params;
+  try {
+    const { data, error } = await supabase
+      .from('user_status')
+      .select('company')
+      .eq('last_team_code', code.toUpperCase())
+      .limit(1)
+      .single();
+
+    if (error) throw new Error('Team not found');
+    res.json({ id: code, organization_name: data.company });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+// --- Diagnostic Retrieval (Report) ---
+app.get('/api/diagnostic/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    // 1. Fetch individual result
+    const { data: individual, error: individualError } = await supabase
+      .from('diagnostic_results')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (individualError) throw individualError;
+
+    // 2. Fetch team insights if organization matches
+    let teamData = null;
+    if (individual.organization_name) {
+      const { data: teamMembers, error: teamError } = await supabase
+        .from('diagnostic_results')
+        .select('overall_score, signal_detection_score, cognitive_framing_score, decision_alignment_score, resource_calibration_score, integrated_responsiveness_score')
+        .eq('organization_name', individual.organization_name);
+
+      if (!teamError && teamMembers.length > 0) {
+        const count = teamMembers.length;
+        const averages = {
+          overall: teamMembers.reduce((a, b) => a + Number(b.overall_score), 0) / count,
+          signal_detection: teamMembers.reduce((a, b) => a + Number(b.signal_detection_score), 0) / count,
+          cognitive_framing: teamMembers.reduce((a, b) => a + Number(b.cognitive_framing_score), 0) / count,
+          decision_alignment: teamMembers.reduce((a, b) => a + Number(b.decision_alignment_score), 0) / count,
+          resource_calibration: teamMembers.reduce((a, b) => a + Number(b.resource_calibration_score), 0) / count,
+          integrated_responsiveness: teamMembers.reduce((a, b) => a + Number(b.integrated_responsiveness_score), 0) / count
+        };
+
+        // Calculate simple variance
+        let variance = {};
+        const dims = ['signal_detection', 'cognitive_framing', 'decision_alignment', 'resource_calibration', 'integrated_responsiveness'];
+        dims.forEach(dim => {
+          const scores = teamMembers.map(m => Number(m[`${dim}_score`] || 0));
+          const diff = Math.max(...scores) - Math.min(...scores);
+          const label = diff <= 15 ? 'Low alignment variance' : diff <= 30 ? 'Moderate alignment variance' : 'High alignment variance';
+          variance[dim] = { label, diff };
+        });
+
+        teamData = { count, averages, variance };
+      }
+    }
+
+    res.json({ ...individual, team_insights: teamData });
+  } catch (err) {
+    console.error(`[API] Fetch Error for ID ${id}:`, err.message);
+    res.status(404).json({ error: 'Report not found' });
+  }
+});
+
 app.post('/api/diagnostic', async (req, res) => {
   const { 
     email,
