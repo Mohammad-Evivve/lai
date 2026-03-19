@@ -312,7 +312,7 @@ app.post('/api/diagnostic/invite', async (req, res) => {
     const validInvites = invites.filter(inv => inv && inv.includes('@') && inv !== email);
     
     // We use the same logEmail pattern as the main diagnostic route
-    const { sendEmail, getSender } = require('../../server/lib/email'); // Adjust path as needed for Netlify context, or use internal
+    const { sendEmail, getSender } = require('./lib/email.cjs'); 
     // Actually, Netlify functions might need a different import. Let's stick to the existing pattern in this file.
     
     for (const inv of validInvites) {
