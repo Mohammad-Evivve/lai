@@ -154,8 +154,7 @@ app.post('/api/diagnostic', async (req, res) => {
           for (const member of teamMembers) {
             const lastUpdateMs = member.last_team_update_at ? new Date(member.last_team_update_at).getTime() : 0;
             if (nowMs - lastUpdateMs >= rateLimitMs) {
-              /* 
-              const { sendEmail, FROM_NOTIFICATIONS } = require('./lib/email');
+              const { sendEmail, getSender } = require('./lib/email');
               const { FLOW_4 } = require('./lib/emailTemplates');
               
               await sendEmail({
@@ -164,8 +163,6 @@ app.post('/api/diagnostic', async (req, res) => {
                 subject: 'New diagnostic completed matching your team',
                 html: FLOW_4.teamUpdate(diagData[0].id)
               });
-              */
-              console.log('Email suppression (missing lib): Team update');
               
               await supabase
                 .from('user_status')
@@ -177,8 +174,7 @@ app.post('/api/diagnostic', async (req, res) => {
       }
 
       // --- Trigger Internal Alert ---
-      /* 
-      const { sendEmail, FROM_NOTIFICATIONS } = require('./lib/email');
+      const { sendEmail, getSender } = require('./lib/email');
       const { INTERNAL } = require('./lib/emailTemplates');
       await sendEmail({
         from: getSender('notifications'),
@@ -194,8 +190,6 @@ app.post('/api/diagnostic', async (req, res) => {
           report_link: `https://lai.institute/report/perception/${diagData[0].id}`
         })
       });
-      */
-      console.log('Email suppression (missing lib): Internal alert');
     }
 
     res.status(201).json({ id: diagData[0].id });
@@ -290,7 +284,6 @@ app.post('/api/report-request', async (req, res) => {
     if (error) throw error;
 
     // Trigger Internal Alert and User Email
-    /*
     try {
       const { sendEmail, getSender } = require('./lib/email');
       
@@ -324,8 +317,6 @@ app.post('/api/report-request', async (req, res) => {
     } catch (e) {
       console.error('Report email trigger failed:', e);
     }
-    */
-    console.log('Email suppression (missing lib): Report download lead');
 
     res.status(201).json({ success: true });
   } catch (err) {
@@ -379,11 +370,9 @@ app.get('/api/analytics/global', async (req, res) => {
   }
 });
 
-/* 
 // Email Scheduler & Templates
 const { sendEmail } = require('./lib/email');
 const { FLOW_1, FLOW_2, FLOW_3, FLOW_4, INTERNAL } = require('./lib/emailTemplates');
-*/
 
 // Initialize Scheduler
 const runEmailScheduler = async () => {
