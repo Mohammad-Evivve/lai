@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { 
   BarChart3, Target, Shield, Globe, 
   ArrowRight, Activity, TrendingUp, Layers,
-  Compass, CheckCircle, FlaskConical
+  Compass, CheckCircle, CheckCircle2, FlaskConical
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import RelatedPathwaysSection from '../components/RelatedPathwaysSection';

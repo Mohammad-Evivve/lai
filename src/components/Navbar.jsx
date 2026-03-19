@@ -19,7 +19,7 @@ const Navbar = () => {
     { name: 'Manifesto', path: '/manifesto' },
     { name: 'Framework', path: '/framework' },
     { name: 'Observatory', path: '/observatory' },
-    { name: 'Research', path: '/library' },
+    { name: 'Research', path: '/research' },
     { name: 'Benchmark', path: '/benchmark' },
     { name: 'About', path: '/about' },
   ];
