@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import serverless from 'serverless-http';
-import { supabase as supabaseClient } from './lib/supabase.cjs';
-import * as emailLib from './lib/email.cjs';
-import * as emailTemplates from './lib/emailTemplates.cjs';
+import { supabase as supabaseClient } from './lib/supabase.js';
+import * as emailLib from './lib/email.js';
+import * as emailTemplates from './lib/emailTemplates.js';
 const { sendEmail, getSender } = emailLib;
 const { INTERNAL, TEAM_INVITATION } = emailTemplates;
 
@@ -19,7 +19,7 @@ app.get('/api/health', async (req, res) => {
   try {
     const health = {
       status: 'ok',
-      version: '1.2.2-STABLE',
+      version: '1.2.3-ESM-STABLE',
       timestamp: new Date().toISOString(),
       env: {
         has_url: !!process.env.SUPABASE_URL,

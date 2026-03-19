@@ -9,9 +9,4 @@ if (!supabaseUrl || !supabaseKey) {
   console.error('Ensure SUPABASE_URL and SUPABASE_KEY (service_role) are set in Netlify Environment Variables.');
 }
 
-const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseKey || 'placeholder'
-);
-
-module.exports = { supabase };
+export const supabase = createClient(supabaseUrl, supabaseKey);
