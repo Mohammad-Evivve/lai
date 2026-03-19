@@ -8,6 +8,8 @@ const INITIAL_FORM = {
   contact_name: '',
   contact_title: '',
   contact_email: '',
+  industry: '',
+  region: 'North America',
   company_size: '',
   planning_stage: '',
   offsite_date: '',
@@ -38,6 +40,18 @@ const INITIAL_FORM = {
 
 /* ─────────────── FIELD OPTIONS ─────────────── */
 const COMPANY_SIZES = ['200–500', '500–1,000', '1,000–5,000', '5,000–10,000', '10,000+'];
+const INDUSTRIES = [
+  'Technology', 'Finance & Insurance', 'Healthcare & Life Sciences', 
+  'Manufacturing & Industrial', 'Energy & Utilities', 'Retail & Consumer Goods', 
+  'Education', 'Government & Public Sector', 'Professional Services', 
+  'Logistics & Supply Chain', 'Non-Profit & Social Impact', 
+  'Media & Telecom', 'Real Estate & Construction', 'Hospitality & Tourism', 'Other'
+];
+const REGIONS = [
+  'North America', 'Europe (West/North)', 'Europe (Central/East)', 
+  'APAC - Southeast Asia', 'APAC - East Asia', 'APAC - South Asia', 
+  'APAC - Oceania', 'MENA', 'Sub-Saharan Africa', 'Latin America', 'Global / Other'
+];
 const PLANNING_STAGES = [
   'Exploring options',
   'Defining objectives',
@@ -111,7 +125,7 @@ const STEPS = [
 
 /* ─────────────── REQUIRED FIELD VALIDATION ─────────────── */
 const REQUIRED = {
-  1: ['org_name', 'contact_name', 'contact_email', 'company_size', 'planning_stage', 'business_context'],
+  1: ['org_name', 'contact_name', 'contact_email', 'industry', 'region', 'company_size', 'planning_stage', 'business_context'],
   2: ['expected_headcount', 'decision_authority'],
   3: ['success_definition', 'diagnostic_reason'],
   4: ['prior_work', 'offsite_format', 'diagnostic_interest'],
@@ -301,7 +315,8 @@ export default function OffsiteIntakePage() {
             Planning a leadership offsite<br />with real stakes?
           </h1>
           <p style={{ fontSize: '1.1rem', color: '#94a3b8', lineHeight: '1.6', marginBottom: '1.5rem', maxWidth: '580px' }}>
-            Tell us what your team is navigating, who needs to be in the room, and what must shift. We'll assess whether a leadership diagnostic is the right intervention.
+            We build an Organizational Adaptiveness Chart for your team to identify core strengths and friction points. 
+            Understand your Most Divergent Dimension and reveal the gap between leadership perception and organizational action.
           </p>
           <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '600', letterSpacing: '0.01em' }}>
             For executive teams · strategic initiatives · high-stakes decision environments
@@ -349,6 +364,26 @@ export default function OffsiteIntakePage() {
               </Field>
               <Field label="Work email" required error={errors.contact_email}>
                 <input style={S.input} type="email" value={form.contact_email} onChange={e => set('contact_email', e.target.value)} placeholder="name@company.com" />
+              </Field>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1.5rem' }}>
+              <Field label="Industry" required error={errors.industry}>
+                <div style={{ position: 'relative' }}>
+                  <select style={S.select} value={form.industry} onChange={e => set('industry', e.target.value)}>
+                    <option value="">Select Industry</option>
+                    {INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
+                  </select>
+                  <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#94a3b8' }}>▾</div>
+                </div>
+              </Field>
+              <Field label="Region" required error={errors.region}>
+                <div style={{ position: 'relative' }}>
+                  <select style={S.select} value={form.region} onChange={e => set('region', e.target.value)}>
+                    {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                  <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#94a3b8' }}>▾</div>
+                </div>
               </Field>
             </div>
 

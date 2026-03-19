@@ -18,12 +18,19 @@ const ObservatoryPage = () => {
   return (
     <div className="observatory-page">
       {/* HERO SECTION */}
-      <header className="page-header bg-navy text-white">
-        <div className="container">
+      <header className="page-header pt-32 pb-20 bg-slate-950 overflow-hidden relative">
+        <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-teal/20 blur-[120px] rounded-full" />
+        </div>
+        <div className="container mx-auto px-6 relative z-10 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <span className="eyebrow text-teal">Structured Observation</span>
-            <h1 className="text-white">The Leadership Adaptiveness Observatory</h1>
-            <p className="hero-lead">Integrating diverse evidence sources to measure organizational response to disruption.</p>
+            <span className="inline-block px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-teal text-[11px] font-bold uppercase tracking-[0.2em] mb-8">
+              Structured Observation
+            </span>
+            <h1 className="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight leading-[1.1]">
+              The Leadership <span className="text-slate-400 italic">Observatory</span>
+            </h1>
+            <p className="text-xl text-slate-400 font-light max-w-2xl mx-auto">Integrating diverse evidence sources to measure organizational response to disruption.</p>
           </motion.div>
         </div>
       </header>

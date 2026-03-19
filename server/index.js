@@ -8,6 +8,14 @@ const db = require('./db');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Prevent server crash on unhandled errors
+process.on('uncaughtException', (err) => {
+  console.error('[UNCAUGHT EXCEPTION]:', err);
+});
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[UNHANDLED REJECTION]:', reason);
+});
+
 app.use(cors({
   origin: [
     'http://localhost:5173', 
@@ -70,19 +78,21 @@ app.post('/api/diagnostic/start', async (req, res) => {
 
     if (error) throw error;
 
-    // --- Trigger Internal Alert (New Lead) ---
-    try {
-      const { sendEmail, getSender } = require('./lib/email');
-      const { INTERNAL } = require('./lib/emailTemplates');
-      await sendEmail({
-        from: getSender('notifications'),
-        to: 'mmemon@evivve.com',
-        subject: `NEW LEAD: Diagnostic Started | ${organization || email}`,
-        html: INTERNAL.diagnosticStarted({ name, email, organization })
-      });
-    } catch (e) {
-      console.error('New lead email trigger failed:', e);
-    }
+        // --- Trigger Internal Alert (New Lead) ---
+        if (email && email.includes('@') && !email.includes('example.com')) {
+          try {
+            const { sendEmail, getSender } = require('./lib/email');
+            const { INTERNAL } = require('./lib/emailTemplates');
+            await sendEmail({
+              from: getSender('notifications'),
+              to: 'mmemon@evivve.com',
+              subject: `NEW LEAD: Diagnostic Started | ${organization || email}`,
+              html: INTERNAL.diagnosticStarted({ name, email, organization })
+            });
+          } catch (e) {
+            console.error('New lead email trigger failed:', e);
+          }
+        }
 
     res.status(201).json({ success: true });
   } catch (err) {
@@ -440,9 +450,12 @@ const runEmailScheduler = async () => {
         }]);
       };
 
-      // Helper to handle send and log
       const dispatch = async (flow, step, subject, html, nextStep, nextDelayHours = null, from = null) => {
         try {
+          if (!user.email || user.email.includes('example.com') || !user.email.includes('@')) {
+            console.warn(`[SCHEDULER] Skipping invalid email: ${user.email}`);
+            return null;
+          }
           const { sendEmail } = require('./lib/email');
           const result = await sendEmail({ to: user.email, subject, html, from });
           

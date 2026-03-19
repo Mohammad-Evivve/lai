@@ -68,11 +68,13 @@ const formatDate = (val) => {
 
 const REGION_HUBS = {
   'North America': { top: 35, left: 15 },
-  'Western Europe': { top: 30, left: 48 },
+  'Europe': { top: 30, left: 48 },
+  'APAC': { top: 55, left: 78 },
   'East Asia': { top: 38, left: 82 },
   'South Asia': { top: 50, left: 70 },
-  'APAC': { top: 60, left: 85 },
-  'Americas': { top: 55, left: 25 },
+  'MENA': { top: 48, left: 52 },
+  'Africa': { top: 65, left: 50 },
+  'Latin America': { top: 65, left: 25 },
   'Global': { top: 45, left: 50 }
 };
 
@@ -775,7 +777,7 @@ const GlobalIndexPage = () => {
       {/* REGIONAL TURBULENCE SNAPSHOT (Analytical context) */}
       <div style={{ maxWidth: 1200, margin: '2rem auto 0', padding: window.innerWidth < 640 ? '0 20px' : '0 2rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 640 ? '1fr' : (window.innerWidth < 1024 ? 'repeat(3, 1fr)' : 'repeat(5, 1fr)'), gap: '1rem' }}>
-          {['Global', 'Americas', 'Europe', 'APAC', 'MEA'].map(r => {
+          {['Global', 'North America', 'Europe', 'APAC', 'Latin America', 'MENA'].map(r => {
             const rObj = regionalTurbulence.find(t => t.region === r) || {};
             const turbScore = rObj.avg_turbulence || 0;
             const delta = rObj.delta_7d || 0;

@@ -249,11 +249,11 @@ const DiagnosticPage = () => {
               <div className="process-preview">
                 <div className="preview-item">
                   <div className="p-icon"><Brain size={20} /></div>
-                  <div className="p-text"><strong>Perception Assessment</strong> Answer a short perception diagnostic</div>
+                  <div className="p-text"><strong>Perception Assessment</strong> Answer a short perception diagnostic to benchmark institutional mindset.</div>
                 </div>
                 <div className="preview-item">
                   <div className="p-icon"><BarChart3 size={20} /></div>
-                  <div className="p-text"><strong>Adaptiveness Profile</strong> Receive your research-grade profile</div>
+                  <div className="p-text"><strong>Adaptiveness Profile</strong> Receive your high-fidelity Organizational Adaptiveness Chart.</div>
                 </div>
                 <div className="preview-item">
                   <div className="p-icon"><Activity size={20} /></div>
@@ -261,7 +261,7 @@ const DiagnosticPage = () => {
                 </div>
                 <div className="preview-item">
                   <div className="p-icon"><Target size={20} /></div>
-                  <div className="p-text"><strong>Reveal the Gap</strong> Identify the delta between perception and action</div>
+                  <div className="p-text"><strong>Reveal the Gap</strong> Understand your Divergent Dimensions and the delta between perception and action.</div>
                 </div>
               </div>
               <button onClick={() => setStep(1)} className="btn-institutional primary full-width">Begin Diagnostic <ArrowRight size={18} /></button>
@@ -397,11 +397,20 @@ const DiagnosticPage = () => {
                   <select value={meta.industry} onChange={(e) => setMeta({...meta, industry: e.target.value})}>
                     <option value="">Select Industry</option>
                     <option value="Technology">Technology</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Healthcare">Healthcare</option>
-                    <option value="Manufacturing">Manufacturing</option>
-                    <option value="Energy">Energy</option>
-                    <option value="Retail">Retail</option>
+                    <option value="Finance & Insurance">Finance & Insurance</option>
+                    <option value="Healthcare & Life Sciences">Healthcare & Life Sciences</option>
+                    <option value="Manufacturing & Industrial">Manufacturing & Industrial</option>
+                    <option value="Energy & Utilities">Energy & Utilities</option>
+                    <option value="Retail & Consumer Goods">Retail & Consumer Goods</option>
+                    <option value="Education">Education</option>
+                    <option value="Government & Public Sector">Government & Public Sector</option>
+                    <option value="Professional Services">Professional Services (Consulting, Legal)</option>
+                    <option value="Logistics & Supply Chain">Logistics, Supply Chain & Transport</option>
+                    <option value="Non-Profit">Non-Profit & Social Impact</option>
+                    <option value="Media & Telecom">Media, Entertainment & Telecom</option>
+                    <option value="Real Estate">Real Estate & Construction</option>
+                    <option value="Hospitality">Hospitality & Tourism</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
                 <div className="form-group">
@@ -428,10 +437,16 @@ const DiagnosticPage = () => {
                   <label>Region</label>
                   <select value={meta.region} onChange={(e) => setMeta({...meta, region: e.target.value})}>
                     <option value="North America">North America</option>
-                    <option value="Europe">Europe</option>
-                    <option value="APAC">APAC</option>
-                    <option value="Middle East">Middle East</option>
-                    <option value="Global">Global</option>
+                    <option value="Europe (West/North)">Europe (Western & Northern)</option>
+                    <option value="Europe (Central/East)">Europe (Central & Eastern)</option>
+                    <option value="APAC - Southeast Asia">APAC - Southeast Asia</option>
+                    <option value="APAC - East Asia">APAC - East Asia</option>
+                    <option value="APAC - South Asia">APAC - South Asia</option>
+                    <option value="APAC - Oceania">APAC - Oceania</option>
+                    <option value="MENA">Middle East & North Africa (MENA)</option>
+                    <option value="Sub-Saharan Africa">Sub-Saharan Africa</option>
+                    <option value="Latin America">Latin America & Caribbean</option>
+                    <option value="Global">Global / Other</option>
                   </select>
                 </div>
               </div>

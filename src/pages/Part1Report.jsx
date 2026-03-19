@@ -357,6 +357,8 @@ const Part1Report = () => {
             </div>
             <div className="meta-col">
               <div className="meta-entry"><span className="m-label">Assessment Date</span> <span className="m-val">{new Date(data.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span></div>
+              <div className="meta-entry"><span className="m-label">Industry</span> <span className="m-val">{data.industry || 'General Industry'}</span></div>
+              <div className="meta-entry"><span className="m-label">Region</span> <span className="m-val">{data.region || 'Global'}</span></div>
               <div className="meta-entry"><span className="m-label">Report ID</span> <span className="m-val">{id.substring(0, 8).toUpperCase()}</span></div>
             </div>
             <div className="meta-col-actions no-print" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>

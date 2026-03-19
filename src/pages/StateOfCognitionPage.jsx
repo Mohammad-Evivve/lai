@@ -176,6 +176,7 @@ const StateOfCognitionPage = () => {
     name: '',
     email: '',
     organization: '',
+    industry: '',
     role: '',
     region: 'North America'
   });
@@ -525,19 +526,55 @@ const StateOfCognitionPage = () => {
             <div className="grid lg:grid-cols-2">
               {/* Left: Visual */}
               <div className="p-16 lg:p-24 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.1),transparent)] flex flex-col justify-center items-center text-center">
-                <div className="relative group cursor-pointer h-full flex flex-col items-center">
-                   {/* Mock Report Cover */}
-                  <div className="w-[280px] h-[380px] bg-white rounded shadow-[0_30px_60px_rgba(0,0,0,0.5)] flex flex-col p-8 text-left transition-transform group-hover:scale-[1.02]">
-                    <div className="flex justify-between items-start mb-12">
-                      <span className="text-[10px] font-black tracking-tighter text-slate-900">LAI</span>
-                      <div className="w-8 h-8 rounded-full border-2 border-slate-900" />
+                  <div className="relative group cursor-pointer h-full flex flex-col items-center py-8">
+                    {/* Shadow Layer 2 */}
+                    <div className="absolute w-[280px] h-[380px] bg-slate-800 rounded shadow-2xl translate-x-4 translate-y-4 -rotate-3 opacity-20" />
+                    {/* Shadow Layer 1 */}
+                    <div className="absolute w-[280px] h-[380px] bg-slate-700 rounded shadow-xl translate-x-2 translate-y-2 -rotate-1 opacity-20" />
+                    
+                    {/* Primary Page */}
+                    <div className="relative w-[280px] h-[380px] bg-[#fdfdfd] rounded shadow-[0_30px_60px_rgba(0,0,0,0.5)] flex flex-col p-8 text-left transition-all duration-500 group-hover:scale-[1.05] group-hover:-rotate-2 rotate-2 border-l-[12px] border-slate-100">
+                      {/* Paper Texture Overlay */}
+                      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]" />
+                      
+                      <div className="flex justify-between items-start mb-12 relative z-10">
+                        <div className="flex flex-col">
+                          <span className="text-[12px] font-black tracking-tighter text-slate-900">LAI</span>
+                          <span className="text-[7px] font-mono text-slate-400 mt-0.5">REF_2026_SOC</span>
+                        </div>
+                        <div className="w-8 h-8 rounded-full border border-slate-900/10 flex items-center justify-center">
+                          <div className="w-4 h-4 rounded-full border-2 border-slate-900 opacity-20" />
+                        </div>
+                      </div>
+
+                      <div className="mt-auto relative z-10">
+                        <div className="mb-6 opacity-40">
+                          <div className="h-0.5 w-12 bg-slate-200 mb-1" />
+                          <div className="h-0.5 w-8 bg-slate-200" />
+                        </div>
+                        
+                        <h4 className="text-3xl font-serif text-slate-900 font-medium leading-tight mb-6">
+                          State of <br/>
+                          <span className="italic text-slate-500">Cognition</span><br/>
+                          2026
+                        </h4>
+                        
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="w-10 h-1 bg-teal" />
+                          <span className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.2em]">Institutional Edition</span>
+                        </div>
+                        
+                        <div className="pt-6 border-t border-slate-100">
+                          <p className="text-[9px] font-bold text-slate-900 uppercase tracking-widest mb-1">Global Behavioral Analysis</p>
+                          <p className="text-[7px] text-slate-400 uppercase tracking-widest">Evidence-Based Research Framework</p>
+                        </div>
+                      </div>
+
+                      {/* Administrative Stamp */}
+                      <div className="absolute top-1/2 right-4 -translate-y-1/2 rotate-90 opacity-[0.05] pointer-events-none">
+                        <span className="text-4xl font-black text-slate-900 whitespace-nowrap tracking-[0.5em]">CONFIDENTIAL</span>
+                      </div>
                     </div>
-                    <div className="mt-auto">
-                      <h4 className="text-2xl font-serif text-slate-900 font-medium leading-tight mb-4">State of Cognition <br/>2026</h4>
-                      <div className="w-12 h-1 bg-teal mb-4" />
-                      <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Global Behavioral Analysis</p>
-                    </div>
-                  </div>
                   <div className="mt-12">
                     <p className="text-slate-400 font-light italic mb-2">124 Pages of Behavior-First Insights</p>
                     <div className="flex items-center justify-center gap-2 text-teal">
@@ -588,15 +625,43 @@ const StateOfCognitionPage = () => {
                         onChange={(e) => setFormData({...formData, organization: e.target.value})}
                       />
                     </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Primary Role / Title</label>
+                      <input 
+                        type="text" 
+                        className="w-full bg-slate-800 border-none rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-teal outline-none transition-all"
+                        placeholder="e.g. VP Strategy"
+                        value={formData.role}
+                        onChange={(e) => setFormData({...formData, role: e.target.value})}
+                        required
+                      />
+                    </div>
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Role</label>
-                        <input 
-                          type="text" 
-                          className="w-full bg-slate-800 border-none rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-teal outline-none transition-all"
-                          value={formData.role}
-                          onChange={(e) => setFormData({...formData, role: e.target.value})}
-                        />
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Industry</label>
+                        <select 
+                          className="w-full bg-slate-800 border-none rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-teal outline-none transition-all appearance-none"
+                          value={formData.industry}
+                          onChange={(e) => setFormData({...formData, industry: e.target.value})}
+                          required
+                        >
+                          <option value="">Select Industry</option>
+                          <option value="Technology">Technology</option>
+                          <option value="Finance & Insurance">Finance & Insurance</option>
+                          <option value="Healthcare & Life Sciences">Healthcare & Life Sciences</option>
+                          <option value="Manufacturing & Industrial">Manufacturing & Industrial</option>
+                          <option value="Energy & Utilities">Energy & Utilities</option>
+                          <option value="Retail & Consumer Goods">Retail & Consumer Goods</option>
+                          <option value="Education">Education</option>
+                          <option value="Government & Public Sector">Government & Public Sector</option>
+                          <option value="Professional Services">Professional Services</option>
+                          <option value="Logistics & Supply Chain">Logistics & Supply Chain</option>
+                          <option value="Non-Profit">Non-Profit & Social Impact</option>
+                          <option value="Media & Telecom">Media & Telecom</option>
+                          <option value="Real Estate">Real Estate & Construction</option>
+                          <option value="Hospitality">Hospitality & Tourism</option>
+                          <option value="Other">Other</option>
+                        </select>
                       </div>
                       <div>
                         <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Region</label>
@@ -605,11 +670,17 @@ const StateOfCognitionPage = () => {
                           value={formData.region}
                           onChange={(e) => setFormData({...formData, region: e.target.value})}
                         >
-                          <option>North America</option>
-                          <option>Europe</option>
-                          <option>Asia Pacific</option>
-                          <option>Middle East / Africa</option>
-                          <option>Latin America</option>
+                          <option value="North America">North America</option>
+                          <option value="Europe (West/North)">Europe (Western & Northern)</option>
+                          <option value="Europe (Central/East)">Europe (Central & Eastern)</option>
+                          <option value="APAC - Southeast Asia">APAC - Southeast Asia</option>
+                          <option value="APAC - East Asia">APAC - East Asia</option>
+                          <option value="APAC - South Asia">APAC - South Asia</option>
+                          <option value="APAC - Oceania">APAC - Oceania</option>
+                          <option value="MENA">Middle East & North Africa (MENA)</option>
+                          <option value="Sub-Saharan Africa">Sub-Saharan Africa</option>
+                          <option value="Latin America">Latin America & Caribbean</option>
+                          <option value="Global">Global / Other</option>
                         </select>
                       </div>
                     </div>
