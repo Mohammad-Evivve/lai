@@ -603,31 +603,63 @@ const Part1Report = () => {
                   </div>
                 );
 
-                const renderTeamPerception = () => (
-                  <div className="tab-pane-brief team-tab">
-                    <div className="team-stats-row-brief">
-                      <div className="t-stat">
-                        <span className="ts-label">Team Avg</span>
-                        <span className="ts-val">{Math.round(teamAvg)}</span>
+                const renderTeamPerception = () => {
+                  const inviteUrl = `${window.location.origin}/diagnostic?team=${data?.team_code || ''}`;
+                  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(inviteUrl)}`;
+
+                  return (
+                    <div className="tab-pane-brief team-tab">
+                      <div className="team-stats-row-brief">
+                        <div className="t-stat">
+                          <span className="ts-label">Team Avg</span>
+                          <span className="ts-val">{Math.round(teamAvg)}</span>
+                        </div>
+                        <div className="t-stat">
+                          <span className="ts-label">Participants</span>
+                          <span className="ts-val">{teamMemberCount}</span>
+                        </div>
+                        <div className="t-stat">
+                          <span className="ts-label">Your Delta</span>
+                          <span className={`ts-val ${Math.abs(delta) > 15 ? highDeltaClass : ''}`}>
+                            {delta > 0 ? `+${Math.round(delta)}` : Math.round(delta)}
+                          </span>
+                        </div>
                       </div>
-                      <div className="t-stat">
-                        <span className="ts-label">Your Delta</span>
-                        <span className={`ts-val ${Math.abs(delta) > 15 ? highDeltaClass : ''}`}>
-                          {delta > 0 ? `+${Math.round(delta)}` : Math.round(delta)}
-                        </span>
+                      <div className="team-interpretation-box">
+                        {Math.abs(delta) < 10 ? (
+                          <p>Your perception is <strong>closely aligned</strong> with the leadership team average on this dimension, indicating a shared experience of the current system.</p>
+                        ) : delta > 0 ? (
+                          <p>You perceive <strong>stronger capability</strong> than the team average. This may indicate confidence that is not yet broadly shared, or that you are experiencing systemic success more directly than others.</p>
+                        ) : (
+                          <p>You perceive <strong>weaker capability</strong> than the team average. This may indicate a more skeptical reading of the system's current effectiveness, or that you are experiencing friction points that the broader team has not yet identified.</p>
+                        )}
+                      </div>
+
+                      {/* Phased Invite CTA */}
+                      <div className="phased-invite-cta">
+                         <div className="p-invite-content">
+                            <h4 className="p-invite-tag">Enable Systems Intelligence</h4>
+                            <p className="p-invite-desc">Invite your leadership team to build a shared map of perception and identify systemic friction.</p>
+                            
+                            <button 
+                              className="p-invite-btn no-print"
+                              onClick={() => {
+                                navigator.clipboard.writeText(inviteUrl);
+                                setCopied('dimension_invite');
+                                setTimeout(() => setCopied(null), 2000);
+                              }}
+                            >
+                              {copied === 'dimension_invite' ? '✓ Link Copied' : 'Copy Invite Link'}
+                            </button>
+                         </div>
+                         <div className="p-invite-qr print-only">
+                            <img src={qrUrl} alt="Team Invite QR" />
+                            <span>Scan to join team</span>
+                         </div>
                       </div>
                     </div>
-                    <div className="team-interpretation-box">
-                      {Math.abs(delta) < 10 ? (
-                        <p>Your perception is <strong>closely aligned</strong> with the leadership team average on this dimension, indicating a shared experience of the current system.</p>
-                      ) : delta > 0 ? (
-                        <p>You perceive <strong>stronger capability</strong> than the team average. This may indicate confidence that is not yet broadly shared, or that you are experiencing systemic success more directly than others.</p>
-                      ) : (
-                        <p>You perceive <strong>weaker capability</strong> than the team average. This may indicate a more skeptical reading of the system's current effectiveness, or that you are experiencing friction points that the broader team has not yet identified.</p>
-                      )}
-                    </div>
-                  </div>
-                );
+                  );
+                };
 
                 const highDeltaClass = 'high-delta';
 
@@ -1148,6 +1180,35 @@ const Part1Report = () => {
         .next-stage-brief h3 { font-size: 32px; font-weight: 950; margin-bottom: 1.5rem; }
         .brief-desc { font-size: 16px; color: #475569; margin-bottom: 2.5rem; line-height: 1.6; }
         .sim-focus-grid-document { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem 3rem; text-align: left; margin: 3rem 0; padding: 2rem; background: #f8fafc; border-radius: 16px; }
+
+        .phased-invite-cta { 
+          margin-top: 1.5rem; 
+          padding: 1.25rem; 
+          background: #0f172a; 
+          border-radius: 12px; 
+          color: white;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 2rem;
+        }
+        .p-invite-tag { color: #14b8a6; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 0.5rem; border: none; }
+        .p-invite-desc { font-size: 13px; color: #94a3b8; margin: 0 0 1rem; line-height: 1.4; }
+        .p-invite-btn { 
+          background: #14b8a6; color: white; border: none; padding: 8px 16px; border-radius: 6px; 
+          font-size: 12px; font-weight: 800; cursor: pointer; transition: opacity 0.2s;
+        }
+        .p-invite-qr { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: #94a3b8; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .p-invite-qr img { width: 80px; height: 80px; border-radius: 4px; background: white; padding: 4px; }
+        
+        .print-only { display: none; }
+        @media print {
+          .print-only { display: flex !important; }
+          .no-print { display: none !important; }
+          .phased-invite-cta { background: #f8fafc; border: 1px solid #e2e8f0; color: #0f172a; }
+          .p-invite-desc { color: #475569; }
+          .p-invite-qr { color: #64748b; }
+        }
         .f-item { display: flex; align-items: center; gap: 0.75rem; font-size: 14px; font-weight: 700; color: #475569; }
         .f-dot { width: 6px; height: 6px; background: #14b8a6; border-radius: 50%; }
 
