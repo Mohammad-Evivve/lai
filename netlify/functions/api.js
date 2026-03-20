@@ -5,7 +5,7 @@ const { supabase: supabaseClient } = require('./lib/supabase.js');
 const emailLib = require('./lib/email.js');
 const emailTemplates = require('./lib/emailTemplates.js');
 const { sendEmail, getSender } = emailLib;
-const { INTERNAL, TEAM_INVITATION } = emailTemplates;
+const { INTERNAL, ESSENTIAL } = emailTemplates;
 
 const app = express();
 
@@ -148,16 +148,46 @@ app.post(['/api/diagnostic', '/diagnostic'], async (req, res) => {
 
     if (diagError) throw diagError;
 
-    // Background Notification
+    // Background Notifications (Fire and Forget)
     (async () => {
       try {
+        // A. Internal Alert (Admin)
         await sendEmail({
           from: getSender('notifications'),
           to: 'mmemon@evivve.com',
           subject: `NEW REPORT: ${organization_name || email}`,
-          html: INTERNAL.diagnosticCompleted({ name, email, organization_name, report_link: `https://adaptiveness.institute/report/perception/${diagData.id}` })
+          html: INTERNAL.diagnosticCompleted({ 
+            name, email, organization_name, 
+            report_link: `https://adaptiveness.institute/report/perception/${diagData.id}` 
+          })
         });
-      } catch (e) {}
+
+        // B. Participant Report (Instant Delivery)
+        await sendEmail({
+          from: getSender('research'),
+          to: email,
+          subject: 'Your Leadership Adaptiveness Profile is Ready',
+          html: ESSENTIAL.participantReport({ 
+            name, 
+            reportId: diagData.id 
+          })
+        });
+
+        // C. Institutional Onboarding (if new team created)
+        if (participation_mode === 'team_create' && final_team_code) {
+          await sendEmail({
+            from: getSender('onboarding'),
+            to: email,
+            subject: 'Institutional Onboarding: Team Measurement Initiated',
+            html: ESSENTIAL.teamOnboarding({
+              organization: organization_name || name,
+              teamCode: final_team_code
+            })
+          });
+        }
+      } catch (e) {
+        console.error("[Email Trigger Error]:", e.message);
+      }
     })();
 
     res.status(201).json({ id: diagData.id, team_code: final_team_code });
@@ -167,6 +197,35 @@ app.post(['/api/diagnostic', '/diagnostic'], async (req, res) => {
 });
 
 // Health Checks & Other Routes
+// State of Cognition Report Request
+app.post(['/api/report-request', '/report-request'], async (req, res) => {
+  const { name, email, organization, industry, role, region } = req.body;
+  
+  try {
+    // 1. Log to Database
+    if (supabaseClient) {
+      await supabaseClient.from('report_leads').insert([{
+        name, email, organization, industry, role, region,
+        report_type: 'SOC_2026',
+        source: 'StateOfCognitionPage'
+      }]);
+    }
+
+    // 2. Trigger Delivery Email
+    await sendEmail({
+      from: getSender('research'),
+      to: email,
+      subject: 'Requested Research: The State of Cognition 2026',
+      html: ESSENTIAL.socReportDelivery({ name })
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("[SOC Request Error]:", err.message);
+    res.status(500).json({ error: 'Failed to process request' });
+  }
+});
+
 app.get(['/api/teams/:code', '/teams/:code'], async (req, res) => {
   const { code } = req.params;
   try {
