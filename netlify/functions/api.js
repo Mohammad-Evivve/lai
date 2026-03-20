@@ -311,21 +311,18 @@ app.post(['/api/diagnostic', '/diagnostic'], async (req, res) => {
 
 // Debug Email Configuration (Secure)
 app.get(['/api/debug/email', '/debug/email'], async (req, res) => {
-  const hasResend = !!process.env.RESEND_API_KEY;
-  const hasSupabaseUrl = !!process.env.SUPABASE_URL;
-  const hasSupabaseKey = !!process.env.SUPABASE_KEY;
-  const hasServiceKey = !!process.env.SUPABASE_SERVICE_KEY;
+  const allKeys = Object.keys(process.env);
+  const presentKeys = allKeys.filter(k => 
+    k.includes('KEY') || k.includes('RESEND') || k.includes('SUPABASE') || k.includes('ID') || k.toLowerCase().includes('netlify')
+  );
   
   res.json({
+    debug_version: 'v4-final',
     status: 'Ready',
-    resend: {
-      present: hasResend,
-      prefix: hasResend ? `${process.env.RESEND_API_KEY.substring(0, 5)}...` : 'MISSING'
-    },
-    supabase: {
-      url: hasSupabaseUrl,
-      anonKey: hasSupabaseKey,
-      serviceKey: hasServiceKey
+    presentKeys,
+    resend_check: {
+      RESEND_API_KEY: !!process.env.RESEND_API_KEY,
+      is_valid_format: process.env.RESEND_API_KEY?.startsWith('re_')
     },
     env: process.env.NODE_ENV || 'production'
   });
