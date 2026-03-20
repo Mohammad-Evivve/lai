@@ -257,23 +257,23 @@ app.post(['/api/diagnostic', '/diagnostic'], async (req, res) => {
     }
     if (!diagData) throw new Error("Database failed to return the new report record.");
 
-    // Notifications (Wait for these to complete in Serverless environment)
+    // Notifications (Strategic Sequential Delivery for Serverless Stability)
     try {
-      const emailPromises = [];
-
-      // A. Internal Alert (Admin)
-      emailPromises.push(sendEmail({
+      // 1. Internal Alert (Admin)
+      const resA = await sendEmail({
         from: getSender('notifications'),
         to: 'mmemon@evivve.com',
         subject: `NEW REPORT: ${organization_name || email}`,
         html: INTERNAL.diagnosticCompleted({ 
           name, email, organization_name, 
           report_link: `https://adaptiveness.institute/report/perception/${diagData.id}` 
-        })
-      }));
+        }),
+        type: 'admin_alert'
+      });
+      console.log(`[Email-1-Admin]: ${resA.success ? 'Success' : 'Fail: ' + resA.error}`);
 
-      // B. Participant Report (Instant Delivery)
-      emailPromises.push(sendEmail({
+      // 2. Participant Report (Instant Delivery)
+      const resB = await sendEmail({
         from: getSender('research'),
         to: email,
         subject: 'Your Leadership Adaptiveness Profile is Ready',
@@ -282,11 +282,12 @@ app.post(['/api/diagnostic', '/diagnostic'], async (req, res) => {
           reportId: diagData.id 
         }),
         type: 'participant_report'
-      }));
+      });
+      console.log(`[Email-2-Participant]: ${resB.success ? 'Success' : 'Fail: ' + resB.error}`);
 
-      // C. Institutional Onboarding (if new team created)
+      // 3. Institutional Onboarding (if new team created)
       if (participation_mode === 'team_create' && final_team_code) {
-        emailPromises.push(sendEmail({
+        const resC = await sendEmail({
           from: getSender('onboarding'),
           to: email,
           subject: 'Your Measurement Cycle Has Been Initiated',
@@ -295,12 +296,11 @@ app.post(['/api/diagnostic', '/diagnostic'], async (req, res) => {
             teamCode: final_team_code
           }),
           type: 'team_onboarding'
-        }));
+        });
+        console.log(`[Email-3-Team]: ${resC.success ? 'Success' : 'Fail: ' + resC.error}`);
       }
-
-      await Promise.allSettled(emailPromises);
     } catch (e) {
-      console.error("[Email Sync Error]:", e.message);
+      console.error("[Email Flow Critical Error]:", e.message);
     }
 
     res.status(201).json({ id: diagData.id, team_code: final_team_code });
