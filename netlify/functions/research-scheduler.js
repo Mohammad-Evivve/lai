@@ -1,4 +1,4 @@
-const supabase = require('./lib/supabase.cjs');
+const supabase = require('./lib/supabase.js');
 
 /**
  * Netlify Scheduled Function: research-scheduler

@@ -1,4 +1,4 @@
-const { supabase } = require('./lib/supabase.cjs');
+const { supabase } = require('./lib/supabase.js');
 
 /**
  * NotebookLM Intelligence Engine v2 — 5-Asset Research Factory

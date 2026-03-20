@@ -1,4 +1,4 @@
-const { supabase } = require('./lib/supabase.cjs');
+const { supabase } = require('./lib/supabase.js');
 
 /**
  * Researcher Agent v2.0 — Sovereign Intelligence Layer

@@ -1,7 +1,7 @@
-import chromium from '@sparticuz/chromium';
-import puppeteer from 'puppeteer-core';
-import { supabase } from './lib/supabase.cjs';
-import crypto from 'crypto';
+const chromium = require('@sparticuz/chromium');
+const puppeteer = require('puppeteer-core');
+const { supabase } = require('./lib/supabase.js');
+const crypto = require('crypto');
 
 /**
  * Orion Scout v3 — Volatility-Hunting Intelligence Scraper
@@ -96,7 +96,7 @@ function extractAFERRSignals(newsItems, company) {
 }
 
 // ── Main Handler ──────────────────────────────────────────────────────────────
-export const handler = async (event) => {
+exports.handler = async (event) => {
   const startTime = Date.now();
 
   let body = {};
@@ -248,6 +248,6 @@ export const handler = async (event) => {
 };
 
 // Netlify 60-minute Cron Activation
-export const config = {
+exports.config = {
   schedule: "@hourly"
 };

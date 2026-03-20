@@ -1,4 +1,4 @@
-import { supabase } from './lib/supabase.cjs';
+const { supabase } = require('./lib/supabase.js');
 
 /**
  * LAI Scoring Worker v1.0.0
@@ -34,7 +34,7 @@ function getStdDev(arr) {
   return Math.sqrt(arr.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n);
 }
 
-export const handler = async (event) => {
+exports.handler = async (event) => {
   const startTime = Date.now();
   console.log('📉 LAI Scoring Engine (v1.7.0) initiated…');
 
@@ -220,6 +220,6 @@ export const handler = async (event) => {
   }
 };
 
-export const config = {
+exports.config = {
   schedule: "*/15 * * * *" // Run every 15 minutes to process new signals
 };

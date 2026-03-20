@@ -1,4 +1,4 @@
-import { supabase } from './lib/supabase.cjs';
+const { supabase } = require('./lib/supabase.js');
 
 /**
  * LAI Reordering Worker v1.0.0
@@ -6,7 +6,7 @@ import { supabase } from './lib/supabase.cjs';
  * Emits 'rank.changed' event every 60s for the frontend to re-fetch/re-order.
  */
 
-export const handler = async (event) => {
+exports.handler = async (event) => {
   const startTime = Date.now();
   console.log('🔄 Institutional Rank Reordering initiated…');
 
@@ -115,6 +115,6 @@ export const handler = async (event) => {
   }
 };
 
-export const config = {
+exports.config = {
   schedule: "*/1 * * * *" // Run every minute for "Institutional Motion"
 };
