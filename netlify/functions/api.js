@@ -170,7 +170,8 @@ app.post(['/api/diagnostic', '/diagnostic'], async (req, res) => {
           html: ESSENTIAL.participantReport({ 
             name, 
             reportId: diagData.id 
-          })
+          }),
+          type: 'participant_report'
         });
 
         // C. Institutional Onboarding (if new team created)
@@ -178,11 +179,12 @@ app.post(['/api/diagnostic', '/diagnostic'], async (req, res) => {
           await sendEmail({
             from: getSender('onboarding'),
             to: email,
-            subject: 'Institutional Onboarding: Team Measurement Initiated',
+            subject: 'Your Measurement Cycle Has Been Initiated',
             html: ESSENTIAL.teamOnboarding({
               organization: organization_name || name,
               teamCode: final_team_code
-            })
+            }),
+            type: 'team_onboarding'
           });
         }
       } catch (e) {
@@ -215,8 +217,9 @@ app.post(['/api/report-request', '/report-request'], async (req, res) => {
     await sendEmail({
       from: getSender('research'),
       to: email,
-      subject: 'Requested Research: The State of Cognition 2026',
-      html: ESSENTIAL.socReportDelivery({ name })
+      subject: 'State of Cognition Report — Institutional Release',
+      html: ESSENTIAL.socReportDelivery({ name }),
+      type: 'soc_report'
     });
 
     res.json({ success: true });

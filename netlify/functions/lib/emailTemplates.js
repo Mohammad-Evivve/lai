@@ -84,20 +84,30 @@ const ESSENTIAL = {
    */
   participantReport: (data) => {
     const reportUrl = generateAppLink(`/report/perception/${data.reportId}`);
+    const diagnosticUrl = generateAppLink('/diagnostic');
+    
     return wrap(`
       <p style="font-weight: bold; font-size: 18px; margin-bottom: 20px;">Your Leadership Adaptiveness Profile is Ready</p>
       
       <p style="color: #475569; font-size: 14px; margin-bottom: 24px;">
-        <strong>EVENT:</strong> Your responses have been processed within the LAI behavioral framework.<br/><br/>
-        <strong>INTERPRETATION:</strong> This profile reflects how you perceive your leadership system’s adaptiveness. It does not yet measure how your system behaves under pressure (Team Diagnostic required for full behavioral synthesis).
+        <strong>EVENT:</strong> Your observations have been processed within the LAI behavioral framework.<br/><br/>
+        <strong>INTERPRETATION:</strong> This profile reflects how your leadership system is currently perceived. It is important to note that most systems behave differently under pressure than they do in static observation.
       </p>
 
       <div style="text-align: center;">
         <a href="${reportUrl}" style="${buttonStyles}">View Your Profile</a>
       </div>
+
+      <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+        <p style="font-size: 13px; color: #1e293b; font-weight: bold; margin-bottom: 10px;">Next Step: Measure Behavior Under Pressure</p>
+        <p style="font-size: 12px; color: #64748b; margin-bottom: 15px;">
+          To reveal the 'Divergent Dimensions' between intent and execution, we recommend a full behavioral measurement cycle for your team.
+        </p>
+        <a href="${diagnosticUrl}" style="font-size: 12px; font-weight: bold; color: #0f172a; text-decoration: underline;">Explore Behavioral Diagnostic &rarr;</a>
+      </div>
       
-      <p style="font-size: 12px; color: #94a3b8; margin-top: 20px;">
-        Secure Access ID: ${data.reportId}
+      <p style="font-size: 11px; color: #94a3b8; margin-top: 30px; font-style: italic;">
+        Drawn from over 20,000 simulated environments and 100,000+ leadership data points.
       </p>
     `);
   },
@@ -106,21 +116,21 @@ const ESSENTIAL = {
    * 2. State of Cognition Report Email
    */
   socReportDelivery: (data) => {
-    const downloadUrl = generateAppLink('/assets/State_of_Cognition_2026_Institutional.pdf'); // Placeholder
+    const downloadUrl = generateAppLink('/assets/State_of_Cognition_2026_Institutional.pdf');
     return wrap(`
-      <p style="font-weight: bold; font-size: 18px; margin-bottom: 20px;">Requested Research: The State of Cognition 2026</p>
+      <p style="font-weight: bold; font-size: 18px; margin-bottom: 20px;">State of Cognition Report — Institutional Release</p>
       
       <p style="color: #475569; font-size: 14px; margin-bottom: 24px;">
         <strong>EVENT:</strong> Institutional request for the flagship behavioral signals report.<br/><br/>
-        <strong>INTERPRETATION:</strong> This report represents the 2026 global baseline for leadership system responsiveness across 10 regions and 5 core dimensions.
+        <strong>INTERPRETATION:</strong> This institutional release represents the 2026 global baseline for leadership system responsiveness across 10 regions and 5 core dimensions.
       </p>
 
       <div style="text-align: center;">
         <a href="${downloadUrl}" style="${buttonStyles}">Download Full Report</a>
       </div>
       
-      <p style="font-size: 12px; color: #64748b; margin-top: 20px;">
-        Evidence count: 100,000+ Behavioral Points
+      <p style="font-size: 12px; color: #64748b; margin-top: 20px; font-weight: bold;">
+        Drawn from over 20,000 simulated environments and 100,000+ leadership data points.
       </p>
     `);
   },
@@ -131,20 +141,20 @@ const ESSENTIAL = {
   teamOnboarding: (data) => {
     const manageUrl = generateAppLink('/observatory', { team: data.teamCode });
     return wrap(`
-      <p style="font-weight: bold; font-size: 18px; margin-bottom: 20px;">Institutional Onboarding: Team Measurement Cycle Initiated</p>
+      <p style="font-weight: bold; font-size: 18px; margin-bottom: 20px;">Your Measurement Cycle Has Been Initiated</p>
       
       <p style="color: #475569; font-size: 14px; margin-bottom: 24px;">
         <strong>EVENT:</strong> A new leadership system measurement cycle has been initialized for <strong>${data.organization}</strong>.<br/><br/>
-        <strong>INTERPRETATION:</strong> You are now authorized to collect and synthesize behavioral signals from your team. This will reveal the 'Divergent Dimensions' between intent and execution.
+        <strong>INTERPRETATION:</strong> You are now authorized to collect and synthesize behavioral signals from your team. Each participant contributes a unique signal; patterns emerge only when these signals converge.
       </p>
 
       <div style="background-color: #ffffff; padding: 20px; border-radius: 4px; border: 1px dashed #cbd5e1; margin: 20px 0; text-align: center;">
-        <span style="font-size: 12px; font-weight: bold; text-transform: uppercase; color: #64748b; display: block; margin-bottom: 5px;">Your Team Access Code</span>
+        <span style="font-size: 12px; font-weight: bold; text-transform: uppercase; color: #64748b; display: block; margin-bottom: 5px;">Team Access Code</span>
         <span style="font-size: 32px; font-weight: 900; letter-spacing: 0.1em; color: #0f172a;">${data.teamCode}</span>
       </div>
 
       <div style="text-align: center;">
-        <a href="${manageUrl}" style="${buttonStyles}">Manage Team Measurement</a>
+        <a href="${manageUrl}" style="${buttonStyles}">Manage Measurement Cycle</a>
       </div>
     `);
   }

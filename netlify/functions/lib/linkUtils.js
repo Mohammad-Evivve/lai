@@ -30,6 +30,12 @@ const generateAppLink = (path, params = {}) => {
   });
   
   const finalUrl = url.toString();
+  
+  // Link Validation Check (Dev Safety)
+  if (!finalUrl || !finalUrl.startsWith("http")) {
+    console.warn("Invalid email link generated:", finalUrl);
+  }
+  
   console.log("Email Link Generated:", finalUrl);
   return finalUrl;
 };
