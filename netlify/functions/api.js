@@ -310,14 +310,23 @@ app.post(['/api/diagnostic', '/diagnostic'], async (req, res) => {
 });
 
 // Debug Email Configuration (Secure)
-app.get('/api/debug/email', async (req, res) => {
-  const hasKey = !!process.env.RESEND_API_KEY;
-  const keyPrefix = hasKey ? `${process.env.RESEND_API_KEY.substring(0, 5)}...` : 'NONE';
+app.get(['/api/debug/email', '/debug/email'], async (req, res) => {
+  const hasResend = !!process.env.RESEND_API_KEY;
+  const hasSupabaseUrl = !!process.env.SUPABASE_URL;
+  const hasSupabaseKey = !!process.env.SUPABASE_KEY;
+  const hasServiceKey = !!process.env.SUPABASE_SERVICE_KEY;
   
   res.json({
     status: 'Ready',
-    hasKey,
-    keyPrefix,
+    resend: {
+      present: hasResend,
+      prefix: hasResend ? `${process.env.RESEND_API_KEY.substring(0, 5)}...` : 'MISSING'
+    },
+    supabase: {
+      url: hasSupabaseUrl,
+      anonKey: hasSupabaseKey,
+      serviceKey: hasServiceKey
+    },
     env: process.env.NODE_ENV || 'production'
   });
 });
