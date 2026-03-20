@@ -208,11 +208,15 @@ const DiagnosticPage = () => {
         if (!response.ok) throw new Error(data.error || 'Failed to submit diagnostic');
         
         console.log('[DIAGNOSTIC] Submission success:', data);
-        setReportId(data.id);
-        if (data.team_code) setServerTeamCode(data.team_code);
-        setStep(7);
-        success = true;
-        setSubmissionError(null);
+        if (data.id) {
+          setReportId(data.id);
+          if (data.team_code) setServerTeamCode(data.team_code);
+          setStep(7);
+          success = true;
+          setSubmissionError(null);
+        } else {
+          throw new Error('Server returned success but no report ID was found.');
+        }
       } catch (err) {
         console.error(`[DIAGNOSTIC] Attempt ${attempts} failed:`, err);
         if (attempts < MAX_ATTEMPTS) {
@@ -652,24 +656,30 @@ const DiagnosticPage = () => {
                   <h3 style={{ fontSize: '1.75rem', fontWeight: '800', marginBottom: '0.75rem', letterSpacing: '-0.02em', color: '#ffffff' }}>Leadership Adaptiveness Profile</h3>
                   <p style={{ color: '#94a3b8', fontSize: '1.1rem', lineHeight: '1.5' }}>Your individual results and research brief are now available for review.</p>
                 </div>
-                
-                <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
-                  <Link to={`/report/perception/${reportId}`} className="btn-institutional primary" style={{ background: '#14b8a6', color: 'white', padding: '1rem 2rem', borderRadius: '12px', textAlign: 'center', fontWeight: '700', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', textDecoration: 'none', flex: '1', minWidth: '200px' }}>
-                    View Results Brief <ArrowRight size={20} />
-                  </Link>
-                  
-                  <button 
-                    onClick={() => {
-                      const url = `${window.location.origin}/report/perception/${reportId}`;
-                      navigator.clipboard.writeText(url);
-                      setCopied('report');
-                      setTimeout(() => setCopied(null), 2000);
-                    }}
-                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', padding: '1rem 2rem', borderRadius: '12px', color: 'white', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', transition: 'all 0.2s', flex: '1', minWidth: '200px' }}
-                  >
-                    {copied === 'report' ? <><CheckCircle size={18} color="#14b8a6" /> Copied!</> : <><LinkIcon size={18} /> Copy Report Link</>}
-                  </button>
-                </div>
+                                {!reportId ? (
+                  <div style={{ color: '#14b8a6', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div className="spinner-small" /> Synchronizing with Leadership Observatory...
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', width: '100%' }}>
+                    <Link to={`/report/perception/${reportId}`} className="btn-institutional primary" style={{ background: '#14b8a6', color: 'white', padding: '1rem 2rem', borderRadius: '12px', textAlign: 'center', fontWeight: '700', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', textDecoration: 'none', flex: '1', minWidth: '200px' }}>
+                      View Results Brief <ArrowRight size={20} />
+                    </Link>
+                    
+                    <button 
+                      onClick={() => {
+                        const url = `${window.location.origin}/report/perception/${reportId}`;
+                        navigator.clipboard.writeText(url);
+                        setCopied('report');
+                        setTimeout(() => setCopied(null), 2000);
+                      }}
+                      style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', padding: '1rem 2rem', borderRadius: '12px', color: 'white', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', transition: 'all 0.2s', flex: '1', minWidth: '200px' }}
+                    >
+                      {copied === 'report' ? <><CheckCircle size={18} color="#14b8a6" /> Copied!</> : <><LinkIcon size={18} /> Copy Report Link</>}
+                    </button>
+                  </div>
+                )}
+
               </div>
 
               <div className="next-steps-grid">
