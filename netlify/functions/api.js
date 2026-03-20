@@ -214,15 +214,33 @@ app.post(['/api/diagnostic', '/diagnostic'], async (req, res) => {
       if (existingTeam) team_id = existingTeam.id;
     }
 
-    const { data: participant } = await supabaseClient.from('participants').upsert([{ name, email, organization: organization_name, industry, role_level, org_size, participation_mode, team_id }], { onConflict: 'email' }).select().single();
+    let participant_id = null;
+    try {
+      const { data: pData } = await supabaseClient.from('participants').upsert([{ 
+        name, 
+        email, 
+        organization: organization_name, 
+        role_level, 
+        org_size, 
+        participation_mode, 
+        team_id 
+      }], { onConflict: 'email' }).select().single();
+      if (pData) participant_id = pData.id;
+    } catch (pe) {
+      console.warn("[API] Participant sync failed, continuing without link:", pe.message);
+    }
 
     const { data: diagData, error: diagError } = await supabaseClient.from('diagnostic_results').insert([{
-        participant_id: participant.id, organization_name, industry, region: region || 'Global',
+        participant_id, organization_name, industry, region: region || 'Global',
         overall_score, signal_detection_score, cognitive_framing_score, resource_calibration_score, decision_alignment_score, integrated_responsiveness_score,
         answers, team_id, metadata: { ...metadata, team_code: final_team_code, is_published: true, recorded_at: new Date().toISOString() }
     }]).select().single();
 
-    if (diagError) throw diagError;
+    if (diagError) {
+      console.error("[API] Diagnostic insert failed:", diagError);
+      throw diagError;
+    }
+    if (!diagData) throw new Error("Database failed to return the new report record.");
 
     // Background Notifications (Fire and Forget)
     (async () => {
