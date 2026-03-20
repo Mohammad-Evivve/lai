@@ -257,54 +257,69 @@ app.post(['/api/diagnostic', '/diagnostic'], async (req, res) => {
     }
     if (!diagData) throw new Error("Database failed to return the new report record.");
 
-    // Background Notifications (Fire and Forget)
-    (async () => {
-      try {
-        // A. Internal Alert (Admin)
-        await sendEmail({
-          from: getSender('notifications'),
-          to: 'mmemon@evivve.com',
-          subject: `NEW REPORT: ${organization_name || email}`,
-          html: INTERNAL.diagnosticCompleted({ 
-            name, email, organization_name, 
-            report_link: `https://adaptiveness.institute/report/perception/${diagData.id}` 
-          })
-        });
+    // Notifications (Wait for these to complete in Serverless environment)
+    try {
+      const emailPromises = [];
 
-        // B. Participant Report (Instant Delivery)
-        await sendEmail({
-          from: getSender('research'),
+      // A. Internal Alert (Admin)
+      emailPromises.push(sendEmail({
+        from: getSender('notifications'),
+        to: 'mmemon@evivve.com',
+        subject: `NEW REPORT: ${organization_name || email}`,
+        html: INTERNAL.diagnosticCompleted({ 
+          name, email, organization_name, 
+          report_link: `https://adaptiveness.institute/report/perception/${diagData.id}` 
+        })
+      }));
+
+      // B. Participant Report (Instant Delivery)
+      emailPromises.push(sendEmail({
+        from: getSender('research'),
+        to: email,
+        subject: 'Your Leadership Adaptiveness Profile is Ready',
+        html: ESSENTIAL.participantReport({ 
+          name, 
+          reportId: diagData.id 
+        }),
+        type: 'participant_report'
+      }));
+
+      // C. Institutional Onboarding (if new team created)
+      if (participation_mode === 'team_create' && final_team_code) {
+        emailPromises.push(sendEmail({
+          from: getSender('onboarding'),
           to: email,
-          subject: 'Your Leadership Adaptiveness Profile is Ready',
-          html: ESSENTIAL.participantReport({ 
-            name, 
-            reportId: diagData.id 
+          subject: 'Your Measurement Cycle Has Been Initiated',
+          html: ESSENTIAL.teamOnboarding({
+            organization: organization_name || name,
+            teamCode: final_team_code
           }),
-          type: 'participant_report'
-        });
-
-        // C. Institutional Onboarding (if new team created)
-        if (participation_mode === 'team_create' && final_team_code) {
-          await sendEmail({
-            from: getSender('onboarding'),
-            to: email,
-            subject: 'Your Measurement Cycle Has Been Initiated',
-            html: ESSENTIAL.teamOnboarding({
-              organization: organization_name || name,
-              teamCode: final_team_code
-            }),
-            type: 'team_onboarding'
-          });
-        }
-      } catch (e) {
-        console.error("[Email Trigger Error]:", e.message);
+          type: 'team_onboarding'
+        }));
       }
-    })();
+
+      await Promise.allSettled(emailPromises);
+    } catch (e) {
+      console.error("[Email Sync Error]:", e.message);
+    }
 
     res.status(201).json({ id: diagData.id, team_code: final_team_code });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// Debug Email Configuration (Secure)
+app.get('/api/debug/email', async (req, res) => {
+  const hasKey = !!process.env.RESEND_API_KEY;
+  const keyPrefix = hasKey ? `${process.env.RESEND_API_KEY.substring(0, 5)}...` : 'NONE';
+  
+  res.json({
+    status: 'Ready',
+    hasKey,
+    keyPrefix,
+    env: process.env.NODE_ENV || 'production'
+  });
 });
 
 // Health Checks & Other Routes
