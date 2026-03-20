@@ -6,29 +6,29 @@ const HomeObservedSystems = () => {
     {
       id: 'simulations',
       value: '20,000+',
-      label: 'SIMULATIONS OBSERVED',
-      annotation: 'Patterns emerging from simulation and live system observation',
+      label: 'SIMULATED ENVIRONMENTS',
+      annotation: 'High-fidelity behavioral datasets emerging from the LAI global observatory.',
       visual: 'network'
     },
     {
       id: 'pressure',
       value: '68%',
-      label: 'BREAK UNDER PRESSURE',
-      annotation: 'Alignment breakdown at critical transition points',
+      label: 'BEHAVIORAL FRICTION',
+      annotation: 'The observed delta between stated institutional intent and actual system action.',
       visual: 'convergence'
     },
     {
       id: 'friction',
       value: '#1',
-      label: 'PRIMARY FRICTION: RESOURCE CALIBRATION',
-      annotation: 'Asymmetric distribution across strategic pillars',
+      label: 'PRIMARY RISK: FRAGMENTATION',
+      annotation: 'The breakdown of systemic coherence under environmental disruption.',
       visual: 'imbalance'
     },
     {
       id: 'gap',
-      value: 'HIGH',
-      label: 'DECISION–EXECUTION GAP',
-      annotation: 'Average lag between signal recognition and behavioral pivot',
+      value: 'SOC v3',
+      label: 'GOVERNANCE BASELINE',
+      annotation: 'The institutional standard for measuring leadership system response velocity.',
       visual: 'drift'
     }
   ];
@@ -37,9 +37,9 @@ const HomeObservedSystems = () => {
     <section className="observed-systems-section">
       <div className="section-container">
         <div className="section-header">
-          <span className="header-label">Observed Across Leadership Systems</span>
+          <span className="header-label">Institutional Benchmarking</span>
           <div className="header-line"></div>
-          <p className="header-subtitle">Patterns emerging from simulation and live system observation</p>
+          <p className="header-subtitle">Measured through 20,000+ simulated environments and 100,000+ data points.</p>
         </div>
 
         <div className="metrics-grid">

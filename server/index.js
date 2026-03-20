@@ -58,7 +58,7 @@ app.get('/api/stats', (req, res) => {
 
 // Submit Diagnostic Result → Supabase
 app.post('/api/diagnostic/start', async (req, res) => {
-  const { email, name, organization } = req.body;
+  const { email, name, organization, industry, role_level, org_size, region } = req.body;
   if (!email) return res.status(400).json({ error: 'Email required' });
 
   try {
@@ -73,6 +73,10 @@ app.post('/api/diagnostic/start', async (req, res) => {
       email,
       name: name || '',
       company: organization || '',
+      industry: industry || '',
+      role: role_level || '',
+      org_size: org_size || '',
+      region: region || '',
       has_started: true,
       last_activity_at: new Date().toISOString()
     };
@@ -98,7 +102,7 @@ app.post('/api/diagnostic/start', async (req, res) => {
               from: getSender('notifications'),
               to: 'mmemon@evivve.com',
               subject: `NEW LEAD: Diagnostic Started | ${organization || email}`,
-              html: INTERNAL.diagnosticStarted({ name, email, organization })
+              html: INTERNAL.diagnosticStarted({ name, email, organization, role_level, industry })
             });
           } catch (e) {
             console.error('New lead email trigger failed:', e);
@@ -133,10 +137,22 @@ app.post('/api/diagnostic/invite', async (req, res) => {
       teamCode = user.last_team_code;
     } else {
       teamCode = `LAI-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+      
+      // Update user_status
       await supabase
         .from('user_status')
         .update({ last_team_code: teamCode })
         .eq('email', email);
+
+      // Register in teams table for report joins
+      await supabase
+        .from('teams')
+        .insert([{ 
+          team_code: teamCode, 
+          organization_name: organization,
+          industry: req.body.industry || null,
+          org_size: req.body.org_size || null
+        }]);
     }
 
     // 2. Dispatch Emails
@@ -190,15 +206,62 @@ app.get('/api/teams/:code', async (req, res) => {
 // --- Diagnostic Retrieval (Report) ---
 app.get('/api/diagnostic/:id', async (req, res) => {
   const { id } = req.params;
+  console.log(`[API] GET /api/diagnostic/${id} - Retrieving report...`);
   try {
-    // 1. Fetch individual result
+    // 1. Fetch individual result with team_code joined
     const { data: individual, error: individualError } = await supabase
       .from('diagnostic_results')
-      .select('*')
+      .select('*, teams(team_code)')
       .eq('id', id)
       .single();
-
+      
     if (individualError) throw individualError;
+    
+    console.log(`[DEBUG] Individual diagnostic retrieved for ID: ${id}`);
+    console.log(`[DEBUG] team_id: ${individual.team_id}`);
+    console.log(`[DEBUG] Raw individual.teams:`, individual.teams);
+
+    // Flatten team_code from the joined object
+    if (individual.teams) {
+      individual.team_code = individual.teams.team_code;
+      delete individual.teams;
+    } 
+    
+    // Fallback logic for team_code
+    if (!individual.team_code) {
+      if (individual.team_id) {
+        // Manual lookup by team_id
+        const { data: teamObj } = await supabase.from('teams').select('team_code').eq('id', individual.team_id).single();
+        if (teamObj) individual.team_code = teamObj.team_code;
+      } else if (individual.organization_name) {
+        // 1. Try to find existing team for this org
+        const { data: existingTeam } = await supabase.from('teams')
+          .select('team_code')
+          .ilike('organization_name', individual.organization_name.trim())
+          .limit(1)
+          .maybeSingle();
+        
+        if (existingTeam) {
+          individual.team_code = existingTeam.team_code;
+        } else {
+          // 2. Auto-generate a team for this report to enable invitations
+          const newCode = `LAI-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+          const { data: newTeam } = await supabase.from('teams').insert([{
+            team_code: newCode,
+            organization_name: individual.organization_name,
+            industry: individual.industry,
+            org_size: individual.org_size
+          }]).select().single();
+          
+          if (newTeam) {
+            individual.team_code = newTeam.team_code;
+            individual.team_id = newTeam.id;
+            // Update the report record to link it permanently
+            await supabase.from('diagnostic_results').update({ team_id: newTeam.id }).eq('id', id);
+          }
+        }
+      }
+    }
 
     // 2. Fetch team insights
     let teamData = null;

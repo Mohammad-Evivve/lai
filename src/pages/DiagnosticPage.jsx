@@ -110,6 +110,7 @@ const DiagnosticPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reportId, setReportId] = useState(null);
   const [serverTeamCode, setServerTeamCode] = useState('');
+  const [submissionError, setSubmissionError] = useState(null);
   const [isInviting, setIsInviting] = useState(false);
   const [copied, setCopied] = useState(null); // 'report' or 'team'
 
@@ -190,7 +191,7 @@ const DiagnosticPage = () => {
 
     let success = false;
     let attempts = 0;
-    const MAX_ATTEMPTS = 2;
+    const MAX_ATTEMPTS = 3;
 
     while (attempts < MAX_ATTEMPTS && !success) {
       try {
@@ -211,15 +212,15 @@ const DiagnosticPage = () => {
         if (data.team_code) setServerTeamCode(data.team_code);
         setStep(7);
         success = true;
+        setSubmissionError(null);
       } catch (err) {
         console.error(`[DIAGNOSTIC] Attempt ${attempts} failed:`, err);
         if (attempts < MAX_ATTEMPTS) {
-          // Wait 1.5s before retry
-          await new Promise(r => setTimeout(r, 1500));
+          // Linear backoff
+          await new Promise(r => setTimeout(r, 2000 * attempts));
         } else {
-          // Final failure fallback
-          setReportId('pending-' + Math.random().toString(36).substring(7));
-          setStep(7);
+          // Final failure - Show error state instead of hallucinating ID
+          setSubmissionError('The secure link to the Leadership Observatory could not be established. Your data is preserved locally. Please retry the final transmission.');
         }
       }
     }
@@ -342,22 +343,7 @@ const DiagnosticPage = () => {
               <div className="diag-actions">
                 <button 
                   disabled={!identity.name || !identity.email || !identity.email.includes('@')} 
-                  onClick={async () => {
-                    setStep(3);
-                    try {
-                      await fetch('/api/diagnostic/start', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                          email: identity.email,
-                          name: identity.name,
-                          organization: meta.organization_name || teamOrgName
-                        })
-                      });
-                    } catch (e) {
-                      console.error('Failed to notify start:', e);
-                    }
-                  }} 
+                  onClick={() => setStep(3)} 
                   className="btn-institutional primary">Continue</button>
               </div>
             </motion.div>
@@ -467,7 +453,26 @@ const DiagnosticPage = () => {
               <div className="diag-actions">
                 <button 
                   disabled={ (mode === 'team_create' && !meta.organization_name) || !meta.industry || !meta.role_level || !meta.org_size} 
-                  onClick={() => setStep(mode === 'team_create' ? 5 : 6)} 
+                  onClick={async () => {
+                    try {
+                      fetch('/api/diagnostic/start', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                          email: identity.email,
+                          name: identity.name,
+                          organization: meta.organization_name || teamOrgName,
+                          industry: meta.industry,
+                          role_level: meta.role_level,
+                          org_size: meta.org_size,
+                          region: meta.region
+                        })
+                      }); // Non-blocking fire/forget
+                    } catch (e) {
+                      console.error('Failed to notify start:', e);
+                    }
+                    setStep(mode === 'team_create' ? 5 : 6);
+                  }} 
                   className="btn-institutional primary"
                 >
                   Continue
@@ -544,35 +549,67 @@ const DiagnosticPage = () => {
           {/* STEP 6: DIAGNOSTIC QUESTIONS */}
           {step === 6 && (
             <motion.div key="questions" className="diag-card questions" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <div className="diag-progress">
-                <div className="diag-progress-bar">
-                  <div className="fill" style={{ width: `${(currentGlobalIndex / totalQuestions) * 100}%` }}></div>
+              {isSubmitting ? (
+                <div className="submission-loading-view" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+                  <Activity className="animate-pulse text-teal-600 mb-6 mx-auto" size={64} />
+                  <h2 style={{ fontSize: '1.75rem', fontWeight: '950', marginBottom: '1rem' }}>Establishing Secure Connection</h2>
+                  <p style={{ color: '#64748b', fontSize: '1.1rem', maxWidth: '400px', marginInline: 'auto' }}>
+                    Transmitting behavioral signals to the Leadership Observatory for synthesis...
+                  </p>
+                  <div className="transmitting-bar-container" style={{ width: '100%', height: '4px', background: '#f1f5f9', borderRadius: '4px', marginTop: '3rem', overflow: 'hidden' }}>
+                    <motion.div 
+                      className="transmitting-bar-fill"
+                      style={{ height: '100%', background: '#14b8a6' }}
+                      animate={{ x: ['-100%', '100%'] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                    />
+                  </div>
                 </div>
-                <div className="diag-progress-label">Question {currentGlobalIndex + 1} of {totalQuestions} · {dimensions[currentDimIndex].name}</div>
-              </div>
-
-              <div className="question-content">
-                <motion.div key={currentGlobalIndex} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}>
-                  <p className="q-text">{dimensions[currentDimIndex].questions[currentQIndex].text}</p>
-                  <div className="scale-legend">
-                    <span>{dimensions[currentDimIndex].questions[currentQIndex].labels[0]}</span>
-                    <span>{dimensions[currentDimIndex].questions[currentQIndex].labels[1]}</span>
+              ) : submissionError ? (
+                <div className="submission-error-view" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+                  <AlertCircle className="text-rose mb-6 mx-auto" size={64} />
+                  <h2 style={{ fontSize: '1.75rem', fontWeight: '950', marginBottom: '1rem', color: '#0f172a' }}>Transmission Interrupted</h2>
+                  <p style={{ color: '#64748b', fontSize: '1.1rem', marginBottom: '2.5rem' }}>
+                    {submissionError}
+                  </p>
+                  <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                    <button onClick={submitDiagnostic} className="btn-institutional primary">Retry final transmission</button>
+                    <button onClick={() => setStep(mode === 'team_create' ? 5 : 4)} className="btn-institutional outline">Review Form</button>
                   </div>
-                  <div className="scale-options-10">
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(val => (
-                      <button key={val} className="scale-node" onClick={() => handleAnswer(val)}>
-                        {val}
-                      </button>
-                    ))}
+                </div>
+              ) : (
+                <>
+                  <div className="diag-progress">
+                    <div className="diag-progress-bar">
+                      <div className="fill" style={{ width: `${(currentGlobalIndex / totalQuestions) * 100}%` }}></div>
+                    </div>
+                    <div className="diag-progress-label">Question {currentGlobalIndex + 1} of {totalQuestions} · {dimensions[currentDimIndex].name}</div>
                   </div>
-                </motion.div>
-              </div>
 
-              <button className="btn-back-nav" onClick={() => {
-                if (currentQIndex > 0) setCurrentQIndex(0);
-                else if (currentDimIndex > 0) { setCurrentDimIndex(currentDimIndex - 1); setCurrentQIndex(1); }
-                else setStep(mode === 'team_create' ? 5 : 4);
-              }}><ChevronLeft size={16} /> Previous Question</button>
+                  <div className="question-content">
+                    <motion.div key={currentGlobalIndex} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}>
+                      <p className="q-text">{dimensions[currentDimIndex].questions[currentQIndex].text}</p>
+                      <div className="scale-legend">
+                        <span>{dimensions[currentDimIndex].questions[currentQIndex].labels[0]}</span>
+                        <span>{dimensions[currentDimIndex].questions[currentQIndex].labels[1]}</span>
+                      </div>
+                      <div className="scale-options-10">
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(val => (
+                          <button key={val} className="scale-node" onClick={() => handleAnswer(val)}>
+                            {val}
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  </div>
+
+                  <button className="btn-back-nav" onClick={() => {
+                    if (currentQIndex > 0) setCurrentQIndex(0);
+                    else if (currentDimIndex > 0) { setCurrentDimIndex(currentDimIndex - 1); setCurrentQIndex(1); }
+                    else setStep(mode === 'team_create' ? 5 : 4);
+                  }}><ChevronLeft size={16} /> Previous Question</button>
+                </>
+              )}
             </motion.div>
           )}
 

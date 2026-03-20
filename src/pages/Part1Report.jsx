@@ -222,23 +222,20 @@ const Part1Report = () => {
   }, [data, teamData]);
 
   useEffect(() => {
-    let retryCount = 0;
-    const MAX_RETRIES = 2;
+    window.scrollTo(0, 0);
+    let pollInterval = null;
+    let timeoutId = null;
 
-    const fetchReport = async () => {
+    const fetchReport = async (isPoll = false) => {
       try {
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Synthesis timed out')), 15000)
-        );
-
-        const fetchPromise = fetch(`/api/diagnostic/${id}`);
-        
-        const response = await Promise.race([fetchPromise, timeoutPromise]);
+        const response = await fetch(`/api/diagnostic/${id}`);
         
         if (!response.ok) {
-          if (response.status === 404 && id.startsWith('pending-')) {
-             // Stay in loading for a bit if it's a pending ID, or show specialized error
-             throw new Error('Record not yet propagate');
+          if (response.status === 404) {
+            // Keep processing if it looks like a pending report
+            setLoading(false);
+            setError('processing');
+            return;
           }
           throw new Error('Report not found');
         }
@@ -247,64 +244,103 @@ const Part1Report = () => {
         setData(report);
         if (report.team_insights) setTeamData(report.team_insights);
         setError(null);
-      } catch (err) {
-        console.error('Report Error:', err);
-        setError(err.message);
-      } finally {
         setLoading(false);
+        
+        // Clear polling if successful
+        if (pollInterval) clearInterval(pollInterval);
+        if (timeoutId) clearTimeout(timeoutId);
+      } catch (err) {
+        if (!isPoll) {
+          console.error('Report Error:', err);
+          setError(err.message);
+          setLoading(false);
+        }
       }
     };
-    fetchReport();
-  }, [id]);
 
-  const handleRetry = () => {
-    setLoading(true);
-    setError(null);
-    // Trigger re-fetch by keeping the same ID but resetting states
-    window.location.reload(); 
-  };
-
-  useEffect(() => {
-    // Ensure the page always loads at the very top and stays there during hydration
-    if ('scrollRestoration' in window.history) {
-      window.history.scrollRestoration = 'manual';
+    if (id.startsWith('pending-')) {
+      setLoading(false);
+      setError('processing');
+    } else {
+      fetchReport();
     }
-    window.scrollTo(0, 0);
-    
-    if (data) {
-      const timer = setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: 'instant' });
-      }, 50);
-      return () => clearTimeout(timer);
-    }
-  }, [data]);
 
-  if (loading) return <div className="report-loading">Synthesizing Institutional Profile...</div>;
-  if (!data) return (
-    <div className="report-error-container">
-      <div className="error-card">
-        <Activity size={48} className={`mb-4 ${error?.includes('timed out') ? 'text-amber-500' : 'text-rose'}`} />
-        <h2>{error?.includes('timed out') ? 'Synthesis Delayed' : 'Institutional Profile Not Found'}</h2>
-        <p>
-          {error?.includes('timed out') 
-            ? "The intensive synthesis of your behavioral profile is taking longer than expected." 
-            : "We were unable to locate this specific perception profile."}
-        </p>
-        <div className="error-actions">
-          {error?.includes('timed out') || error?.includes('propagate') ? (
-            <button onClick={handleRetry} className="btn-institutional primary">Retry Synthesis</button>
-          ) : (
-            <Link to="/diagnostic" className="btn-institutional primary">Take Diagnostic</Link>
-          )}
-          <a href="mailto:support@lai.institute" className="btn-institutional outline">Contact Support</a>
-        </div>
-        <div className="debug-info">
-          Attempted ID: {id}
-          {error && <div style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '0.5rem' }}>Status: {error}</div>}
-        </div>
+    // Polling logic for 'processing' state
+    if (error === 'processing' || id.startsWith('pending-')) {
+      pollInterval = setInterval(() => {
+        fetchReport(true);
+      }, 4000);
+
+      // 45s timeout for polling
+      timeoutId = setTimeout(() => {
+        clearInterval(pollInterval);
+        setError('timeout');
+      }, 45000);
+    }
+
+    return () => {
+      if (pollInterval) clearInterval(pollInterval);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [id, error]);
+
+  if (loading) return (
+    <div className="report-loading-container">
+      <div className="loading-content">
+        <Activity className="animate-pulse text-teal-500 mb-4" size={48} />
+        <p>Initializing Institutional Secure Connection...</p>
       </div>
     </div>
   );
+
+  // PROCESSING STATE (The Fix)
+  if (error === 'processing' || (loading === false && !data && !error) || (id.startsWith('pending-') && error !== 'timeout')) {
+    return (
+      <div className="report-processing-container">
+        <div className="processing-card">
+          <div className="institutional-seal-small">LAI-CORE-SECURE</div>
+          <Compass className="animate-spin-slow text-teal-600 mb-6" size={60} />
+          <h1>Preparing Your Institutional Profile</h1>
+          <p className="p-lead">
+            We are currently processing your leadership adaptiveness signals and benchmarking them against the global observatory baseline.
+          </p>
+          <div className="processing-status-strip">
+            <span className="dot animate-ping"></span>
+            <span>Synthesis in Progress...</span>
+          </div>
+          <p className="p-sub">This usually takes a moment. You will be redirected automatically once ready.</p>
+          
+          <div className="processing-footer">
+            <span className="trace-id">Trace ID: {id}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error === 'timeout' || (!data && error && error !== 'processing')) {
+    return (
+      <div className="report-error-container">
+        <div className="error-card">
+          <AlertCircle size={48} className="text-rose mb-4" />
+          <h2>{error === 'timeout' ? 'Synthesis Delayed' : 'Institutional Profile Not Found'}</h2>
+          <p>
+            {error === 'timeout' 
+              ? "The intensive synthesis of your behavioral profile is taking longer than expected." 
+              : "We were unable to locate this specific perception profile."}
+          </p>
+          <div className="error-actions">
+            <button onClick={() => window.location.reload()} className="btn-institutional primary">Retry Connection</button>
+            <Link to="/diagnostic" className="btn-institutional outline">Restart Diagnostic</Link>
+            <a href="mailto:support@lai.institute" className="btn-institutional outline">Contact Support</a>
+          </div>
+          <div className="debug-info">
+            Attempted ID: {id}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const { scores, team_average_score, summaryPattern } = reportLogic;
   const teamMemberCount = teamData?.count || 0;
@@ -442,7 +478,7 @@ const Part1Report = () => {
 
         {/* 3. LEADERSHIP RISK SIGNAL (CONDITIONAL) */}
         {riskSignal && (
-          <section className="report-section risk-signal-section page-section" style={{ pageBreakBefore: 'always' }}>
+          <section className="report-section risk-signal-section page-section">
             <div className="risk-banner-inner">
                <AlertCircle size={40} className="text-rose" />
                <div style={{ flex: 1 }}>
@@ -1079,6 +1115,62 @@ const Part1Report = () => {
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
+        .report-loading-container, .report-processing-container {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #f8fafc;
+          padding: 2rem;
+          text-align: center;
+        }
+        .processing-card {
+          background: white;
+          padding: 4rem;
+          border-radius: 24px;
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 40px 100px -20px rgba(0,0,0,0.05);
+          max-width: 600px;
+          width: 100%;
+        }
+        .institutional-seal-small {
+          font-size: 0.65rem;
+          font-weight: 900;
+          letter-spacing: 2px;
+          color: #94a3b8;
+          margin-bottom: 2rem;
+        }
+        .processing-card h1 {
+          font-size: 2rem;
+          font-weight: 950;
+          color: #0f172a;
+          margin-bottom: 1rem;
+          letter-spacing: -0.02em;
+        }
+        .p-lead { color: #64748b; font-size: 1.1rem; line-height: 1.6; margin-bottom: 2.5rem; }
+        .processing-status-strip {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.75rem;
+          background: #f1f5f9;
+          padding: 0.75rem 1.5rem;
+          border-radius: 99px;
+          margin-bottom: 1.5rem;
+        }
+        .processing-status-strip span { font-size: 0.85rem; font-weight: 700; color: #0f172a; }
+        .processing-status-strip .dot { width: 8px; height: 8px; background: #14b8a6; border-radius: 50%; }
+        .p-sub { font-size: 0.85rem; color: #94a3b8; }
+        .processing-footer { margin-top: 3rem; pt: 1.5rem; border-top: 1px solid #f1f5f9; }
+        .trace-id { font-size: 0.65rem; font-family: monospace; color: #cbd5e1; }
+        
+        .animate-spin-slow {
+          animation: spin 8s linear infinite;
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+
         .report-page { background: #f1f5f9; min-height: 100vh; padding: 4rem 2rem; color: #0f172a; font-family: 'Inter', -apple-system, sans-serif; }
         .report-container { 
           width: 900px; margin: 0 auto; background: white; 
@@ -1358,17 +1450,20 @@ const Part1Report = () => {
           .risk-signal-section {
             background: #fff1f2 !important;
             margin-bottom: 1.5rem !important;
-            page-break-before: avoid !important;
-            break-before: avoid !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            page-break-before: auto !important;
+            break-before: auto !important;
           }
-          .risk-banner-inner { padding: 1.25rem !important; gap: 1rem !important; }
-          .risk-title { font-size: 1.1rem !important; }
+          .risk-banner-inner { padding: 1rem !important; gap: 1rem !important; }
+          .risk-title { font-size: 1rem !important; margin-bottom: 0.5rem !important; }
           .risk-content-expanded {
-            margin-top: 0.75rem !important;
-            padding-top: 0.75rem !important;
+            margin-top: 0.5rem !important;
+            padding-top: 0.5rem !important;
           }
-          .risk-content-expanded ul { gap: 0.5rem !important; }
-          .risk-desc { font-size: 0.85rem !important; margin-bottom: 0.75rem !important; }
+          .risk-content-expanded ul { gap: 0.25rem !important; margin-top: 0.5rem !important; }
+          .risk-desc { font-size: 0.8rem !important; margin-bottom: 0.5rem !important; }
+          .risk-tag { font-size: 0.65rem !important; margin-bottom: 0.25rem !important; }
 
           /* ── 3. TEAM ALIGNMENT (Fragmented Perception): keep on one page ── */
           .team-alignment-section {

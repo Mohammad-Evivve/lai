@@ -136,6 +136,8 @@ const INTERNAL = {
     <p><strong>Name:</strong> ${data.name || 'N/A'}</p>
     <p><strong>Email:</strong> ${data.email || 'N/A'}</p>
     <p><strong>Organization:</strong> ${data.organization || 'N/A'}</p>
+    <p><strong>Role:</strong> ${data.role_level || 'N/A'}</p>
+    <p><strong>Industry:</strong> ${data.industry || 'N/A'}</p>
     <p style="font-size: 12px; color: #64748b; margin-top: 20px;">Automated follow-ups (Flow 1) will trigger if they exit before completion.</p>
   `),
   demoRequested: (data) => wrap(`

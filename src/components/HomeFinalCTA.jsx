@@ -24,16 +24,16 @@ const HomeFinalCTA = () => {
           transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
         >
           <h2 className="cta-headline">
-            Measure the gap between perceived alignment and system behavior.
+            Reveal the gap between perceived alignment and observed system behavior.
           </h2>
           
           <div className="cta-actions">
             <Link to="/diagnostic" className="btn-institutional-final primary">
-              Measure Your Leadership System
+              Initiate Measurement Cycle
             </Link>
-            <button className="btn-institutional-final outline">
-              Speak to an Expert
-            </button>
+            <Link to="/framework" className="btn-institutional-final outline">
+              Institutional Framework
+            </Link>
           </div>
         </motion.div>
       </div>

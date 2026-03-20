@@ -19,7 +19,7 @@ app.get(['/api/health', '/health'], async (req, res) => {
   try {
     const health = {
       status: 'ok',
-      version: '1.2.5-ULTRA-STABLE',
+      version: '1.2.8-FINAL',
       timestamp: new Date().toISOString(),
       env: {
         has_url: !!process.env.SUPABASE_URL,
@@ -55,17 +55,93 @@ app.get(['/api/health', '/health'], async (req, res) => {
   }
 });
 
+// Submit Diagnostic Start (Initial Lead Capture)
+app.post(['/api/diagnostic/start', '/diagnostic/start'], async (req, res) => {
+  const { email, name, organization, industry, role_level, org_size, region } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email required' });
+
+  try {
+    const updateData = {
+      email,
+      name: name || '',
+      company: organization || '',
+      industry: industry || '',
+      role: role_level || '',
+      org_size: org_size || '',
+      region: region || '',
+      has_started: true,
+      last_activity_at: new Date().toISOString()
+    };
+
+    await supabaseClient.from('user_status').upsert(updateData, { onConflict: 'email' });
+
+    // Trigger Internal Alert
+    if (email && email.includes('@') && !email.includes('example.com')) {
+      await sendEmail({
+        from: getSender('notifications'),
+        to: 'mmemon@evivve.com',
+        subject: `NEW LEAD: Diagnostic Started | ${organization || email}`,
+        html: INTERNAL.diagnosticStarted({ name, email, organization, role_level, industry })
+      });
+    }
+
+    res.status(201).json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to record start' });
+  }
+});
+
 // Diagnostic Results — Enhanced for Team Insights
 app.get(['/api/diagnostic/:id', '/diagnostic/:id'], async (req, res) => {
   const { id } = req.params;
   try {
     const { data: individual, error: individualError } = await supabaseClient
       .from('diagnostic_results')
-      .select('*')
+      .select('*, teams(team_code)')
       .eq('id', id)
       .single();
 
     if (individualError) throw individualError;
+
+    // Flatten team_code from join
+    if (individual.teams) {
+      individual.team_code = individual.teams.team_code;
+      delete individual.teams;
+    }
+
+    // Robust Fallback Logic for team_code
+    if (!individual.team_code) {
+      if (individual.team_id) {
+        const { data: teamObj } = await supabaseClient.from('teams').select('team_code').eq('id', individual.team_id).single();
+        if (teamObj) individual.team_code = teamObj.team_code;
+      } else if (individual.organization_name) {
+        const isGeneric = (org) => !org || ['none', 'na', 'test', 'ntu'].includes(org.toLowerCase().trim());
+        if (!isGeneric(individual.organization_name)) {
+          const { data: existingTeam } = await supabaseClient.from('teams')
+            .select('team_code')
+            .ilike('organization_name', individual.organization_name.trim())
+            .limit(1)
+            .maybeSingle();
+
+          if (existingTeam) {
+            individual.team_code = existingTeam.team_code;
+          } else {
+            // Auto-generate for continuity
+            const newCode = `LAI-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+            const { data: newTeam } = await supabaseClient.from('teams').insert([{
+              team_code: newCode,
+              organization_name: individual.organization_name,
+              industry: individual.industry,
+              org_size: individual.org_size
+            }]).select().single();
+            if (newTeam) {
+              individual.team_code = newTeam.team_code;
+              await supabaseClient.from('diagnostic_results').update({ team_id: newTeam.id }).eq('id', id);
+            }
+          }
+        }
+      }
+    }
 
     const { data: participant } = await supabaseClient
       .from('participants')

@@ -34,11 +34,10 @@ const HomePage = () => {
 
         <div className="container relative z-10">
           <div className="editorial-header mb-16">
-            <span className="eyebrow-label text-teal">From the Global Observatory</span>
-            <h2 className="section-headline text-navy">Global Adaptiveness Index</h2>
+            <span className="eyebrow-label text-teal">Institutional Intelligence</span>
+            <h2 className="section-headline text-navy">Global Observatory</h2>
             <p className="large-p text-slate-500 max-w-2xl">
-              Establishing transparency in leadership behavior through a global dataset 
-              of benchmarked organizations.
+              The definitive global baseline for leadership system response velocity.
             </p>
           </div>
 
@@ -46,39 +45,39 @@ const HomePage = () => {
             <div className="featured-observatory">
               <div className="observatory-meta">
                 <div className="intelligence-legend compact">
-                  <h4 className="legend-title">Hierarchy of Truth</h4>
+                  <h4 className="legend-title">Measurement Hierarchy</h4>
                   <div className="legend-items">
                     <div className="legend-item">
                       <div className="legend-tier tier-0">Tier 0</div>
-                      <div><strong>Sovereign</strong> (1.2x)</div>
+                      <div><strong>Sovereign</strong> (Observed Reality)</div>
                     </div>
                     <div className="legend-item">
                       <div className="legend-tier tier-1">Tier 1</div>
-                      <div><strong>Observed</strong> (1.0x)</div>
+                      <div><strong>Simulated</strong> (Behavioral Response)</div>
                     </div>
                     <div className="legend-item">
                       <div className="legend-tier tier-2">Tier 2</div>
-                      <div><strong>Perceived</strong> (0.8x)</div>
+                      <div><strong>Perceived</strong> (Baseline Intent)</div>
                     </div>
                   </div>
                 </div>
               </div>
               <div className="observatory-cta mt-12">
-                <Link to="/global-index" className="btn-institutional-custom">Explore the Full Index</Link>
+                <Link to="/global-index" className="btn-institutional-custom">Access the Full Index</Link>
               </div>
             </div>
 
             <div className="research-links">
                 <div className="research-link-card featured-card">
                   <span className="r-label text-teal">Flagship Report</span>
-                  <h3>State of Cognition 2026</h3>
-                  <p className="text-slate-400 text-sm mb-6">A global behavioral analysis of how leaders translate awareness into action.</p>
-                  <Link to="/research/reports/state-of-cognition" className="r-button text-teal">Explore Report →</Link>
+                  <h3>State of Cognition (SOC v3)</h3>
+                  <p className="text-slate-400 text-sm mb-6">Measuring the transition from perception to action across 20,000+ simulated environments.</p>
+                  <Link to="/research/reports/state-of-cognition" className="r-button text-teal">Explore Baseline →</Link>
                </div>
                <div className="research-link-card">
                   <span className="r-label">Recent Publication</span>
                   <h3>The 2024 Alignment Paradox</h3>
-                  <Link to="/library" className="r-button">Read Research</Link>
+                  <Link to="/library" className="r-button">Institutional Library</Link>
                </div>
                <div className="research-link-card">
                   <span className="r-label">Institutional Benchmarking</span>

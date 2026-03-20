@@ -8,19 +8,19 @@ const HomePatterns = () => {
       title: "Alignment Without Movement",
       description: "Agreement is achieved at the cognitive level, but structural inertia prevents the reallocation of resources. The system 'stalls' at the moment of transition.",
       visualType: "CONVERGENCE",
-      tag: "PATTERN 01"
+      tag: "SIGNAL_101 / OBSERVED"
     },
     {
       title: "Shared Awareness, Fragmented Action",
       description: "Internal signals are recognized across the organization, but execution paths diverge as individual business units prioritize local stability over systemic pivot.",
       visualType: "DIVERGENCE",
-      tag: "PATTERN 02"
+      tag: "SIGNAL_204 / OBSERVED"
     },
     {
-      title: "Decision Confidence, Resource Drift",
-      description: "Confidence remains high even as operating choices lose coherence across the system. Strategic intent weakens as resources drift toward legacy outcomes.",
+      title: "Strategic Drift, Operational Stasis",
+      description: "Institutional intent loses coherence during translation. Strategic velocity drops as resources remain tethered to legacy models despite high-level 'agreement'.",
       visualType: "STALL",
-      tag: "PATTERN 03"
+      tag: "SIGNAL_309 / OBSERVED"
     }
   ];
 

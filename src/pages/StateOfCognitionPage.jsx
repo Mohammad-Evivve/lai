@@ -184,6 +184,10 @@ const StateOfCognitionPage = () => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);

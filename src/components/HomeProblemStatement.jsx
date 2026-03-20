@@ -13,11 +13,10 @@ const HomeProblemStatement = () => {
           className="problem-content"
         >
           <h2 className="statement-headline">
-            Leadership teams often appear aligned before decisions reveal otherwise.
+            Strategy does not fail in the planning.<br />It fails in the behavior.
           </h2>
           <p className="statement-body">
-            Agreement is visible in meetings. Breakdown appears when priorities shift, 
-            resources move, and pressure increases. 
+            The gap between <strong>institutional intent</strong> and <strong>observed behavior</strong> is where adaptiveness breaks down. The Institute measures this delta through high-fidelity simulation.
           </p>
           <div className="statement-divider"></div>
         </motion.div>

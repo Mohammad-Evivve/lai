@@ -167,6 +167,16 @@ const INTERNAL = {
     <p><strong>Email:</strong> ${data.email || 'N/A'}</p>
     <p><strong>Organization:</strong> ${data.organization_name || 'N/A'}</p>
     <p><strong>Report:</strong> <a href="${data.report_link}" style="color: #0f172a;">${data.report_link}</a></p>
+  `),
+  diagnosticStarted: (data) => wrap(`
+    <h2 style="font-size: 16px; border-left: 4px solid #0f172a; padding-left: 12px; color: #0f172a; text-transform: uppercase; letter-spacing: 0.05em;">New High-Intent Lead: Diagnostic Started</h2>
+    <p>A user has just initiated the Leadership Adaptiveness Diagnostic.</p>
+    <p><strong>Name:</strong> ${data.name || 'N/A'}</p>
+    <p><strong>Email:</strong> ${data.email || 'N/A'}</p>
+    <p><strong>Organization:</strong> ${data.organization || 'N/A'}</p>
+    <p><strong>Role:</strong> ${data.role_level || 'N/A'}</p>
+    <p><strong>Industry:</strong> ${data.industry || 'N/A'}</p>
+    <p style="font-size: 11px; color: #64748b; margin-top: 20px; font-style: italic;">Follow-up triggers are now active for this lead context.</p>
   `)
 };
 

@@ -8,11 +8,11 @@ const HomeHeroInstitutional = () => {
     <section className="hero-institutional">
       <div className="hero-visual-bg">
         <SignalVisual 
-          type="CONVERGENCE" 
+          type="COHERENCE" 
           width={1200} 
           height={600} 
-          color="#2dd4bf" 
-          opacity={0.15} 
+          color="#14b8a6" 
+          opacity={0.12} 
         />
       </div>
 
@@ -22,7 +22,7 @@ const HomeHeroInstitutional = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
         >
-          <span className="eyebrow-label">The Global Observatory</span>
+          <span className="eyebrow-label text-teal tracking-[0.4em]">Global Observatory</span>
           <h1 className="hero-headline">Leadership Adaptiveness Institute</h1>
           <p className="hero-subline">
             The institutional standard for measuring how leadership systems respond to disruption.
@@ -32,9 +32,26 @@ const HomeHeroInstitutional = () => {
             <Link to="/diagnostic" className="btn-institutional-hero primary">
               Measure Your Leadership System
             </Link>
-            <Link to="/observatory" className="btn-institutional-hero outline">
-              How the Observatory Works
+            <Link to="/framework" className="btn-institutional-hero outline">
+              Institutional Framework
             </Link>
+          </div>
+
+          <div className="authority-strip">
+            <div className="authority-item">
+              <span className="a-count">20,000+</span>
+              <span className="a-label">Simulated Environments</span>
+            </div>
+            <div className="authority-divider" />
+            <div className="authority-item">
+              <span className="a-count">100,000+</span>
+              <span className="a-label">Behavioral Data Points</span>
+            </div>
+            <div className="authority-divider" />
+            <div className="authority-item">
+              <span className="a-count">SOC v3</span>
+              <span className="a-label">State of Cognition Baseline</span>
+            </div>
           </div>
         </motion.div>
       </div>
@@ -137,6 +154,42 @@ const HomeHeroInstitutional = () => {
         .btn-institutional-hero.outline:hover {
           border-color: #ffffff;
           background: rgba(255, 255, 255, 0.05);
+        }
+
+        .authority-strip {
+          margin-top: 80px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 40px;
+          padding-top: 40px;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .authority-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+        }
+        .a-count {
+          font-family: var(--font-sans);
+          font-size: 24px;
+          font-weight: 800;
+          color: #ffffff;
+          letter-spacing: -0.02em;
+        }
+        .a-label {
+          font-family: var(--font-sans);
+          font-size: 11px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          color: #64748b;
+        }
+        .authority-divider {
+          width: 1px;
+          height: 32px;
+          background: rgba(255, 255, 255, 0.1);
         }
 
         @media (max-width: 1024px) {
