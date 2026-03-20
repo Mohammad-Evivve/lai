@@ -1,11 +1,15 @@
 const { Resend } = require('resend');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend = null;
+if (process.env.RESEND_API_KEY) {
+  resend = new Resend(process.env.RESEND_API_KEY);
+}
 
 const getSender = (type) => 'Leadership Adaptiveness Institute <mmemon@evivve.com>';
 
 const sendEmail = async ({ from, to, subject, html }) => {
   try {
+    if (!resend) throw new Error('Resend API Key is missing');
     const { data, error } = await resend.emails.send({
       from: from || getSender(),
       to,
