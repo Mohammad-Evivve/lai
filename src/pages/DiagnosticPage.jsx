@@ -650,20 +650,19 @@ const DiagnosticPage = () => {
                   {!copied && <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '1.5rem', fontWeight: '500' }}>Share this code with your team to enable aggregate alignment variance mapping.</p>}
                 </div>
               )}
-
               <div className="report-access-card" style={{ background: '#0f172a', color: 'white', padding: '3rem', borderRadius: '24px', marginBottom: '3rem', boxShadow: '0 30px 60px -12px rgba(0,0,0,0.25)', textAlign: 'left' }}>
                 <div style={{ marginBottom: '2.5rem' }}>
                   <h3 style={{ fontSize: '1.75rem', fontWeight: '800', marginBottom: '0.75rem', letterSpacing: '-0.02em', color: '#ffffff' }}>Leadership Adaptiveness Profile</h3>
                   <p style={{ color: '#94a3b8', fontSize: '1.1rem', lineHeight: '1.5' }}>Your individual results and research brief are now available for review.</p>
                 </div>
-                                {!reportId ? (
+                {!reportId ? (
                   <div style={{ color: '#14b8a6', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <div className="spinner-small" /> Synchronizing with Leadership Observatory...
                   </div>
                 ) : (
-                  <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', width: '100%' }}>
-                    <Link to={`/report/perception/${reportId}`} className="btn-institutional primary" style={{ background: '#14b8a6', color: 'white', padding: '1rem 2rem', borderRadius: '12px', textAlign: 'center', fontWeight: '700', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', textDecoration: 'none', flex: '1', minWidth: '200px' }}>
-                      View Results Brief <ArrowRight size={20} />
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', width: '100%' }}>
+                    <Link to={`/report/perception/${reportId}`} className="btn-institutional primary" style={{ background: '#14b8a6', color: 'white', padding: '1.25rem 2.5rem', borderRadius: '12px', textAlign: 'center', fontWeight: '800', fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', textDecoration: 'none', flex: '1', minWidth: '240px', boxShadow: '0 10px 20px -5px rgba(20, 184, 166, 0.3)' }}>
+                      Access Your Profile Now <ArrowRight size={22} />
                     </Link>
                     
                     <button 
@@ -673,13 +672,12 @@ const DiagnosticPage = () => {
                         setCopied('report');
                         setTimeout(() => setCopied(null), 2000);
                       }}
-                      style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', padding: '1rem 2rem', borderRadius: '12px', color: 'white', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', transition: 'all 0.2s', flex: '1', minWidth: '200px' }}
+                      style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', padding: '1.25rem 2.5rem', borderRadius: '12px', color: 'white', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', transition: 'all 0.2s', flex: '0.5', minWidth: '200px' }}
                     >
-                      {copied === 'report' ? <><CheckCircle size={18} color="#14b8a6" /> Copied!</> : <><LinkIcon size={18} /> Copy Report Link</>}
+                      {copied === 'report' ? <><CheckCircle size={18} color="#14b8a6" /> Copied!</> : <><LinkIcon size={18} /> Copy Direct Link</>}
                     </button>
                   </div>
                 )}
-
               </div>
 
               <div className="next-steps-grid">
@@ -688,8 +686,8 @@ const DiagnosticPage = () => {
                     <Mail size={24} />
                   </div>
                   <div className="info-content">
-                    <strong className="info-title">Persistence Link</strong>
-                    <span className="info-desc">A secure access link has been dispatched to <strong>{identity.email}</strong>.</span>
+                    <strong className="info-title">Institutional Persistence</strong>
+                    <span className="info-desc">A copy is being dispatched to <strong>{identity.email}</strong>. If it does not arrive shortly, you can access your profile directly using the controls above.</span>
                   </div>
                 </div>
                 <div className="info-node-premium">
@@ -702,6 +700,7 @@ const DiagnosticPage = () => {
                   </div>
                 </div>
               </div>
+
             </motion.div>
           )}
         </AnimatePresence>

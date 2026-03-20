@@ -5,7 +5,7 @@ import {
   FileText, ShieldCheck, Info, ArrowRight, 
   Activity, Users, Brain, Target, Compass,
   AlertCircle, CheckCircle, Lightbulb, Link as LinkIcon,
-  Printer
+  Printer, Mail
 } from 'lucide-react';
 import { supabase } from '../supabase';
 
@@ -190,9 +190,58 @@ const Part1Report = () => {
   const [error, setError] = useState(null);
   const [teamData, setTeamData] = useState(null);
   const [activeTabs, setActiveTabs] = useState({});
+  const [resending, setResending] = useState(false);
+  const [resendStatus, setResendStatus] = useState(null); // 'cooldown', 'success', 'error'
+  const [resendCooldown, setResendCooldown] = useState(0);
   const [copied, setCopied] = useState(null);
 
   const reportIdDisplay = useMemo(() => id ? id.substring(0, 8).toUpperCase() : '', [id]);
+
+  useEffect(() => {
+    let timer;
+    if (resendCooldown > 0) {
+      timer = setInterval(() => {
+        setResendCooldown(prev => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
+
+  const handleResend = async () => {
+    if (resendCooldown > 0 || resending) return;
+    
+    setResending(true);
+    setResendStatus(null);
+    
+    try {
+      const resp = await fetch('/api/resend-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          reportId: id,
+          email: data?.participants?.email
+        })
+      });
+      
+      const res = await resp.json();
+      if (!resp.ok) {
+        if (resp.status === 429) {
+          setResendStatus('cooldown');
+          setResendCooldown(res.remainingSeconds || 300);
+        } else {
+          throw new Error(res.error || 'Failed to resend');
+        }
+      } else {
+        setResendStatus('success');
+        setResendCooldown(300); // 5 minute hard cooldown
+      }
+    } catch (err) {
+      console.error('Resend error:', err);
+      setResendStatus('error');
+    } finally {
+      setResending(false);
+    }
+  };
 
   const reportLogic = useMemo(() => {
     if (!data) return { scores: {}, team_average_score: 0, summaryPattern: 'D' };
@@ -450,6 +499,26 @@ const Part1Report = () => {
               >
                 <Printer size={15} /> Download Report
               </button>
+
+              <button 
+                onClick={handleResend}
+                disabled={resending || resendCooldown > 0}
+                className="btn-institutional outline-resend"
+                style={{ 
+                  background: 'white', color: '#0f172a', border: '1px solid #e2e8f0', 
+                  padding: '10px 20px', borderRadius: '10px', fontWeight: '700', 
+                  cursor: (resending || resendCooldown > 0) ? 'not-allowed' : 'pointer', 
+                  display: 'flex', alignItems: 'center', gap: '0.4rem',
+                  fontSize: '13px', transition: 'all 0.2s', whiteSpace: 'nowrap',
+                  opacity: (resending || resendCooldown > 0) ? 0.7 : 1,
+                  justifyContent: 'center'
+                }}
+              >
+                <Mail size={15} /> {resending ? 'Dispatched...' : (resendCooldown > 0 ? `Resend (${Math.floor(resendCooldown/60)}:${(resendCooldown%60).toString().padStart(2, '0')})` : 'Resend Profile Email')}
+              </button>
+
+              {resendStatus === 'success' && <div style={{ fontSize: '11px', color: '#16a34a', fontWeight: '700' }}>✓ Profile Dispatched</div>}
+              {resendStatus === 'error' && <div style={{ fontSize: '11px', color: '#dc2626', fontWeight: '700' }}>! Delivery Attempt Failed</div>}
             </div>
           </div>
         </header>

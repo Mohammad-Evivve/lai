@@ -158,26 +158,53 @@ const ESSENTIAL = {
       </div>
     `);
   }
-};
+};const INTERNAL = {
+  salesAlert: (data) => {
+    const typeLabel = data.event_type === 'diagnostic_start' ? 'NEW LEAD' : 'DIAGNOSTIC COMPLETED';
+    return wrap(`
+      <h2 style="font-size: 16px; border-left: 4px solid #0f172a; padding-left: 12px; color: #0f172a; text-transform: uppercase; letter-spacing: 0.05em;">${typeLabel}</h2>
+      <p style="font-size: 14px; margin-bottom: 20px;">A high-intent event has been recorded from the Leadership Adaptiveness Diagnostic.</p>
+      
+      <div style="background-color: #ffffff; padding: 20px; border-radius: 4px; border: 1px solid #e2e8f0;">
+        <p><strong>Name:</strong> ${data.name || 'N/A'}</p>
+        <p><strong>Email:</strong> ${data.email || 'N/A'}</p>
+        <p><strong>Organization:</strong> ${data.organization || data.organization_name || 'N/A'}</p>
+        <p><strong>Role:</strong> ${data.role_level || 'N/A'}</p>
+        <p><strong>Industry:</strong> ${data.industry || 'N/A'}</p>
+        ${data.report_link ? `<p><strong>Report:</strong> <a href="${data.report_link}" style="color: #0f172a;">View Profile</a></p>` : ''}
+      </div>
 
-const INTERNAL = {
-  diagnosticCompleted: (data) => wrap(`
-    <h2 style="font-size: 16px; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em;">Internal Alert: Diagnostic Completed</h2>
-    <p><strong>Name:</strong> ${data.name || 'N/A'}</p>
-    <p><strong>Email:</strong> ${data.email || 'N/A'}</p>
-    <p><strong>Organization:</strong> ${data.organization_name || 'N/A'}</p>
-    <p><strong>Report:</strong> <a href="${data.report_link}" style="color: #0f172a;">${data.report_link}</a></p>
-  `),
-  diagnosticStarted: (data) => wrap(`
-    <h2 style="font-size: 16px; border-left: 4px solid #0f172a; padding-left: 12px; color: #0f172a; text-transform: uppercase; letter-spacing: 0.05em;">New High-Intent Lead: Diagnostic Started</h2>
-    <p>A user has just initiated the Leadership Adaptiveness Diagnostic.</p>
-    <p><strong>Name:</strong> ${data.name || 'N/A'}</p>
-    <p><strong>Email:</strong> ${data.email || 'N/A'}</p>
-    <p><strong>Organization:</strong> ${data.organization || 'N/A'}</p>
-    <p><strong>Role:</strong> ${data.role_level || 'N/A'}</p>
-    <p><strong>Industry:</strong> ${data.industry || 'N/A'}</p>
-    <p style="font-size: 11px; color: #64748b; margin-top: 20px; font-style: italic;">Follow-up triggers are now active for this lead context.</p>
-  `)
+      <p style="font-size: 11px; color: #64748b; margin-top: 20px; font-style: italic;">Signals classified as SALES high-intent lead context.</p>
+    `);
+  },
+  
+  opsAlert: (data) => {
+    const isCritical = ['failed_at_send', 'resend_abuse', 'provider_restrictions'].includes(data.status);
+    const borderColor = isCritical ? '#dc2626' : '#f59e0b';
+    const textColor = isCritical ? '#991b1b' : '#92400e';
+    const bgColor = isCritical ? '#fef2f2' : '#fffbeb';
+    
+    return wrap(`
+      <h2 style="font-size: 16px; color: ${borderColor}; text-transform: uppercase; letter-spacing: 0.1em;">[EMAIL OPS] ${data.event_type.replace(/_/g, ' ').toUpperCase()}</h2>
+      <p style="background-color: ${bgColor}; border: 1px solid ${borderColor}; padding: 12px; color: ${textColor}; font-weight: bold;">
+        Internal Signal: ${data.status.toUpperCase()}<br/>
+        Type: ${data.event_type}
+      </p>
+      
+      <div style="margin: 20px 0; font-size: 13px;">
+        <p><strong>Recipient:</strong> ${data.recipient || 'N/A'}</p>
+        <p><strong>Report ID:</strong> ${data.report_id || 'N/A'}</p>
+        <p><strong>Error:</strong> ${data.error_message || 'N/A'}</p>
+        ${data.generated_link ? `<p><strong>Access Link:</strong> <a href="${data.generated_link}" style="color: #0f172a;">${data.generated_link}</a></p>` : ''}
+      </div>
+
+      <p style="font-size: 11px; color: #64748b; margin-top: 20px;">
+        Trace ID: ${data.provider_message_id || 'N/A'}<br/>
+        Timestamp: ${new Date().toISOString()}
+      </p>
+      <p style="font-size: 11px; color: #94a3b8; font-style: italic;">Classified as TECH operational signal. Logs remain the source of truth.</p>
+    `);
+  }
 };
 
 module.exports = { ESSENTIAL, INTERNAL };

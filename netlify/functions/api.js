@@ -75,14 +75,25 @@ app.post(['/api/diagnostic/start', '/diagnostic/start'], async (req, res) => {
 
     await supabaseClient.from('user_status').upsert(updateData, { onConflict: 'email' });
 
-    // Trigger Internal Alert
+    // Trigger Internal Alert (Sales Signal)
     if (email && email.includes('@') && !email.includes('example.com')) {
-      await sendEmail({
+      const salesResult = await sendEmail({
         from: getSender('notifications'),
         to: 'mmemon@evivve.com',
-        subject: `NEW LEAD: Diagnostic Started | ${organization || email}`,
-        html: INTERNAL.diagnosticStarted({ name, email, organization, role_level, industry })
+        subject: `[LEAD] Diagnostic Started — ${email}`,
+        html: INTERNAL.salesAlert({ 
+          name, 
+          email, 
+          organization, 
+          role_level, 
+          industry,
+          event_type: 'diagnostic_start'
+        }),
+        type: 'diagnostic_start'
       });
+      
+      // Log lead signal
+      await logEmailOp(email, 'diagnostic_start', salesResult, null, 'sales');
     }
 
     res.status(201).json({ success: true });
@@ -257,50 +268,131 @@ app.post(['/api/diagnostic', '/diagnostic'], async (req, res) => {
     }
     if (!diagData) throw new Error("Database failed to return the new report record.");
 
-    // Notifications (Strategic Sequential Delivery for Serverless Stability)
-    try {
-      // 1. Internal Alert (Admin)
-      const resA = await sendEmail({
-        from: getSender('notifications'),
-        to: 'mmemon@evivve.com',
-        subject: `NEW REPORT: ${organization_name || email}`,
-        html: INTERNAL.diagnosticCompleted({ 
-          name, email, organization_name, 
-          report_link: `https://adaptiveness.institute/report/perception/${diagData.id}` 
-        }),
-        type: 'admin_alert'
-      });
-      console.log(`[Email-1-Admin]: ${resA.success ? 'Success' : 'Fail: ' + resA.error}`);
+    const logEmailOp = async (recipient, type, result, reportId = null, category = 'tech', extraLink = null) => {
+      try {
+        const logData = {
+          recipient,
+          event_type: type, // Using event_type for consistency
+          email_type: type, // Keeping email_type for backward compat if table not updated yet
+          event_category: category,
+          status: result.status,
+          provider_message_id: result.provider_message_id,
+          provider_response: result.provider_response,
+          error_message: result.error_message,
+          report_id: reportId,
+          generated_link: extraLink || result.generated_link
+        };
+        
+        const { error } = await supabaseClient.from('email_ops_log').insert([logData]);
+        
+        if (error) {
+          console.error("[CRITICAL] email_ops_log_write_failed:", error.message);
+          // Trigger Tech Signal for log failure
+          await sendEmail({
+            from: getSender('notifications'),
+            to: 'tech@evivve.com',
+            subject: `[EMAIL OPS][FAIL] Log Write Failed — ${recipient}`,
+            html: INTERNAL.opsAlert({
+              event_type: 'email_ops_log_write_failed',
+              status: 'failed_at_send',
+              recipient,
+              error_message: error.message
+            }),
+            type: 'email_ops_log_write_failed'
+          });
+        }
+      } catch (e) {
+        console.error("[CRITICAL] Absolute failure in logEmailOp:", e.message);
+      }
+    };
 
-      // 2. Participant Report (Instant Delivery)
-      const resB = await sendEmail({
+    // Notifications (Sequential Delivery with Persistence & Failure-First Alerting)
+    try {
+      const reportLink = `https://adaptiveness.institute/report/perception/${diagData.id}`;
+      
+      // 1. Participant Report (Primary Goal)
+      const resP = await sendEmail({
         from: getSender('research'),
         to: email,
         subject: 'Your Leadership Adaptiveness Profile is Ready',
-        html: ESSENTIAL.participantReport({ 
-          name, 
-          reportId: diagData.id 
-        }),
+        html: ESSENTIAL.participantReport({ name, reportId: diagData.id }),
         type: 'participant_report'
       });
-      console.log(`[Email-2-Participant]: ${resB.success ? 'Success' : 'Fail: ' + resB.error}`);
+      await logEmailOp(email, 'participant_report', resP, diagData.id, 'tech', reportLink);
 
-      // 3. Institutional Onboarding (if new team created)
+      // 2. Institutional Onboarding (if applicable)
       if (participation_mode === 'team_create' && final_team_code) {
-        const resC = await sendEmail({
+        const resT = await sendEmail({
           from: getSender('onboarding'),
           to: email,
           subject: 'Your Measurement Cycle Has Been Initiated',
-          html: ESSENTIAL.teamOnboarding({
-            organization: organization_name || name,
-            teamCode: final_team_code
-          }),
+          html: ESSENTIAL.teamOnboarding({ organization: organization_name || name, teamCode: final_team_code }),
           type: 'team_onboarding'
         });
-        console.log(`[Email-3-Team]: ${resC.success ? 'Success' : 'Fail: ' + resC.error}`);
+        await logEmailOp(email, 'team_onboarding', resT, diagData.id, 'tech');
+        
+        // 2b. Sales Signal for Team Creation
+        const resSales = await sendEmail({
+          from: getSender('notifications'),
+          to: 'mmemon@evivve.com',
+          subject: `[LEAD] Team Created — ${organization_name || name}`,
+          html: INTERNAL.salesAlert({ 
+            name, 
+            email, 
+            organization: organization_name, 
+            event_type: 'team_created'
+          }),
+          type: 'team_created'
+        });
+        await logEmailOp(email, 'team_created', resSales, diagData.id, 'sales');
       }
+
+      // 3. Technical Signals (Lead completions & failures)
+      
+      // 3a. Success Signal to Sales
+      if (resP.success) {
+        await sendEmail({
+          from: getSender('notifications'),
+          to: 'mmemon@evivve.com',
+          subject: `[LEAD] Diagnostic Completed — ${email}`,
+          html: INTERNAL.salesAlert({ 
+            name, 
+            email, 
+            organization: organization_name, 
+            report_link: reportLink,
+            event_type: 'diagnostic_completed'
+          }),
+          type: 'diagnostic_completed'
+        });
+        // We don't necessarily need to LOG every internal alert to email_ops_log if it's just a duplicate of the participant one, 
+        // but the user wants "logs remain source of truth". I'll log it as a sales event.
+        await logEmailOp(email, 'diagnostic_completed', { status: 'accepted_by_provider', success: true }, diagData.id, 'sales', reportLink);
+      }
+
+      // 3b. Failure Signal to Tech (Only if participant delivery failed)
+      if (!resP.success) {
+        await sendEmail({
+          from: getSender('notifications'),
+          to: 'mmemon@evivve.com',
+          subject: `[EMAIL OPS][FAIL] Participant Report — ${email}`,
+          html: INTERNAL.opsAlert({
+            recipient: email,
+            event_type: 'participant_report_failure',
+            status: resP.status,
+            error_message: resP.error_message,
+            report_id: diagData.id,
+            generated_link: reportLink
+          }),
+          type: 'participant_report_failure'
+        });
+        await logEmailOp(email, 'participant_report_failure', { status: 'accepted_by_provider', success: true }, diagData.id, 'tech', reportLink);
+      }
+
+      // 4. Silent Administrative Success Trace (Internal Only)
+      console.log(`[Diagnostic-Complete] ID: ${diagData.id} | Email: ${email} | Delivery: ${resP.status}`);
+
     } catch (e) {
-      console.error("[Email Flow Critical Error]:", e.message);
+      console.error("[Email Flow Exception]:", e.message);
     }
 
     res.status(201).json({ id: diagData.id, team_code: final_team_code });
@@ -309,22 +401,131 @@ app.post(['/api/diagnostic', '/diagnostic'], async (req, res) => {
   }
 });
 
+// Protected Resend Endpoint with Cooldown
+app.post(['/api/resend-report', '/resend-report'], async (req, res) => {
+  const { reportId, email } = req.body;
+  if (!reportId || !email) return res.status(400).json({ error: 'Report ID and Email required' });
+
+  try {
+    // 1. Verify Ownership & Existence (Joins diagnostic_results with participants)
+    const { data: report, error: reportErr } = await supabaseClient
+      .from('diagnostic_results')
+      .select('id, participant_id, participants(email, name)')
+      .eq('id', reportId)
+      .single();
+
+    if (reportErr || !report || report.participants?.email?.toLowerCase() !== email.toLowerCase()) {
+      // Trigger Tech Signal for Auth Failure (Potential probe or abuse)
+      await sendEmail({
+        from: getSender('notifications'),
+        to: 'tech@evivve.com',
+        subject: `[EMAIL OPS][AUTH] Resend Denied — ${email}`,
+        html: INTERNAL.opsAlert({
+          recipient: email,
+          event_type: 'resend_endpoint_auth_failed',
+          status: 'failed_at_send',
+          report_id: reportId,
+          error_message: 'Identity mismatch or report not found'
+        }),
+        type: 'resend_endpoint_auth_failed'
+      });
+      await logEmailOp(email, 'resend_endpoint_auth_failed', { status: 'failed_at_send' }, reportId, 'tech');
+      
+      return res.status(403).json({ error: 'Access denied: Profile not linked to this identity.' });
+    }
+
+    // 2. Enforce 5-Minute Server-Side Cooldown
+    const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const { data: recentOps } = await supabaseClient
+      .from('email_ops_log')
+      .select('created_at')
+      .eq('report_id', reportId)
+      .eq('recipient', email)
+      .eq('status', 'accepted_by_provider')
+      .gt('created_at', fiveMinsAgo)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (recentOps && recentOps.length > 0) {
+      const lastSent = new Date(recentOps[0].created_at);
+      const remainingSeconds = Math.max(0, 300 - Math.floor((Date.now() - lastSent.getTime()) / 1000));
+      
+      // Trigger Tech Signal for Resend Abuse
+      await sendEmail({
+        from: getSender('notifications'),
+        to: 'tech@evivve.com',
+        subject: `[EMAIL OPS][ABUSE] Resend Cooldown Hit — ${email}`,
+        html: INTERNAL.opsAlert({
+          recipient: email,
+          event_type: 'resend_abuse',
+          status: 'resend_abuse',
+          report_id: reportId,
+          error_message: `Cooldown active. Remaining: ${remainingSeconds}s`
+        }),
+        type: 'resend_abuse'
+      });
+      await logEmailOp(email, 'resend_abuse', { status: 'resend_abuse' }, reportId, 'tech');
+
+      return res.status(429).json({ 
+        error: 'Institutional cooldown active.', 
+        remainingSeconds 
+      });
+    }
+
+    const logResendOp = async (recipient, type, result, reportId = null) => {
+      await logEmailOp(recipient, type, result, reportId, 'tech');
+    };
+
+    // 3. Dispatch Email
+    const resP = await sendEmail({
+      from: getSender('research'),
+      to: email,
+      subject: 'Re-Issue: Your Leadership Adaptiveness Profile',
+      html: ESSENTIAL.participantReport({ 
+        name: report.participants.name, 
+        reportId: report.id 
+      }),
+      type: 'participant_report_resend'
+    });
+
+    await logResendOp(email, 'participant_report_resend', resP, report.id);
+
+    if (!resP.success) {
+      // Trigger Tech Signal for delivery failure on resend
+      await sendEmail({
+        from: getSender('notifications'),
+        to: 'tech@evivve.com',
+        subject: `[EMAIL OPS][FAIL] Resend Failed — ${email}`,
+        html: INTERNAL.opsAlert({
+          recipient: email,
+          event_type: 'resend_delivery_failure',
+          status: resP.status,
+          error_message: resP.error_message,
+          report_id: reportId
+        }),
+        type: 'resend_delivery_failure'
+      });
+      return res.status(502).json({ error: 'Provider rejected delivery attempt.', details: resP.error_message });
+    }
+
+    res.json({ success: true, status: 'dispatched' });
+
+  } catch (err) {
+    console.error("[Resend API Error]:", err.message);
+    res.status(500).json({ error: 'Operational failure during re-issue.' });
+  }
+});
+
 // Debug Email Configuration (Secure)
 app.get(['/api/debug/email', '/debug/email'], async (req, res) => {
-  const allKeys = Object.keys(process.env);
-  const presentKeys = allKeys.filter(k => 
-    k.includes('KEY') || k.includes('RESEND') || k.includes('SUPABASE') || k.includes('ID') || k.toLowerCase().includes('netlify')
-  );
-  
   res.json({
-    debug_version: 'v4-final',
+    debug_version: '1.2.9-HARDENED',
     status: 'Ready',
-    presentKeys,
     resend_check: {
-      RESEND_API_KEY: !!process.env.RESEND_API_KEY,
-      is_valid_format: process.env.RESEND_API_KEY?.startsWith('re_')
+      RESEND_API_KEY: !!process.env.RESEND_API_KEY
     },
-    env: process.env.NODE_ENV || 'production'
+    env: process.env.NODE_ENV || 'production',
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -344,13 +545,48 @@ app.post(['/api/report-request', '/report-request'], async (req, res) => {
     }
 
     // 2. Trigger Delivery Email
-    await sendEmail({
+    const resP = await sendEmail({
       from: getSender('research'),
       to: email,
       subject: 'State of Cognition Report — Institutional Release',
       html: ESSENTIAL.socReportDelivery({ name }),
       type: 'soc_report'
     });
+    
+    // Log tech event for delivery
+    await logEmailOp(email, 'soc_report', resP, null, 'tech');
+
+    // 3. Trigger Sales Signal
+    if (resP.success) {
+      await sendEmail({
+        from: getSender('notifications'),
+        to: 'mmemon@evivve.com',
+        subject: `[LEAD] SOC Report Requested — ${email}`,
+        html: INTERNAL.salesAlert({ 
+          name, 
+          email, 
+          organization, 
+          industry,
+          event_type: 'soc_report_requested'
+        }),
+        type: 'soc_report_requested'
+      });
+      await logEmailOp(email, 'soc_report_requested', { status: 'accepted_by_provider', success: true }, null, 'sales');
+    } else {
+      // Tech signal for SOC failure
+      await sendEmail({
+        from: getSender('notifications'),
+        to: 'mmemon@evivve.com',
+        subject: `[EMAIL OPS][FAIL] SOC Report Failure — ${email}`,
+        html: INTERNAL.opsAlert({
+          recipient: email,
+          event_type: 'soc_report_failure',
+          status: resP.status,
+          error_message: resP.error_message
+        }),
+        type: 'soc_report_failure'
+      });
+    }
 
     res.json({ success: true });
   } catch (err) {
