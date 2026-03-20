@@ -34,6 +34,11 @@ const distPath = path.join(__dirname, '..', 'dist');
 app.use(express.static(distPath));
 
 // API Routes
+const ingestRoutes = require('./routes/ingest');
+const deliveryRoutes = require('./routes/delivery');
+
+app.use('/api/v1', ingestRoutes);
+app.use('/api/v1/delivery', deliveryRoutes);
 
 // Health Check
 app.get('/api/health', async (req, res) => {
@@ -93,19 +98,27 @@ app.post('/api/diagnostic/start', async (req, res) => {
 
     if (error) throw error;
 
-        // --- Trigger Internal Alert (New Lead) ---
+        // --- Trigger Internal Alert (Sales Signal) ---
         if (email && email.includes('@') && !email.includes('example.com')) {
           try {
             const { sendEmail, getSender } = require('./lib/email');
             const { INTERNAL } = require('./lib/emailTemplates');
             await sendEmail({
               from: getSender('notifications'),
-              to: 'mmemon@evivve.com',
-              subject: `NEW LEAD: Diagnostic Started | ${organization || email}`,
-              html: INTERNAL.diagnosticStarted({ name, email, organization, role_level, industry })
+              to: 'sales@evivve.com',
+              subject: `[LEAD] Diagnostic Started — ${email}`,
+              html: INTERNAL.salesAlert({ 
+                name, 
+                email, 
+                organization, 
+                role_level, 
+                industry,
+                event_type: 'diagnostic_start'
+              }),
+              type: 'diagnostic_start'
             });
           } catch (e) {
-            console.error('New lead email trigger failed:', e);
+            console.error('New lead signal trigger failed:', e);
           }
         }
 
@@ -430,21 +443,28 @@ app.post('/api/diagnostic', async (req, res) => {
             }
           }
 
-          // 2. Internal Alert
+          // 2. Internal Signals (Sales & Tech)
+          const reportLink = `https://lai.institute/report/perception/${diagData[0].id}`;
+          
+          // 2a. Success Signal to Sales
           await sendEmail({
             from: getSender('notifications'),
-            to: 'mmemon@evivve.com',
-            subject: `New Diagnostic: ${organization_name}`,
-            html: INTERNAL.diagnosticCompleted({
+            to: 'sales@evivve.com',
+            subject: `[LEAD] Diagnostic Completed — ${email}`,
+            html: INTERNAL.salesAlert({
               name: req.body.name,
               email,
-              organization_name,
+              organization: organization_name,
               role_level: req.body.role_level,
-              top_dimension: topDim,
-              lowest_dimension: lowestDim,
-              report_link: `https://lai.institute/report/perception/${diagData[0].id}`
-            })
+              report_link: reportLink,
+              event_type: 'diagnostic_completed'
+            }),
+            type: 'diagnostic_completed'
           });
+          
+          // Note: In local server, we don't have logEmailOp yet, but we'll monitor via console
+          console.log(`[SIGNAL] Sales: Diagnostic Completed for ${email}`);
+
         } catch (bgErr) {
           console.error('[BACKGROUND] Notification Error:', bgErr);
         }
@@ -525,18 +545,24 @@ app.post('/api/demo-request', async (req, res) => {
 
     if (error) throw error;
 
-    // --- Trigger Internal Alert (Demo Request) ---
+    // --- Trigger Internal Alert (Sales Signal) ---
     try {
       const { sendEmail, getSender } = require('./lib/email');
       const { INTERNAL } = require('./lib/emailTemplates');
       await sendEmail({
         from: getSender('notifications'),
-        to: 'mmemon@evivve.com',
-        subject: `DEMO REQUESTED: ${organization || email}`,
-        html: INTERNAL.demoRequested({ name, email, organization })
+        to: 'sales@evivve.com',
+        subject: `[LEAD] Demo Requested — ${organization || email}`,
+        html: INTERNAL.salesAlert({ 
+          name, 
+          email, 
+          organization, 
+          event_type: 'demo_requested'
+        }),
+        type: 'demo_requested'
       });
     } catch (e) {
-      console.error('Demo request email trigger failed:', e);
+      console.error('Demo request signal trigger failed:', e);
     }
 
     res.status(201).json({ id: data[0].id });
@@ -561,20 +587,20 @@ app.post('/api/report-request', async (req, res) => {
     try {
       const { sendEmail, getSender } = require('./lib/email');
       
-      // Internal Alert
+      // Internal Alert (Sales Signal)
       await sendEmail({
         from: getSender('notifications'),
-        to: 'mmemon@evivve.com',
-        subject: `REPORT DOWNLOAD: State of Cognition 2026 | ${organization || email}`,
-        html: `<h3>New Research Lead</h3>
-               <p>A user has requested the State of Cognition 2026 report.</p>
-               <ul>
-                 <li><strong>Name:</strong> ${name}</li>
-                 <li><strong>Email:</strong> ${email}</li>
-                 <li><strong>Organization:</strong> ${organization || 'N/A'}</li>
-                 <li><strong>Role:</strong> ${role || 'N/A'}</li>
-                 <li><strong>Region:</strong> ${region || 'N/A'}</li>
-               </ul>`
+        to: 'sales@evivve.com',
+        subject: `[LEAD] SOC Report Requested — ${email}`,
+        html: INTERNAL.salesAlert({ 
+          name, 
+          email, 
+          organization, 
+          role,
+          region,
+          event_type: 'soc_report_requested'
+        }),
+        type: 'soc_report_requested'
       });
 
       // User Email with PDF link
